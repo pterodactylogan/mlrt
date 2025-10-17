@@ -23,6 +23,7 @@ def train_eval_model(spec):
     train_data = spec["train-data"]
     val_data = spec["val-data"]
     model_path = spec["model-dir"]
+    eval_prefix = spec["eval-data"]
     os.makedirs(model_path, exist_ok=True)
 
     # set up hyperparamters
@@ -140,7 +141,7 @@ def train_eval_model(spec):
     test_size = "Large"
     test_types = ["SR", "SA", "LR", "LA"]
     data_files = [
-        os.path.join("data_gen", test_size, f"{lang}_Test{test_type}.txt")
+        f"{eval_prefix}{test_type}.txt"
         for test_type in test_types
     ]
     for test_type, data_file in zip(test_types, data_files):
