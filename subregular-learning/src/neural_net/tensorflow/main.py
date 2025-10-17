@@ -27,7 +27,7 @@ def train_eval_model(spec):
 
     # set up hyperparamters
     model_types = ["simple", "gru", "lstm", "transformer"]
-    hparams = {train_data
+    hparams = {
         "dropout": [0.1, 0.1, 0.0, 0.1],
         "embed_dim": [32, 32, 256, 256],
         "epochs": 4 * [64],
