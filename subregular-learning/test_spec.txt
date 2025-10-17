@@ -1,6 +1,7 @@
 [{
 	"model-type": "simple",
-	"train-data": "./data_gen/Small/04.03.SL.2.1.0_Train.txt",
-	"val-data": "./data_gen/Small/04.03.SL.2.1.0_Dev.txt",
-	"model-dir": "./model_test/Uni_simple_NoDrop_04.03.SL.2.1.0_Small
+	"train-data": "../../../subregular-learning/data_gen/Small/04.04.SL.2.1.0_Train.txt",
+	"val-data": "../../../subregular-learning/data_gen/Small/04.04.SL.2.1.0_Dev.txt",
+	"model-dir": "./models_test/Uni_simple_NoDrop_04.03.SL.2.1.0_Small",
+	"eval-data": "../../../subregular-learning/data_gen/Small/04.04.SL.2.1.0_Test"
 }]
