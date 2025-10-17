@@ -1,0 +1,6 @@
+[{
+	"model-type": "simple",
+	"train-data": "./data_gen/Small/04.03.SL.2.1.0_Train.txt",
+	"val-data": "./data_gen/Small/04.03.SL.2.1.0_Dev.txt",
+	"model-dir": "./model_test/Uni_simple_NoDrop_04.03.SL.2.1.0_Small
+}]
