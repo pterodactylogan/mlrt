@@ -1,4 +1,5 @@
 from itertools import product
+import json
 
 specs = []
 
@@ -62,5 +63,5 @@ for f in name_files:
             num_models += 1
             if num_models % 120 == 0:
                 with open(f"./spec_files/specs_{num_models // 120}.txt", "w") as out_file:
-                    out_file.write(str(specs))
+                    json.dump(specs, out_file)
                 specs = []
