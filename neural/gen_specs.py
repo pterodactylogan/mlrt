@@ -34,7 +34,7 @@ for f in name_files:
                 model_dir += "PlusShort/"
             elif "long" in f:
                 model_dir += "Standard/"
-            model_dir += net_type + "_" + "".join(f.split(".")[:-1])
+            model_dir += net_type + "_" + "".join(line.split(".")[:-1])
 
             if "small" in f:
                 path += "Small/"
@@ -54,9 +54,9 @@ for f in name_files:
 
             specs.append({
                 "model-type": net_type,
-                "train-data": path + f.strip(),
-                "val-data": test_path + f.strip().split("Train")[0] + "Dev.txt",
-                "eval-data": test_path + f.strip().split("Train")[0] + "Test",
+                "train-data": path + line.strip(),
+                "val-data": test_path + line.strip().split("Train")[0] + "Dev.txt",
+                "eval-data": test_path + line.strip().split("Train")[0] + "Test",
                 "model-dir": model_dir
             })
 
