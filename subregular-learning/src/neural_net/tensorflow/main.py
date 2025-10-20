@@ -138,7 +138,6 @@ def train_eval_model(spec):
 
     model.summary()
 
-    test_size = "Large"
     test_types = ["SR", "SA", "LR", "LA"]
     data_files = [
         f"{eval_prefix}{test_type}.txt"
