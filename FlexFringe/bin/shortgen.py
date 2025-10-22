@@ -132,7 +132,8 @@ def main(ctx: Context) -> None:
             ltag = os.path.basename(path).split("_")[0]
             split = os.path.basename(path).split("_")[1].split(".")[0]
             assert split == "Train"
-            outpath_ps = os.path.join(outdir_ps, f"{ltag}_TrainPS.txt")
+            outpath_ps_ff = os.path.join(outdir_ps, f"{ltag}_TrainPS.ff")
+            outpath_ps_mlrt = os.path.join(outdir_ps, f"{ltag}_TrainPS.mlrt")
             if os.path.exists(outpath_ps) and not args.force:
                 continue  # Skip existing files.
             og_data = list(
@@ -149,11 +150,11 @@ def main(ctx: Context) -> None:
             )
             ctx.log.info("read: %s", sh_path)
             data = sh_data + og_data
-            pd.DataFrame(data).to_csv(outpath_ps, index=False, header=False, sep="\t")
-            ff_string = MLRegTestFile.from_path(outpath_ps).to_string()
-            with open(outpath_ps, "w") as fd:
+            pd.DataFrame(data).to_csv(outpath_ps_mlrt, index=False, header=False, sep="\t")
+            ff_string = MLRegTestFile.from_path(outpath_ps_mlrt).to_string()
+            with open(outpath_ps_ff, "w") as fd:
                 fd.write(ff_string)
-            ctx.log.info("wrote: %s", outpath_ps)
+            ctx.log.info("wrote: %s", outpath_ps_ff, outpath_ps_mlrt)
 
 
 if __name__ == "__main__":
