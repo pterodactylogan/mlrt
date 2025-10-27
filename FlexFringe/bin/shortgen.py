@@ -134,8 +134,7 @@ def main(ctx: Context) -> None:
             assert split == "Train"
             outpath_ps_ff = os.path.join(outdir_ps, f"{ltag}_TrainPS.ff")
             outpath_ps_mlrt = os.path.join(outdir_ps, f"{ltag}_TrainPS.mlrt")
-            if os.path.exists(outpath_ps) and not args.force:
-                continue  # Skip existing files.
+            
             og_data = list(
                 pd.read_csv(path, sep="\t", names=["sample", "label"]).itertuples(
                     index=False, name=None
@@ -150,11 +149,16 @@ def main(ctx: Context) -> None:
             )
             ctx.log.info("read: %s", sh_path)
             data = sh_data + og_data
-            pd.DataFrame(data).to_csv(outpath_ps_mlrt, index=False, header=False, sep="\t")
-            ff_string = MLRegTestFile.from_path(outpath_ps_mlrt).to_string()
-            with open(outpath_ps_ff, "w") as fd:
-                fd.write(ff_string)
-            ctx.log.info("wrote: %s", outpath_ps_ff, outpath_ps_mlrt)
+            if not os.path.exists(outpath_ps_mlrt) or args.force:
+                pd.DataFrame(data).to_csv(outpath_ps_mlrt, index=False, header=False, sep="\t")
+                ctx.log.info("wrote: %s", outpath_ps_mlrt)
+
+            if not os.path.exists(outpath_ps_ff) or args.force:
+                ff_string = MLRegTestFile.from_path(outpath_ps_mlrt).to_string()
+                with open(outpath_ps_ff, "w") as fd:
+                    fd.write(ff_string)
+                ctx.log.info("wrote: %s", outpath_ps_ff)
+            
 
 
 if __name__ == "__main__":
