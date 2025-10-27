@@ -17,6 +17,8 @@ for f in name_files:
     for line in open("../data_filenames/" + f).readlines():
         if "Train" not in line or line.strip()[-3:] == ".ff":
             continue
+        if "both" in f and ".mlrt" not in line:
+            continue
         for net_type in network_types:
             if "onlyshort" in f:
                 path = "../data/OnlyShort/"
