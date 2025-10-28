@@ -40,11 +40,11 @@ for f in name_files:
 
             if "small" in f:
                 path += "Small/"
-                test_path += "Small/"
+                test_path += "Large/"
                 model_dir += "_Small"
             elif "mid" in f:
                 path += "Mid/"
-                test_path += "Mid/"
+                test_path += "Large/"
                 model_dir += "_Mid"
             elif "large" in f:
                 path += "Large/"
