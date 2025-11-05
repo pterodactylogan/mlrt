@@ -29,6 +29,7 @@ for f in name_files:
             
 
             test_path = "../../../subregular-learning/data_gen/"
+            val_path = "../../../subregular-learning/data_gen/"
             model_dir = "./models/"
             if "onlyshort" in f:
                 model_dir += "OnlyShort/"
@@ -40,14 +41,17 @@ for f in name_files:
 
             if "small" in f:
                 path += "Small/"
+                val_path += "Small/"
                 test_path += "Large/"
                 model_dir += "_Small"
             elif "mid" in f:
                 path += "Mid/"
+                val_path += "Mid/"
                 test_path += "Large/"
                 model_dir += "_Mid"
             elif "large" in f:
                 path += "Large/"
+                val_path += "Large/"
                 test_path += "Large/"
                 model_dir += "_Large"
             elif "onlyshort" in f:
@@ -57,7 +61,7 @@ for f in name_files:
             specs.append({
                 "model-type": net_type,
                 "train-data": path + line.strip(),
-                "val-data": test_path + line.strip().split("Train")[0] + "Dev.txt",
+                "val-data": val_path + line.strip().split("Train")[0] + "Dev.txt",
                 "eval-data": test_path + line.strip().split("Train")[0] + "Test",
                 "model-dir": model_dir
             })
