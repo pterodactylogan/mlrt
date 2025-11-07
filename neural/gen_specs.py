@@ -55,7 +55,8 @@ for f in name_files:
                 test_path += "Large/"
                 model_dir += "_Large"
             elif "onlyshort" in f:
-                test_path += "Small/"
+                test_path += "Large/"
+                val_path += "Small/"
 
 
             specs.append({
@@ -67,7 +68,7 @@ for f in name_files:
             })
 
             num_models += 1
-            if num_models % 120 == 0:
-                with open(f"./spec_files/specs_{num_models // 120}.txt", "w") as out_file:
+            if num_models % 50 == 0:
+                with open(f"./spec_files_50/specs_{num_models // 50}.txt", "w") as out_file:
                     json.dump(specs, out_file)
                 specs = []
