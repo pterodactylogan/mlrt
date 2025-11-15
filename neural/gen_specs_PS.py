@@ -43,6 +43,7 @@ for f, line in pairs:
             model_dir += "OnlyShort/"
         elif "both" in f:
             model_dir += "PlusShort/"
+            line = line.replace(".txt", ".mlrt")
         elif "long" in f:
             model_dir += "Standard/"
         model_dir += net_type + "_" + "".join(line.split(".")[:-1])
