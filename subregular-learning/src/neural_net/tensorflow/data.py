@@ -16,7 +16,12 @@ def parse_dataset(fname, vocabulary={'pad': 0}):
     y_items = []
     with open(fname, 'r') as f:
         for line in f.readlines():
-            x, y = line.strip().split('\t')
+            try:
+                x, y = line.strip().split('\t')
+            except:
+                print("badly formatted line in file", fname + ":")
+                print(line)
+                continue
             x_indices = []
             for c in x:
                 if c not in vocabulary:
