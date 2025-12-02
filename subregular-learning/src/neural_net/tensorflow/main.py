@@ -24,12 +24,6 @@ def train_eval_model(spec):
     val_data = spec["val-data"]
     model_path = spec["model-dir"]
     eval_prefix = spec["eval-data"]
-    if "short-strings" in spec:
-        short_strings = spec["short-strings"]
-    else:
-        short_strings = False
-    
-    print(type(short_strings))
     os.makedirs(model_path, exist_ok=True)
 
     # set up hyperparamters
@@ -80,16 +74,6 @@ def train_eval_model(spec):
     x_val = tf.constant(pad_data(x_val, vocabulary))
     y_train = tf.constant(y_train)
     y_val = tf.constant(y_val)
-
-    if short_strings:
-        short_string_dir = "../tmp/shortgen/OnlyShort"
-        short_string_file = os.path.join(short_string_dir, f"{lang}_TrainOS.mlrt")
-        vocabulary, x_short, y_short = parse_dataset(short_string_file, vocabulary)
-
-        x_short = tf.constant(pad_data(x_short, vocabulary))
-        y_short = tf.constant(y_short)
-        x_train = tf.concat([x_short, x_train], axis=0)
-        y_train = tf.concat([y_short, y_train], axis=0)
 
     save_vocab(vocab_file, vocabulary)
 
