@@ -27,7 +27,13 @@ def parse_dataset(fname, vocabulary={'pad': 0}):
                 if c not in vocabulary:
                     vocabulary[c] = len(vocabulary)
                 x_indices.append(vocabulary[c])
-            y_numeric = [1.0, 0.0] if y == "TRUE" else [0.0, 1.0]
+            if y == "TRUE" or y == "True":
+                y_numeric = [1.0, 0.0]
+            elif y == "FALSE" or y == "False":
+                y_numeric = [0.0, 1.0]
+            else:
+                raise ValueError(y, "is not a valid label")                
+
             x_items.append(x_indices)
             y_items.append(y_numeric)
     return vocabulary, x_items, y_items

@@ -24,7 +24,10 @@ def train_eval_model(spec):
     val_data = spec["val-data"]
     model_path = spec["model-dir"]
     eval_prefix = spec["eval-data"]
-    short_strings = spec["short-strings"]
+    if "short-strings" in spec:
+        short_strings = spec["short-strings"]
+    else:
+        short_strings = False
     
     print(type(short_strings))
     os.makedirs(model_path, exist_ok=True)
