@@ -24,6 +24,9 @@ def train_eval_model(spec):
     val_data = spec["val-data"]
     model_path = spec["model-dir"]
     eval_prefix = spec["eval-data"]
+    short_strings = spec["short-strings"]
+    
+    print(type(short_strings))
     os.makedirs(model_path, exist_ok=True)
 
     # set up hyperparamters
@@ -154,7 +157,6 @@ if __name__ == "__main__":
     model_file = parser.parse_args().model_file
 
     batch_size = 64
-    short_strings = False
 
     model_specs = json.loads(open(model_file).read())
 
