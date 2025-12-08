@@ -1,9 +1,19 @@
 import csv
+from enum import Enum
+
+class StrLen(Enum):
+    OS = 1 # only short
+    PS = 2 # plus short
+    STD = 3 # standard
 
 lines = open("all_evals.txt", "r").readlines()
 tests = {}
 for line in lines:
     test = line.strip().split(":")[0].replace("models/", "")
+    test = test.replace("OnlyShort/", "")
+    test = test.replace("PlusShort/", "")
+    test = test.replace("Standard/", "")
+    
     if test not in tests:
         tests[test] = {}
     metric = line.strip().split(":")[1]
@@ -40,18 +50,20 @@ with open(csv_fname, "w", newline="\n") as f:
 
 for test in tests:
     model = test.split("/")[0]
-    direction = model.split("_")[0]
-    network_type = model.split("_")[1]
-    drop = model.split("_")[2]
-    lang = model.split("_")[3]
-    train_set_size = model.split("_")[4]
+    network_type = model.split("_")[0]
+    lang = model.split("_")[1]
 
-    alph = lang.split(".")[0]
-    tier = lang.split(".")[1]
-    lang_class = lang.split(".")[2]
-    k = lang.split(".")[3]
-    j = lang.split(".")[4]
-    lang_i = lang.split(".")[5]
+    if "OS" not in model:
+        train_set_size = model.split("_")[3]
+    else:
+        train_set_size = "Small"
+
+    alph = lang[0:2]
+    tier = lang[2:4]
+    lang_class = lang[4:-3]
+    k = lang[-3]
+    j = lang[-2]
+    lang_i = lang[-1]
 
     test_type = test.split("/")[1].split("_")[0].replace("Test", "")
 
@@ -65,9 +77,7 @@ for test in tests:
                 k,
                 j,
                 lang_i,
-                direction,
                 network_type,
-                drop,
                 train_set_size,
                 test_type,
                 tests[test]["TP"],
