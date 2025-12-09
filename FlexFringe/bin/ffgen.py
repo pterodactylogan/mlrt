@@ -39,14 +39,14 @@ TMP_DIR = "/gpfs/projects/HeinzGroup/tmp"
 SF_DIR = "/gpfs/projects/HeinzGroup/asoubki/SiccoFringe"
 
 
-def get_models(ini: str, modeldir: str):
-    gstr = os.path.join(modeldir, f"{ini}_*.final.json")
+def get_models(modeldir: str):
+    gstr = os.path.join(modeldir, f"*.final.json")
     for path in glob(gstr):
         yield path
 
 
 def get_training_data(data_type: str, datadir: str):
-    gstr = os.path.join(datadir, f"*/*_{data_type}.ff")
+    gstr = os.path.join(datadir, f"*/*_{data_type}")
     for path in glob(gstr):
         yield path
 
@@ -70,7 +70,7 @@ def get_missing_models(ini: str, data_type: str, datadir: str, modeldir: str):
         bname = os.path.basename(tstr)
         msize = os.path.basename(os.path.dirname(tstr))
         return {
-            "dstr": bname.replace(f"{data_type}.txt", msize),
+            "dstr": bname.replace(f"{data_type}", msize),
             "data_size": msize,
             "data_path": tstr,
         }
@@ -85,8 +85,9 @@ def get_missing_models(ini: str, data_type: str, datadir: str, modeldir: str):
 def main(ctx: Context) -> None:
     inis = ("edsm", "rpni", "alergia")
     data_sizes = ("Small", "Mid", "Large")
-    data_types = ("Train", "TrainPS")
+    data_types = ("Train.txt", "TrainPS.ff")
     partitions = slurm.sinfo().PARTITION.unique()
+    ctx.parser.add_argument("-e", "--email", default="sarah.payne@stonybrook.edu")
     ctx.parser.add_argument("-i", "--ini", type=os.path.realpath, required=True)
     ctx.parser.add_argument("-m", "--modeldir", type=os.path.realpath, required=True)
     ctx.parser.add_argument("-d", "--datadir", type=os.path.realpath, required=True)
@@ -147,7 +148,7 @@ def main(ctx: Context) -> None:
                 "time": slurm.timelimit(partition),
                 "partition": partition,
                 "mail-type": "BEGIN,END",
-                "mail-user": "sarah.payne@stonybrook.edu",
+                "mail-user": args.email,
             },
             modules=args.modules,
             dryrun=args.dryrun,
