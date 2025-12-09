@@ -51,18 +51,18 @@ def get_training_data(data_type: str, datadir: str):
         yield path
 
 
-def get_missing_models(ini: str, data_type: str, datadir: str, modeldir: str):
+def get_missing_models(data_type: str, datadir: str, modeldir: str):
     """Returns the paths to training data for all models not yet generated."""
 
     def parse_models(mstr):
         bname = ".".join(os.path.basename(mstr).split(".")[:-2])
         return {
-            "dstr": bname.replace(f"{ini}_", ""),
+            "dstr": bname,
             "data_size": bname.split("_")[-1],
             "model_path": mstr,
         }
 
-    models = pd.DataFrame(map(parse_models, get_models(ini, modeldir)))
+    models = pd.DataFrame(map(parse_models, get_models(modeldir)))
     if models.empty:
         models = pd.DataFrame([], columns=["dstr", "data_size", "model_path"])
 
