@@ -120,7 +120,7 @@ def main(ctx: Context) -> None:
     # Generate FlexFringe commands.
     cmds = []
 
-    data_name = args.datadir.split("data/")[1]
+    data_name = (args.datadir.split("data/")[1]).replace("/", "-")
     for path in get_missing_models(
         args.data_type, args.datadir, args.modeldir
     ):
