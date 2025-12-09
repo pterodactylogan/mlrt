@@ -46,7 +46,7 @@ def get_models(modeldir: str):
 
 
 def get_training_data(data_type: str, datadir: str):
-    gstr = os.path.join(datadir, f"*/*_{data_type}")
+    gstr = os.path.join(datadir, f"*_{data_type}")
     for path in glob(gstr):
         yield path
 
@@ -63,7 +63,11 @@ def get_missing_models(data_type: str, datadir: str, modeldir: str):
         }
 
     models = pd.DataFrame(map(parse_models, get_models(modeldir)))
+    
+    print(models.head())
+    
     if models.empty:
+        print("no models in directory")
         models = pd.DataFrame([], columns=["dstr", "data_size", "model_path"])
 
     def parse_training_data(tstr):
@@ -78,6 +82,9 @@ def get_missing_models(data_type: str, datadir: str, modeldir: str):
     tdata = pd.DataFrame(
         map(parse_training_data, get_training_data(data_type, datadir))
     )
+    
+    print(tdata.head())
+    
     tdata = tdata.merge(models, how="left", on=["dstr", "data_size"])
     return tdata[tdata.model_path.isna()].data_path.tolist()
 
@@ -91,7 +98,6 @@ def main(ctx: Context) -> None:
     ctx.parser.add_argument("-i", "--ini", type=os.path.realpath, required=True)
     ctx.parser.add_argument("-m", "--modeldir", type=os.path.realpath, required=True)
     ctx.parser.add_argument("-d", "--datadir", type=os.path.realpath, required=True)
-    ctx.parser.add_argument("-s", "--data-size", choices=data_sizes, required=True)
     ctx.parser.add_argument("-t", "--data-type", choices=data_types, required=True)
     ctx.parser.add_argument("-p", "--partitions", choices=partitions, nargs="+")
     ctx.parser.add_argument(
