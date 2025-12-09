@@ -34,7 +34,7 @@ from src.core import slurm
 #                                            /user-guide/running-your-jobs/gnu-parallel/
 
 
-JOBS_DIR = "/gpfs/projects/HeinzGroup/Jobs"
+JOBS_DIR = "/gpfs/projects/HeinzGroup/Jobs/lswanson"
 TMP_DIR = "/gpfs/projects/HeinzGroup/tmp"
 SF_DIR = "/gpfs/projects/HeinzGroup/asoubki/SiccoFringe"
 
@@ -124,6 +124,7 @@ def main(ctx: Context) -> None:
         bname = os.path.splitext(os.path.basename(path))[0].split("_")[0]
         dsize = os.path.basename(os.path.dirname(path))
         if ini != args.ini or dsize != args.data_size:
+            print("skipping:", ini)
             continue  # Skip incorrect ini/size.
         out_file = os.path.join(args.modeldir, f"{ini}_{bname}_{dsize}")
         cmds.append(f"{ff_bin} {path} --ini {ini_file} --outputfile {out_file}")
@@ -139,7 +140,7 @@ def main(ctx: Context) -> None:
         cores = (28 if "28" in partition else 24) // 2
         nodes = 8 if "medium" in partition else 1
         nodes = 24 if "large" in partition else nodes
-        jid = f"{args.ini}-{args.data_size}-{args.data_type}-{idx + 1}"
+        jid = f"{args.data_size}-{args.data_type}-{idx + 1}"
         cmdpath = os.path.join(JOBS_DIR, f"{jid}.txt")
         ctx.log.info(f"writing: {cmdpath} ({len(grp)} commands)")
         with open(cmdpath, "w") as fd:
