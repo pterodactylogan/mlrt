@@ -56,6 +56,8 @@ def get_missing_models(data_type: str, datadir: str, modeldir: str):
 
     def parse_models(mstr):
         bname = ".".join(os.path.basename(mstr).split(".")[:-2])
+        # remove prefixed info about gridsearch
+        bname = "_".join(bname.split("_")[1:])
         return {
             "dstr": bname,
             "data_size": bname.split("_")[-1],
@@ -85,7 +87,7 @@ def get_missing_models(data_type: str, datadir: str, modeldir: str):
     
     print(tdata.head())
     
-    tdata = tdata.merge(models, how="left", on=["dstr", "data_size"])
+    tdata = tdata.merge(models, how="left", on=["dstr"])
     return tdata[tdata.model_path.isna()].data_path.tolist()
 
 
@@ -117,6 +119,8 @@ def main(ctx: Context) -> None:
     ctx.log.info("FlexFringe Binary: %s", ff_bin)
     # Generate FlexFringe commands.
     cmds = []
+
+    data_name = args.datadir.split("data/")[1]
     for path in get_missing_models(
         args.data_type, args.datadir, args.modeldir
     ):
@@ -141,7 +145,7 @@ def main(ctx: Context) -> None:
         cores = (28 if "28" in partition else 24) // 2
         nodes = 8 if "medium" in partition else 1
         nodes = 24 if "large" in partition else nodes
-        jid = f"{args.data_type}-{idx + 1}"
+        jid = f"{ini}-{data_name}-{idx + 1}"
         cmdpath = os.path.join(JOBS_DIR, f"{jid}.txt")
         ctx.log.info(f"writing: {cmdpath} ({len(grp)} commands)")
         with open(cmdpath, "w") as fd:
@@ -157,6 +161,7 @@ def main(ctx: Context) -> None:
                 "partition": partition,
                 "mail-type": "BEGIN,END",
                 "mail-user": args.email,
+                "job-name": jid
             },
             modules=args.modules,
             dryrun=args.dryrun,
