@@ -112,7 +112,7 @@ def main(ctx: Context) -> None:
     # Generate FlexFringe commands.
     cmds = []
     for path in get_missing_models(
-        args.ini, args.data_type, args.datadir, args.modeldir
+        args.data_type, args.datadir, args.modeldir
     ):
         ini = os.path.splitext(os.path.basename(ini_file))[0]
         bname = os.path.splitext(os.path.basename(path))[0].split("_")[0]
