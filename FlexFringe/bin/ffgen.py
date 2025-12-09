@@ -46,7 +46,7 @@ def get_models(ini: str, modeldir: str):
 
 
 def get_training_data(data_type: str, datadir: str):
-    gstr = os.path.join(datadir, f"*/*_{data_type}.txt")
+    gstr = os.path.join(datadir, f"*/*_{data_type}.ff")
     for path in glob(gstr):
         yield path
 
@@ -87,7 +87,7 @@ def main(ctx: Context) -> None:
     data_sizes = ("Small", "Mid", "Large")
     data_types = ("Train", "TrainPS")
     partitions = slurm.sinfo().PARTITION.unique()
-    ctx.parser.add_argument("-i", "--ini", choices=inis, required=True)
+    ctx.parser.add_argument("-i", "--ini", type=os.path.realpath, required=True)
     ctx.parser.add_argument("-m", "--modeldir", type=os.path.realpath, required=True)
     ctx.parser.add_argument("-d", "--datadir", type=os.path.realpath, required=True)
     ctx.parser.add_argument("-s", "--data-size", choices=data_sizes, required=True)
@@ -104,9 +104,9 @@ def main(ctx: Context) -> None:
     # Make the output dir if it isn't there.
     os.makedirs(args.modeldir, exist_ok=True)
     # Use a different binary for rpni since it is not on the main branch.
-    ff_dir = SF_DIR if args.ini == "rpni" else FF_DIR
+    ff_dir = SF_DIR # if args.ini == "rpni" else FF_DIR
     ff_bin = os.path.join(ff_dir, "flexfringe")
-    ini_file = os.path.join(ff_dir, "ini", f"{args.ini}.ini")
+    ini_file = args.ini #os.path.join(ff_dir, "ini", f"{args.ini}.ini")
     ctx.log.info("FlexFringe Binary: %s", ff_bin)
     # Generate FlexFringe commands.
     cmds = []
@@ -147,7 +147,7 @@ def main(ctx: Context) -> None:
                 "time": slurm.timelimit(partition),
                 "partition": partition,
                 "mail-type": "BEGIN,END",
-                "mail-user": "adil.soubki@stonybrook.edu",
+                "mail-user": "sarah.payne@stonybrook.edu",
             },
             modules=args.modules,
             dryrun=args.dryrun,
