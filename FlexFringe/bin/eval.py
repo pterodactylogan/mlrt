@@ -20,6 +20,7 @@ from src.data.flexfringe import FFModel
 
 MLRT_DIR = os.path.join(FF_DIR, "data", "MLRegTest")
 CACHE_DIR = os.path.join(os.path.dirname(FF_DIR), ".cache")
+SF_DIR = "/gpfs/projects/HeinzGroup/asoubki/SiccoFringe"
 
 
 def compute(model: FFModel, path: str) -> dict[str, Any]:
@@ -55,6 +56,7 @@ def main(ctx: Context) -> None:
         _, dstr, msize = os.path.basename(path).replace(".final.json", "").split("_")
         # Always evaluate on large but include same msize train as a sanity check.
         dpaths =  glob(os.path.join(MLRT_DIR, "Large", f"{dstr}_Test*"))
+        dpaths += glob(os.path.join(MLRT_DIR, "Large", f"{dstr}_Dev*"))
         dpaths += glob(os.path.join(MLRT_DIR, msize, f"{dstr}_Train*"))
         model = FFModel.from_path(path)
         for dpath in tqdm(dpaths, leave=False):

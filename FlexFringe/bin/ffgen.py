@@ -125,7 +125,6 @@ def main(ctx: Context) -> None:
     for path in get_missing_models(
         args.data_type, args.datadir, args.modeldir
     ):
-
         bname = os.path.splitext(os.path.basename(path))[0].split("_")[0]
         dsize = os.path.basename(os.path.dirname(path))
         
@@ -141,7 +140,6 @@ def main(ctx: Context) -> None:
     if len(cmds) == 0:
         print("all models already completed")
         return 0
-    
     cmd_grps = distribute(len(args.partitions) * 2, cmds)
     # Generate slurm job files.
     for idx, grp in enumerate(cmd_grps):
@@ -166,7 +164,8 @@ def main(ctx: Context) -> None:
                 "partition": partition,
                 "mail-type": "BEGIN,END",
                 "mail-user": args.email,
-                "job-name": jid
+                "job-name": jid,
+                "output": f"outfiles/{jid}.log"
             },
             modules=args.modules,
             dryrun=args.dryrun,

@@ -12,7 +12,8 @@ from typing import Any, Iterator
 import pandas as pd  # type: ignore
 
 from ..bin.flexfringe import FF_BIN, FF_DIR
-
+SF_DIR = "/gpfs/projects/HeinzGroup/asoubki/SiccoFringe"
+SF_BIN = os.path.join(SF_DIR, "flexfringe")
 
 PROBABALISTIC_INIS = ["alergia"]
 
