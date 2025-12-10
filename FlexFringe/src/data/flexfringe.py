@@ -103,8 +103,9 @@ class FFModel:
         state = "0"
         for sym in seq:
             state = self.dfa[state].get(str(sym), None)
-            if state is None:
+            if state is None or self.dfa[state]=={}:
                 return False
+        
         assert isinstance(self.dfa[state]["is_final"], bool)
         return bool(self.dfa[state]["is_final"])
 
