@@ -34,7 +34,8 @@ for performfirst in [0, 1]:
 		for extend in [0, 1]:
 			for shallowfirst in [0, 1]:
 				for depthcheck in [0, 1]:
-					for symbolcheck in [0, 1]:
+                                        # symbolcheck = 1 causes segfault. skipping.
+					for symbolcheck in [0]:
 						for search in ["searchdeep", "searchlocal", "searchglobal", "searchpartial", "none"]:
 							for sinkson in [0, 1]:
 								make_ini_file(performfirst, reversetraces, extend, shallowfirst, depthcheck, symbolcheck, search, sinkson)
