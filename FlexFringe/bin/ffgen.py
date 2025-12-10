@@ -119,12 +119,13 @@ def main(ctx: Context) -> None:
     ctx.log.info("FlexFringe Binary: %s", ff_bin)
     # Generate FlexFringe commands.
     cmds = []
+    ini = os.path.splitext(os.path.basename(ini_file))[0]
 
     data_name = (args.datadir.split("data/")[1]).replace("/", "-")
     for path in get_missing_models(
         args.data_type, args.datadir, args.modeldir
     ):
-        ini = os.path.splitext(os.path.basename(ini_file))[0]
+
         bname = os.path.splitext(os.path.basename(path))[0].split("_")[0]
         dsize = os.path.basename(os.path.dirname(path))
         
@@ -137,6 +138,10 @@ def main(ctx: Context) -> None:
         #      f"{ff_bin} <(head -n 1 {path}; tail -n +2 {path} | shuf) "
         #      f"--ini {ini_file} --outputfile {out_file}"
         #  )
+    if len(cmds) == 0:
+        print("all models already completed")
+        return 0
+    
     cmd_grps = distribute(len(args.partitions) * 2, cmds)
     # Generate slurm job files.
     for idx, grp in enumerate(cmd_grps):
