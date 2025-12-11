@@ -1,14 +1,13 @@
 import os
 
 from glob import glob
-import pandas as pd
 
 outfile = open("./standard_evals.csv", "w")
-model_dir = "./models/Standard/simple_6464LTT421_Train_Large"
+model_dir = "./models/Standard"
 
 gstr = os.path.join(model_dir, f"**/*_eval.txt")
 
-outfile.write("alph,tier,class,k,j,i,network_type,train_set_size,test_type,tp,tp,tn,fn,tpr,fpr,precision,fscore,accuracy,auc,brier")
+outfile.write("alph,tier,class,k,j,i,network_type,train_set_size,test_type,tp,fp,tn,fn,tpr,fpr,precision,fscore,accuracy,auc,brier")
 outfile.write("\n")
 
 for path in glob(gstr, recursive=True):
@@ -24,7 +23,7 @@ for path in glob(gstr, recursive=True):
 
     test_type = path.split("/")[-1][4:6]
 
-    with efile as open(path):
+    with open(path) as efile:
         metrics = {}
         for line in efile.readlines():
             met = (line.split(":")[0]).strip()
