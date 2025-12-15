@@ -94,7 +94,7 @@ def get_missing_models(data_type: str, datadir: str, modeldir: str):
 def main(ctx: Context) -> None:
     inis = ("edsm", "rpni", "alergia")
     data_sizes = ("Small", "Mid", "Large")
-    data_types = ("Train.txt", "TrainPS.ff")
+    data_types = ("Train.txt", "TrainPS.ff", "TrainOS.ff")
     partitions = slurm.sinfo().PARTITION.unique()
     ctx.parser.add_argument("-e", "--email", default="sarah.payne@stonybrook.edu")
     ctx.parser.add_argument("-i", "--ini", type=os.path.realpath, required=True)
