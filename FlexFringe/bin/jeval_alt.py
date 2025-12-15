@@ -53,7 +53,7 @@ def main(ctx: Context) -> None:
     scriptname = os.path.basename(sys.argv[0]).replace(".py", "")
     cmdpath = time.strftime(os.path.join(TMP_DIR, f"{scriptname}.%Y%m%d.%H%M%S.txt"))
     cmds = []
-    for path in get_missing_models(args.outdir, args.modeldir, args.ini):
+    for path in get_missing_models(args.modeldir):
         dstr = ".".join(os.path.basename(path).split(".")[:-2])
         outpath = os.path.join(args.modeldir, f"eval.csv")
         cmds.append(f"{EVAL_BIN} {path} -o {outpath}")
