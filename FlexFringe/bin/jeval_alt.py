@@ -46,6 +46,8 @@ def main(ctx: Context) -> None:
     ctx.parser.add_argument(
         "-y", "--dryrun", action="store_true", help="don't send to slurm"
     )
+    ctx.parser.add_argument("-e", "--email", default="logan.swanson@stonybrook.edu")
+
     ctx.parser.set_defaults(
         modules=["shared", "gnu-parallel/6.0", "anaconda/3", "gcc/12.1.0"]
     )
@@ -67,6 +69,8 @@ def main(ctx: Context) -> None:
     cores = 28 if "28" in args.partition else 24
     nodes = 8 if "medium" in args.partition else 1
     nodes = 24 if "large" in args.partition else nodes
+
+    name = os.path.basename(args.modeldir)
     slurm.sbatch(
         # f"cat {cmdpath} | parallel --tmpdir={TMP_DIR} -l1 srun -N1 -n1 sh -c '$@' --",
         f"cat {cmdpath} | parallel --tmpdir={TMP_DIR} -P {cores}",
@@ -75,6 +79,10 @@ def main(ctx: Context) -> None:
             "nodes": nodes,
             "time": slurm.timelimit(args.partition),
             "partition": args.partition,
+            "output": f"outfiles/{name}_evals.log",
+            "job-name": f"{name}-evals",
+            "mail-type": "BEGIN,END",
+            "mail-user": args.email,
         },
         modules=args.modules,
         dryrun=args.dryrun,
