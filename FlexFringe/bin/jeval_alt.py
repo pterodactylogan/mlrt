@@ -10,6 +10,7 @@ import os
 import sys
 import time
 from glob import glob
+from contextlib import suppress
 
 import pandas as pd
 
@@ -61,7 +62,7 @@ def main(ctx: Context) -> None:
     with open(cmdpath, "w") as fd:
         fd.write("\n".join(cmds))
     # Submit job to slurm.
-    os.makedirs(args.outdir, exist_ok=True)
+    
     # XXX: This logic is also in bin/ffgen.py. Should be pulled into the slurm module.
     cores = 28 if "28" in args.partition else 24
     nodes = 8 if "medium" in args.partition else 1
