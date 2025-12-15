@@ -50,6 +50,7 @@ def main(ctx: Context) -> None:
     # Evaluate the given models.
     results = []
     gstr = os.path.join(args.directory, f"*.final.json")
+    done = 0
     for path in glob(gstr):
         _, dstr, msize = os.path.basename(path).replace(".final.json", "").split("_")
         # Always evaluate on large but include same msize train as a sanity check.
@@ -59,6 +60,8 @@ def main(ctx: Context) -> None:
         model = FFModel.from_path(path)
         for dpath in tqdm(dpaths, leave=False):
             results.append(compute(model, dpath))
+        done += 1
+        ctx.log.info("finished %d models", done)
     # Update and write results.
     new = pd.DataFrame(results)
     new["last_modified"] = pd.Timestamp.now()
