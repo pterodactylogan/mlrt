@@ -2,8 +2,8 @@ import os
 
 from glob import glob
 
-outfile = open("./standard_evals.csv", "w")
-model_dir = "./models/Standard"
+outfile = open("./plusshort_evals.csv", "w")
+model_dir = "./models/PlusShort"
 
 gstr = os.path.join(model_dir, f"**/*_eval.txt")
 
@@ -30,6 +30,9 @@ for path in glob(gstr, recursive=True):
             val = (line.split(":")[1]).strip()
             metrics[met] = val
 
+    if metrics["TP"] == "0" and metrics["FP"] == "0":
+        continue
+    
     outfile.write(",".join([
         alph, tier, lang_class, k, j, i, network_type,
         train_set_size, test_type, metrics["TP"], metrics["FP"],
