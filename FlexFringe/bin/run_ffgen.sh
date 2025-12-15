@@ -5,7 +5,7 @@ module load slurm
 module load anaconda 
 conda activate /gpfs/projects/HeinzGroup/caffeine_underground/ffgen
 
-for file in $(ls ../grid-ini/0.0.1.*.ini); do
+for file in $(ls ../small-grid-ini/0.1.1.1.0.0*.ini); do
   echo "Processing file: $file"
   # Perform actions on $file
   python3 ffgen.py --ini $file \
