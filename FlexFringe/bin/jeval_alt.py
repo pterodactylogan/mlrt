@@ -26,7 +26,7 @@ TMP_DIR = "/gpfs/projects/HeinzGroup/tmp"
 
 def get_missing_models(modeldir: str) -> set[str]:
     gstr = os.path.join(os.path.realpath(modeldir), f"*.final.json")
-    all_models = {p for p in glob(gstr)}
+    all_models = {p for p in glob(gstr) if "_64" not in p}
     evals = pd.DataFrame()
     with suppress(FileNotFoundError):
         current = pd.read_csv(os.path.join(modeldir, "evals.csv"))
