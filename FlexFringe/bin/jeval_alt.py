@@ -29,7 +29,7 @@ def get_missing_models(modeldir: str) -> set[str]:
     all_models = {p for p in glob(gstr) if "_64" not in p}
     evals = pd.DataFrame()
     with suppress(FileNotFoundError):
-        current = pd.read_csv(os.path.join(modeldir, "evals.csv"))
+        evals = pd.read_csv(os.path.join(modeldir, "eval.csv"))
     if not evals.empty:
         return all_models - set(evals.model_path)
     return all_models
