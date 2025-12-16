@@ -26,12 +26,13 @@ TMP_DIR = "/gpfs/projects/HeinzGroup/tmp"
 
 def get_missing_models(modeldir: str) -> set[str]:
     gstr = os.path.join(os.path.realpath(modeldir), f"*.final.json")
-    all_models = {p for p in glob(gstr) if "_64" not in p}
-    evals = pd.DataFrame()
-    with suppress(FileNotFoundError):
-        evals = pd.read_csv(os.path.join(modeldir, "eval.csv"))
+    all_models = {p.strip(".final.json") for p in glob(gstr) if "_64" not in p}
+
+    estr = os.path.join(os.path.realpath(modeldir), f"*_eval.csv")
+    all_evals = {p.strip("_eval.csv") for p in glob(estr)}
+    
     if not evals.empty:
-        return all_models - set(evals.model_path)
+        return all_models - all_evals
     return all_models
 
 
@@ -57,9 +58,8 @@ def main(ctx: Context) -> None:
     cmdpath = time.strftime(os.path.join(TMP_DIR, f"{scriptname}.%Y%m%d.%H%M%S.txt"))
     cmds = []
     for path in get_missing_models(args.modeldir):
-        dstr = ".".join(os.path.basename(path).split(".")[:-2])
-        outpath = os.path.join(args.modeldir, f"eval.csv")
-        cmds.append(f"{EVAL_BIN} {path} -o {outpath}")
+        outpath = path + "_eval.csv"
+        cmds.append(f"{EVAL_BIN} {path}.final.json -o {outpath}")
     ctx.log.info("writing: %s", cmdpath)
     with open(cmdpath, "w") as fd:
         fd.write("\n".join(cmds))
