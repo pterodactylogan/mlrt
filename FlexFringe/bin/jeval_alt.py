@@ -31,7 +31,7 @@ def get_missing_models(modeldir: str) -> set[str]:
     estr = os.path.join(os.path.realpath(modeldir), f"*_eval.csv")
     all_evals = {p.strip("_eval.csv") for p in glob(estr)}
     
-    if not evals.empty:
+    if not len(all_evals) == 0:
         return all_models - all_evals
     return all_models
 
