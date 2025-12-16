@@ -1,4 +1,8 @@
 */grid-ini/*
+*.final.json
+*.init.json
+*.init.dot
+*.final.dot
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
