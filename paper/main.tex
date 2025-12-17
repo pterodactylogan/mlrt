@@ -1,0 +1,220 @@
+\documentclass[twoside,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{blindtext}
+\usepackage{siunitx}
+\sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
+
+% Any additional packages needed should be included after jmlr2e.
+% Note that jmlr2e.sty includes epsfig, amssymb, natbib and graphicx,
+% and defines many common macros, such as 'proof' and 'example'.
+%
+% It also sets the bibliographystyle to plainnat; for more information on
+% natbib citation styles, see the natbib documentation, a copy of which
+% is archived at http://www.jmlr.org/format/natbib.pdf
+
+% Available options for package jmlr2e are:
+%
+%   - abbrvbib : use abbrvnat for the bibliography style
+%   - nohyperref : do not load the hyperref package
+%   - preprint : remove JMLR specific information from the template,
+%         useful for example for posting to preprint servers.
+%
+% Example of using the package with custom options:
+%
+% \usepackage[abbrvbib, preprint]{jmlr2e}
+
+\usepackage[preprint]{jmlr2e}
+
+% Definitions of handy macros can go here
+
+\newcommand{\dataset}{{\cal D}}
+\newcommand{\fracpartial}[2]{\frac{\partial #1}{\partial  #2}}
+
+% ================ START OF NON-TEMPLATE SETUP ================ %
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{xfrac}
+
+% Silence unneeded warnings.
+\usepackage{silence}
+\WarningFilter{caption}{Unknown document class}
+
+% For drawing automata.
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,matrix,automata,shapes,positioning}
+\tikzstyle{elbl} = [fill=white,inner sep=1pt,font=\footnotesize,>=stealth]
+
+% For tables.
+\usepackage{booktabs,multirow}
+\usepackage{subcaption}
+\usepackage[font=small,labelfont=bf]{caption}
+
+% Useful shorthand.
+\newcommand{\tsc}[1]{\textsc{#1}}
+\newcommand{\ttt}[1]{\texttt{#1}}
+\newcommand{\tbf}[1]{\textbf{#1}}
+
+% Shorthand for MLRegTest factors.
+\newcommand{\tttx}[1]{\ttt{#1}\xspace}
+\newcommand{\Alpha}{\tttx{Alph}}
+\newcommand{\Tier}{\tttx{Tier}}
+\newcommand{\Class}{\tttx{Class}}
+\newcommand{\kay}{\tttx{k}}
+\newcommand{\jay}{\tttx{j}}
+\newcommand{\eye}{\tttx{i}}
+\newcommand{\TrainSize}{\tttx{TrainSize}}
+\newcommand{\TestType}{\tttx{TestType}}
+\newcommand{\NNType}{\tttx{NNType}}
+\newcommand{\AlgoType}{\tttx{AlgoType}}
+
+% Code repository url
+\newcommand{\repo}{https://github.com/adil-soubki/mlrt}
+
+% Use these to change spacing of lists.
+\usepackage{enumitem}
+\setlist[enumerate]{
+    topsep=0pt,itemsep=-0.5ex,
+    partopsep=0.5ex,parsep=0.5ex
+}
+\setlist[itemize]{
+    topsep=0pt,itemsep=-0.5ex,
+    partopsep=0.5ex,parsep=0.5ex,
+    leftmargin=10pt
+}
+
+% Set the paper title here.
+\newcommand{\papertitle}{Short }
+
+% Notes.
+\newcommand{\assign}[2]{\textcolor{#1}{(#2)}}
+\newcommand{\note}[3]{{
+    \normalfont
+    \noindent
+    \textcolor{#1}{\textbf{#2}: #3}
+}}
+\newcommand{\adil}[1]{\note{Orchid}{Adil}{#1}}
+\newcommand{\jeff}[1]{\note{Green}{Jeff}{#1}}
+% ================= END OF NON-TEMPLATE SETUP ================= %
+
+% Heading arguments are {volume}{year}{pages}{date submitted}{date published}{paper id}{author-full-names}
+
+\usepackage{lastpage}
+\jmlrheading{23}{2022}{1-\pageref{LastPage}}{1/21; Revised 5/22}{9/22}{21-0000}{}
+
+% Short headings should be running head and authors last names
+
+\ShortHeadings{\papertitle}{}
+\firstpageno{1}
+
+\begin{document}
+
+\title{\papertitle}
+
+\author{\name{~Anonymous~Review~Copy}}
+% \author{
+%     \name Logan Swanson
+%     \email logan.swanson@stonybrook.edu\\
+%     \addr Department of Lingustics \\
+%     Institute for Advanced Computational Science \\
+%     Stony Brook University
+%     \AND
+%     \name Sarah Payne
+%     \email sarah.payne@stonybrook.edu\\
+%     \addr Department of Linguistics \\
+%     Institute for Advanced Computational Science \\
+%     Stony Brook University
+%     \AND
+%     \name Adil Soubki
+%     \email asoubki@cs.stonybrook.edu\\
+%     \addr Department of Computer Science \\
+%     Institute for Advanced Computational Science \\
+%     Stony Brook University
+%     \AND
+%     \name Sam van der Poel
+%     \email samvanderpoel@gatech.edu\\
+%     \addr Department of Computer Science \\
+%     Georgia Tech University \\
+%     \AND
+%     \name Jeffrey Heinz
+%     \email jeffrey.heinz@stonybrook.edu\\
+%     \addr Department of Linguistics \\
+%     Institute for Advanced Computational Science \\
+%     Stony Brook University
+% }
+
+\editor{}
+
+\maketitle
+
+% trailing '%' for backward compatibility of .sty file
+\begin{abstract}%
+  \citet{Soubki-Heinz-2023-BSMALRL} examine the performance of the
+  state-merging algorithms RPNI, EDSM, and ALERGIA were tested on an
+  early version of MLRegTest, a benchmark for the learning of regular
+  languages \citep{mlregtest}. They found that the neural models
+  generally outperformed the state-merging algorithms on this
+  benchmark. The MLRegtTest benchmark excludes strings less than
+  length 19 in order to achieve a balance of positive and negative
+  strings in training, development and test sets across all languages
+  in MLRegTest. \citet{Soubki-Heinz-2023-BSMALRL} report a follow-up
+  experiment which includes shorter strings and shows they
+  dramatically improve the performance of the state-merging
+  algorithms.
+
+  This paper makes three conributions. First, it replicates the
+  experiments in \citet{Soubki-Heinz-2023-BSMALRL} for the neural
+  networks and state-merging algorithms RPNI and EDSM on the final
+  version of the MLRegTest. This replication includes a grid search
+  over many parameters belonging to the state-merging algorithms
+  provided by the flexfringe software \citep{flexfringe-short,
+    flexfringe} to find suitable hyperparameters. Second, it conducts
+  a comprehensive set of follow-experiments with shorter strings on
+  \emph{both} the neural and state-merging learning systems to allow
+  for comparison. Third, on the basis of these experiments, we
+  conclude that the neural systems outperform the state-merging
+  systems in all conditions save one. When the training data is small,
+  and the short strings are included, EDSM outperforms the neural
+  networks.
+\end{abstract}
+
+% \begin{keywords}
+%   keyword one, keyword two, keyword three
+% \end{keywords}
+
+\section{Introduction}
+
+\section{MLRegTest}
+
+\section{Learning Systems} \label{sec:bg}
+
+\subsection{State-Merging Systems}
+\subsection{Neural Systems}
+
+\section{Experiments} \label{sec:exps}
+
+\section{Results} \label{sec:results}
+
+
+\section{Discussion}\label{sec:disc}
+
+
+\section{Conclusions} % and Future Work
+
+\acks{Acknowledgments here.}
+% \acks{Data set creation, model training, and evaluation were completed on the Stony Brook SeaWulf HPC cluster maintained by Research Computing and Cyberinfrastructure, and the Institute for Advanced Computational Science at Stony Brook University and made possible by NSF grant \#1531492.
+
+% We also thank Sicco Verweer for invaluable assistance with FlexFringe as well as the ICGI reviewers for their feedback which improved this work.}
+
+
+% \section*{Code Availability}
+% The code used for these experiments is available on \href{\repo}{GitHub}.\footnote{\href{\repo}{\repo}}.
+% The code used for these experiments will be made available on GitHub upon publication.
+
+\newpage
+\appendix
+
+\vskip 0.2in
+\bibliography{refs}
+
+
+\end{document}
