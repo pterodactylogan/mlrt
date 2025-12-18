@@ -28,8 +28,15 @@ def get_missing_models(modeldir: str) -> set[str]:
     gstr = os.path.join(os.path.realpath(modeldir), f"*.final.json")
     all_models = {p.replace(".final.json", "") for p in glob(gstr) if "_64" not in p}
 
+    combined = pd.DataFrame()
+    with suppress(FileNotFoundError):
+        combined = pd.read_csv("eval_combined.csv").dropna(subset = ["model_path"])
+
+    if not combined.empty:
+        all_evals = {p.replace(".final.json", "") for p in combined["model_path"]}
+
     estr = os.path.join(os.path.realpath(modeldir), f"*_eval.csv")
-    all_evals = {p.replace("_eval.csv", "") for p in glob(estr)}
+    all_evals += {p.replace("_eval.csv", "") for p in glob(estr)}
     
     if not len(all_evals) == 0:
         return all_models - all_evals
