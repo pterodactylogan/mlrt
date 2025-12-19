@@ -24,7 +24,7 @@ EVAL_BIN = os.path.abspath(os.path.join(os.path.dirname(__file__), "eval.py"))
 TMP_DIR = "/gpfs/projects/HeinzGroup/tmp"
 
 
-def get_missing_models(modeldir: str) -> set[str]:
+def get_missing_models(modeldir: str, ctx: Context) -> set[str]:
     gstr = os.path.join(os.path.realpath(modeldir), f"*.final.json")
     all_models = {p.replace(".final.json", "") for p in glob(gstr) if "_64" not in p}
 
@@ -35,6 +35,7 @@ def get_missing_models(modeldir: str) -> set[str]:
     all_evals = set()
 
     if not combined.empty:
+        ctx.log.info("found combined eval file")
         all_evals = {p.replace(".final.json", "") for p in combined["model_path"]}
 
     estr = os.path.join(os.path.realpath(modeldir), f"*_eval.csv")
@@ -66,7 +67,7 @@ def main(ctx: Context) -> None:
     scriptname = os.path.basename(sys.argv[0]).replace(".py", "")
     cmdpath = time.strftime(os.path.join(TMP_DIR, f"{scriptname}.%Y%m%d.%H%M%S.txt"))
     cmds = []
-    for path in get_missing_models(args.modeldir):
+    for path in get_missing_models(args.modeldir, ctx):
         outpath = path + "_eval.csv"
         cmds.append(f"{EVAL_BIN} {path}.final.json -o {outpath}")
     ctx.log.info("writing: %s", cmdpath)
