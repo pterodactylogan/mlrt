@@ -30,7 +30,7 @@ def get_missing_models(modeldir: str) -> set[str]:
 
     combined = pd.DataFrame()
     with suppress(FileNotFoundError):
-        combined = pd.read_csv("eval_combined.csv").dropna(subset = ["model_path"])
+        combined = pd.read_csv(modeldir + "/eval_combined.csv").dropna(subset = ["model_path"])
 
     all_evals = set()
 
