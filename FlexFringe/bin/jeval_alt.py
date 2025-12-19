@@ -70,6 +70,11 @@ def main(ctx: Context) -> None:
     ctx.log.info("writing: %s", cmdpath)
     with open(cmdpath, "w") as fd:
         fd.write("\n".join(cmds))
+
+    if len(cmds) == 0:
+        print("all evals already completed")
+        return 0
+    
     # Submit job to slurm.
     
     # XXX: This logic is also in bin/ffgen.py. Should be pulled into the slurm module.
