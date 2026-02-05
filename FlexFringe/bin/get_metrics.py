@@ -28,14 +28,15 @@ import pandas as pd
 prefix = "../FlexFringe/models-ps-small/"
 suffix = ".ini/eval_combined.csv"
 
-# RPNI
+
 file_paths = []
+# 0: RPNI, 1: EDSM
 for heuristic in [0,1]:
-    for reversetraces in [0,1]:
+    for reversetraces in [0]:
         for extend in [0,1]:
             for shallowfirst in [0,1]:
                 for search in ["searchdeep", "searchlocal", "searchglobal", "searchpartial", "none"]:
-                    for sinkson in [0,1]:
+                    for sinkson in [0]:
                         file_path = prefix + f"{heuristic}.{reversetraces}.{extend}.{shallowfirst}.0.0.{search}.{sinkson}"
                         if sinkson:
                             for sinkcount in [1,10,25]:
@@ -45,11 +46,30 @@ for heuristic in [0,1]:
                         else:
                             file_paths.append(file_path + suffix)
 
-successfull = []
+best_acc = 0
+best_acc_cell = ""
+best_f1 = 0
+best_f1_cell = ""
+
+best_acc_edsm = 0
+best_acc_edsm_cell = ""
+best_f1_edsm = 0
+best_f1_edsm_cell = ""
+
+best_acc_rpni = 0
+best_acc_rpni_cell = ""
+best_f1_rpni = 0
+best_f1_rpni_cell = ""
+
 for p in file_paths:
-    print("processing", p)
+    #print("processing", p)
+
+    try:
+        evals = pd.read_csv(p)
+    except:
+        print("no eval found for", p)
+        continue
     
-    evals = pd.read_csv(p)
     orig_len = len(evals)
     cols = evals.columns.tolist()
     cols.remove("last_modified")
@@ -63,12 +83,47 @@ for p in file_paths:
     if dedup_len != dropna_len:
         print(f"removed {dedup_len - dropna_len} nan rows")
 
-    failed = evals[evals["accuracy"] < 1]
-    failed = failed[failed["split"] == "Train"]
-    if len(failed) == 0:
-        successfull.append(p)
-        
-##    print(failed[["split", "alphabet_size", "tier_size", "language_class",
-##                  "factor_width", "threshold", "index", "accuracy"]])
+##    failed = evals[evals["accuracy"] < 1]
+##    failed = failed[failed["split"] == "Train"]
 
-print("\n".join(successfull))
+    dev_evals = evals[evals["split"] == "Dev"]
+    acc = dev_evals["accuracy"].mean()
+    f1 = dev_evals["f1"].mean()
+
+    cell = p.replace(prefix, "").replace(suffix, "")
+    if acc > best_acc:
+        best_acc = acc
+        best_acc_cell = cell
+
+    if f1 > best_f1:
+        best_f1 = f1
+        best_f1_cell = cell
+
+    if cell[0] == "0":
+        if acc > best_acc_rpni:
+            best_acc_rpni = acc
+            best_acc_rpni_cell = cell
+        if f1 > best_f1_rpni:
+            best_f1_rpni = f1
+            best_f1_rpni_cell = cell
+    elif cell[0] == "1":
+        if acc > best_acc_edsm:
+            best_acc_edsm = acc
+            best_acc_edsm_cell = cell
+        if f1 > best_f1_edsm:
+            best_f1_edsm = f1
+            best_f1_edsm_cell = cell
+    else:
+        print("bad eval path:", p)
+
+    # # find avg f1 and accuracy on Dev data
+    # track best scores for RPNI and EDSM
+
+print("best acc", best_acc, best_acc_cell)
+print("best f1", best_f1, best_f1_cell)
+
+print("best acc RPNI", best_acc_rpni, best_acc_rpni_cell)
+print("best f1 RPNI", best_f1_rpni, best_f1_rpni_cell)
+
+print("best acc EDSM", best_acc_edsm, best_acc_edsm_cell)
+print("best f1 EDSM", best_f1_edsm, best_f1_edsm_cell)
