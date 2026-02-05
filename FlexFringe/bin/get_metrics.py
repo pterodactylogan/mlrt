@@ -30,19 +30,20 @@ suffix = ".ini/eval_combined.csv"
 
 # RPNI
 file_paths = []
-for reversetraces in [0,1]:
-    for extend in [0,1]:
-        for shallowfirst in [0,1]:
-            for search in ["searchdeep", "searchlocal", "searchglobal", "searchpartial", "none"]:
-                for sinkson in [0,1]:
-                    file_path = prefix + f"0.{reversetraces}.{extend}.{shallowfirst}.0.0.{search}.{sinkson}"
-                    if sinkson:
-                        for sinkcount in [1,10,25]:
-                            for mergesinkscore in [0,1]:
-                                new_file_path = file_path + f".{sinkcount}.{mergesinkscore}"
-                                file_paths.append(new_file_path + suffix)
-                    else:
-                        file_paths.append(file_path + suffix)
+for heuristic in [0,1]:
+    for reversetraces in [0,1]:
+        for extend in [0,1]:
+            for shallowfirst in [0,1]:
+                for search in ["searchdeep", "searchlocal", "searchglobal", "searchpartial", "none"]:
+                    for sinkson in [0,1]:
+                        file_path = prefix + f"{heuristic}.{reversetraces}.{extend}.{shallowfirst}.0.0.{search}.{sinkson}"
+                        if sinkson:
+                            for sinkcount in [1,10,25]:
+                                for mergesinkscore in [0,1]:
+                                    new_file_path = file_path + f".{sinkcount}.{mergesinkscore}"
+                                    file_paths.append(new_file_path + suffix)
+                        else:
+                            file_paths.append(file_path + suffix)
 
 successfull = []
 for p in file_paths:
@@ -70,4 +71,4 @@ for p in file_paths:
 ##    print(failed[["split", "alphabet_size", "tier_size", "language_class",
 ##                  "factor_width", "threshold", "index", "accuracy"]])
 
-print(successfull)
+print("\n".join(successfull))
