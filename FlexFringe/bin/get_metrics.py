@@ -44,6 +44,7 @@ for reversetraces in [0,1]:
                     else:
                         file_paths.append(file_path + suffix)
 
+successfull = []
 for p in file_paths:
     print("processing", p)
     
@@ -61,7 +62,12 @@ for p in file_paths:
     if dedup_len != dropna_len:
         print(f"removed {dedup_len - dropna_len} nan rows")
 
-    failed = evals[evals["accuracy"] < .8]
+    failed = evals[evals["accuracy"] < 1]
     failed = failed[failed["split"] == "Train"]
-    print(failed[["split", "alphabet_size", "tier_size", "language_class",
-                  "factor_width", "threshold", "index", "accuracy"]])
+    if len(failed) == 0:
+        successfull.append(p)
+        
+##    print(failed[["split", "alphabet_size", "tier_size", "language_class",
+##                  "factor_width", "threshold", "index", "accuracy"]])
+
+print(successfull)
