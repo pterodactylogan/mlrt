@@ -67,6 +67,7 @@ both_ps %>%
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 for PlusShort Data") 
+ggsave("figs/f1-PS.pdf")
   
 
 # Plot averaged accuracy by test set for each model on OS
@@ -80,6 +81,7 @@ both_os %>%
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 for OnlyShort Data") 
+ggsave("figs/f1-OS.pdf")
 
 
 # Plot them together 
@@ -93,6 +95,7 @@ all %>%
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 by Data Type") 
+ggsave("figs/f1-by-datatype.pdf")
 
 
 # Now plotting by language class, like Adil's Figure 2. First PS 
@@ -106,7 +109,7 @@ both_ps %>%
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 by Language Class + Model on PlusShort") 
-
+ggsave("figs/ps-by-class.pdf", width = 15, height = 7)
 
 # Same thing but on only short 
 both_os %>% 
@@ -119,7 +122,7 @@ both_os %>%
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 by Language Class + Model on OnlyShort") 
-
+ggsave("figs/os-by-class.pdf", width = 15, height = 7)
 
 
 
