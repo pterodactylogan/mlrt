@@ -3,15 +3,15 @@
 echo "loading modules"
 module load slurm
 module load anaconda 
-conda activate /gpfs/projects/HeinzGroup/caffeine_underground/ffgen
+conda activate /gpfs/projects/HeinzGroup/caffeine_underground/data_ff
 
-for file in $(ls ../small-grid-ini/0.1.1.1.0.0*.ini); do
+for file in $(ls ../small-grid-ini/0.0.1.0.0.0.searchdeep.0.ini); do
   echo "Processing file: $file"
   # Perform actions on $file
   python3 ffgen.py --ini $file \
-	--modeldir ../FlexFringe/models-ps-small/${file##*/} \
-	--datadir /gpfs/projects/HeinzGroup/caffeine_underground/mlrt/data/PlusShort/Small \
-	--data-type TrainPS.ff \
-	--email logan.swanson@stonybrook.edu \
-	--partitions medium-28core #medium-28core long-28core extended-28core large-28core 
+	--modeldir ../FlexFringe/models-reg-large/${file##*/} \
+	--datadir /gpfs/projects/HeinzGroup/asoubki/FlexFringe/data/MLRegTest/Large \
+	--data-type Train.txt \
+	--email sarah.payne@stonybrook.edu \
+	--partitions extended-28core long-28core #medium-28core long-28core extended-28core large-28core 
 done

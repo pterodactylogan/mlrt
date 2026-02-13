@@ -33,8 +33,8 @@ from src.core import slurm
 # TODO: https://docs-research-it.berkeley.edu/services/high-performance-computing
 #                                            /user-guide/running-your-jobs/gnu-parallel/
 
-
-JOBS_DIR = "/gpfs/projects/HeinzGroup/Jobs/lswanson"
+JOBS_DIR = "/gpfs/projects/HeinzGroup/caffeine_underground/jobs"
+#JOBS_DIR = "/gpfs/projects/HeinzGroup/Jobs/lswanson"
 TMP_DIR = "/gpfs/projects/HeinzGroup/tmp"
 SF_DIR = "/gpfs/projects/HeinzGroup/asoubki/SiccoFringe"
 
