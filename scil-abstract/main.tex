@@ -112,44 +112,45 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-  \citet{adil23} examine the performance of the
-  state-merging algorithms RPNI, EDSM, and ALERGIA were tested on an
-  early version of MLRegTest, a benchmark for the learning of regular
-  languages \citep{mlregtest}. They found that the neural models
-  generally outperformed the state-merging algorithms on this
-  benchmark. The MLRegtTest benchmark excludes strings less than
-  length 19 in order to achieve a balance of positive and negative
-  strings in training, development and test sets across all languages
-  in MLRegTest. \citet{adil23} report a follow-up
-  experiment which includes shorter strings and shows they
-  dramatically improve the performance of the state-merging
-  algorithms.
+\sarah{I basically just copied Jeff's abstract with a few edits. Probably should be shortened considerably}
+ \citet{adil23} examine the performance of the state-merging algorithms RPNI, EDSM, and ALERGIA on an early version of MLRegTest, a benchmark for the learning of regular  languages \citep{mlregtest}. 
+They found that the neural models generally outperformed the state-merging algorithms on this benchmark. 
+However, the MLRegTest benchmark excludes strings less than length 19 in order to achieve a balance of positive and negative strings in training, development and test sets across all languages in MLRegTest. 
+\citet{adil23} report a follow-up  experiment which includes shorter strings and show that they  dramatically improve the performance of the state-merging algorithms.
 
-  This paper makes three conributions. First, it replicates the
-  experiments in \citet{adil23} for the neural
-  networks and state-merging algorithms RPNI and EDSM on the final
-  version of the MLRegTest. This replication includes a grid search
-  over many parameters belonging to the state-merging algorithms
-  provided by the flexfringe software \citep{flexfringe-short,
-    flexfringe} to find suitable hyperparameters. Second, it conducts
-  a comprehensive set of follow-experiments with shorter strings on
-  \emph{both} the neural and state-merging learning systems to allow
-  for comparison. Third, on the basis of these experiments, we
-  conclude that the neural systems outperform the state-merging
-  systems in all conditions save one. When the training data is small,
-  and the short strings are included, EDSM outperforms the neural
-  networks.
+This paper makes three contributions. First, it replicates the experiments in \citet{adil23} for the neural networks and state-merging algorithms RPNI and EDSM on the final version of  MLRegTest. 
+This replication includes a grid search over many parameters belonging to the state-merging algorithms provided by the FlexFringe software \citep{flexfringe-short, flexfringe} to find suitable hyperparameters. 
+Second, it conducts a comprehensive set of follow-experiments with shorter strings on \emph{both} the neural and state-merging learning systems to allow for comparison. 
+Third, on the basis of these experiments, we conclude that the neural systems outperform the state-merging systems in all conditions save one. 
+When the training data is small, and the short strings are included, EDSM outperforms the neural networks.
 \end{abstract}
 
 \section{Introduction}
 
 \section{MLRegTest}
+\sarah{Maybe this section should be something more like "evaluation" or "data" given that the OS and PS are in addition to the standard MLRegTest}
+
 
 \section{Learning Systems} \label{sec:bg}
 
 \subsection{State-Merging Systems}
+Following \citet{adil23}, we make use of the state-merging algorithms provided by \textsc{FlexFringe} \citep{flexfringe-short, flexfringe}. 
+We build on \citeauthor{adil23} by conducting a limited gridsearch over the following parameters provided by \textsc{FlexFringe}:
+\begin{itemize}
+\item \textsc{PerformFirst:} corresponding to whether the algorithm should perform EDSM or a modified version of RPNI 
+\item \textsc{Extend} \todo{what does this do}
+\item \textsc{ShallowFirst} \todo{what does this do}
+\item \textsc{SearchStrategy}: searchdeep, searchlocal, searchglobal, searchpartial, none \todo{discuss}
+\end{itemize}
+
+We also tried to tune the following parameters but it caused segfaulting: \textsc{ReverseTraces}, \textsc{DepthCheck}, \textsc{SymbolCheck}, and \textsc{SinksOn}, \textsc{SinkCount}, and \textsc{MergeScore}. 
+All of these parameters thus remained at their default values. 
+
+\todo{a word about how we gridsearched}
 
 \subsection{Neural Systems}
+Following \citet{mlregtest}, we test four neural architectures, all consisting of a trainable embedding layer followed by a unidirectional recurrent module (either a \textbf{\textsc{Simple}} RNN, a \textbf{GRU}, or an \textbf{LSTM}) or two consecutive \textbf{\textsc{Transformer}} blocks, dense feed-forward layers, dropout, layer normalization, and softmax activation. 
+All neural networks are implemented with TensorFlow and Keras \todo{cite packages} and use the same hyperparameters as \citet{mlregtest}.\footnote{\todo{add link to the repo}}
 
 \section{Experiments} \label{sec:exps}
 
