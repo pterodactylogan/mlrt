@@ -115,7 +115,7 @@
 \sarah{I basically just copied Jeff's abstract with a few edits. Probably should be shortened considerably}
  \citet{adil23} examine the performance of the state-merging algorithms RPNI, EDSM, and ALERGIA on an early version of MLRegTest, a benchmark for the learning of regular  languages \citep{mlregtest}. 
 They found that the neural models generally outperformed the state-merging algorithms on this benchmark. 
-However, the MLRegTest benchmark excludes strings less than length 19 in order to achieve a balance of positive and negative strings in training, development and test sets across all languages in MLRegTest. 
+However, the MLRegTest benchmark excludes strings less than length 20 in order to achieve a balance of positive and negative strings in training, development and test sets across all languages in MLRegTest. 
 \citet{adil23} report a follow-up  experiment which includes shorter strings and show that they  dramatically improve the performance of the state-merging algorithms.
 
 This paper makes three contributions. First, it replicates the experiments in \citet{adil23} for the neural networks and state-merging algorithms RPNI and EDSM on the final version of  MLRegTest. 
@@ -126,33 +126,82 @@ When the training data is small, and the short strings are included, EDSM outper
 \end{abstract}
 
 \section{Introduction}
-
-\section{MLRegTest}
-\sarah{Maybe this section should be something more like "evaluation" or "data" given that the OS and PS are in addition to the standard MLRegTest}
+This paper compares the results of a state merging algorithm and four neural network architectures on an extension of \textsc{MLRegTest}, a benchmark for the  learning of regular languages \citep{mlregtest}.
+The training data of \textsc{MLRegTest} contains only strings of at least length 20, but \citet{adil23} demonstrated that augmenting this training data with shorter strings led to significant improvement in the performance of the state merging algorithms. 
+Following \citeauthor{adil23}, we compare performance of our models when trained on the original \textsc{MLRegTest} data, the augmented \citeauthor{adil23} data, and training data containing \textit{only} strings of length 19 or less.  
+We find that \todo{let's see what we find once everything is done :)}
 
 
 \section{Learning Systems} \label{sec:bg}
 
 \subsection{State-Merging Systems}
-Following \citet{adil23}, we make use of the state-merging algorithms provided by \textsc{FlexFringe} \citep{flexfringe-short, flexfringe}. 
-We build on \citeauthor{adil23} by conducting a limited gridsearch over the following parameters provided by \textsc{FlexFringe}:
+Following \citet{adil23}, we make use of the state-merging algorithms provided by \textsc{FlexFringe} \citep{flexfringe-short, flexfringe}.\footnote{\todo{add a link to the exact version of FlexFringe we used, since it wasn't the most up-to-date. SP has this from Adil}}
+\textsc{FlexFringe} provides implementations of the EDSM \citep{edsm}, RPNI \citep{rpni}state-merging algorithms:\footnote{We exclude ALERGIA from consideration because of the infeasibly high compute demands noted by \citeauthor{adil23}} both take as input a set of strings labeled as to whether or not they belong to the target language, and construct a prefix tree from these strings. 
+A search is then conducted for pairs of states to merge: RPNI does so in a breadth-first fashion, so that for any two potential merges, pair closer to the initial state is chosen. 
+EDSM instead computes a score for all possible pairs and attempts to merge the one with the highest score.\footnote{Notably, the implementation of RPNI in \textsc{FlexFringe} differs slightly from that in \citet{rpni}: while \citeauthor{rpni} merged states in length-lexicographic order when ties arise, \textsc{FlexFringe} instead calculates a score, akin to EDSM. } 
+
+
+In order to determine state merging algorithm will perform best, we  conduct a limited gridsearch over the following parameters provided by \textsc{FlexFringe}:
 \begin{itemize}
-\item \textsc{PerformFirst:} corresponding to whether the algorithm should perform EDSM or a modified version of RPNI 
-\item \textsc{Extend} \todo{what does this do}
-\item \textsc{ShallowFirst} \todo{what does this do}
-\item \textsc{SearchStrategy}: searchdeep, searchlocal, searchglobal, searchpartial, none \todo{discuss}
+\item \textsc{PerformFirst:}  whether the algorithm should perform EDSM or RPNI 
+\item \textsc{Extend}: extend (color red) blue states that cannot be merged with any red
+\item \textsc{ShallowFirst}: consider coloring blue states closest to the root first
+\item \textsc{SearchStrategy}: searchdeep, searchlocal, searchglobal, searchpartial, none \todo{They have absolutely no documentation of what these parameters do, should we  just guess? }
 \end{itemize}
+We attempted to add the following parameters to the grid search, but modifying these parameters from their default state resulted in segmentation faults in the \textsc{FlexFringe} executable, so we left them at their default values: 
+\textsc{ReverseTraces}, \textsc{DepthCheck}, \textsc{SymbolCheck}, and \textsc{SinksOn}, \textsc{SinkCount}, and \textsc{MergeScore}. 
 
-We also tried to tune the following parameters but it caused segfaulting: \textsc{ReverseTraces}, \textsc{DepthCheck}, \textsc{SymbolCheck}, and \textsc{SinksOn}, \textsc{SinkCount}, and \textsc{MergeScore}. 
-All of these parameters thus remained at their default values. 
+Grid searching was carried out on the \textsc{PlusShort} data using overall accuracy on the development set (see \S \ref{sec:eval}). 
+The best performing model, used in the remainder of the paper, was \textsc{PerformFirst = 0} (i.e., RPNI), \textsc{Extend = 1}, \textsc{ShallowFirst = 0}, and \textsc{SearchStrategy = SearchDeep}. 
 
-\todo{a word about how we gridsearched}
 
 \subsection{Neural Systems}
 Following \citet{mlregtest}, we test four neural architectures, all consisting of a trainable embedding layer followed by a unidirectional recurrent module (either a \textbf{\textsc{Simple}} RNN, a \textbf{GRU}, or an \textbf{LSTM}) or two consecutive \textbf{\textsc{Transformer}} blocks, dense feed-forward layers, dropout, layer normalization, and softmax activation. 
-All neural networks are implemented with TensorFlow and Keras \todo{cite packages} and use the same hyperparameters as \citet{mlregtest}.\footnote{\todo{add link to the repo}}
+All neural networks are implemented with TensorFlow and Keras \citep{tensorflow, keras} and use the same hyperparameters as \citet{mlregtest}.\footnote{Implementations of the neural networks are available at: \href{https://github.com/heinz-jeffrey/subregular-learning/}{https://github.com/heinz-jeffrey/subregular-learning/}}
 
-\section{Experiments} \label{sec:exps}
+\section{Evaluation}\label{sec:eval}
+
+\begin{table}[t!]
+\begin{small}
+\centering
+\begin{tabular}{| r || l |}
+\hline
+\textsc{Factor} & \textsc{Possible Levels} \\ 
+\hline \hline
+\texttt{AlphabetSize} & 4, 16\\
+\texttt{Tier} & 3, 4, 7, 16\\ 
+\texttt{LanguageClass} & SL, coSL, TSL, TcoSL, SP, \\
+& coSP, LT, TLT, PT, LTT, TLTT, \\
+& PLT, TPLT, SF, Zp, Reg\\
+\texttt{FactorWidth} & 0, 2, 3, 4, 5, 6 \\ 
+\texttt{ThresholdSize} & 0, 1, 2, 3, 5\\ 
+\texttt{Index} & 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 \\
+\texttt{TrainSize} & Small (1k), Mid (10k), Large (100k)\\
+\texttt{DataType} & \textsc{OnlyShort, PlusShort}\\
+& \textsc{OnlyLong}\\
+\texttt{Model} & \textsc{FlexFringe, Simple}\\
+& \textsc{GRU, LSTM, Transformer}\\
+\hline
+\end{tabular}
+\end{small}
+\caption{The values used in our experimental setup. \sarah{could put this in the appendix if we need to}}
+\label{tab:experimental-setup}
+\end{table}
+
+We evaluate our learning models with an extension of \textsc{MLRegTest} \citep{mlregtest}, which contains training, development, and test data with and equal number of positive and negative examples of strings from 1,800 languages.
+We follow \citet{adil23} in excluding those languages with alphabet sizes of 64 due to unicode errors, thus considering 1,140  languages. 
+
+In the original version of \textsc{MLRegTest}, the length of strings in training ranges from 20-29; \citeauthor{adil23} conducted a follow-up experiment in which roughly 1,000 short training strings (length 1-19) were added to the original \textsc{MLRegTest} training data. 
+The authors found that \textsc{FlexFringe} significantly improved when these short strings were added to its training data. 
+In the current work, we build on \citeauthor{adil23} by considering three training setups:
+\paragraph{\textsc{OnlyShort}:} models are trained on only the short strings from \citet{adil23}
+\paragraph{\textsc{PlusShort}:} models are trained on  \textsc{MLRegTest}  augmented with short strings, replicating \citet{adil23}
+\paragraph{\textsc{OnlyLong}:} models are trained on the original \textsc{MLRegTest} data
+
+\textsc{MLRegTest} is designed to investigate a number of potential factors which may contribute to model performance, summarized with our additions in Table \ref{tab:experimental-setup}. 
+It additionally contains four testing sets per language, based on the length of the strings (\textsc{Short} = 20-29, \textsc{Long} = 31-50) and the method of generation (\textsc{Random}, sampled randomly without replacement or \textsc{Adversarial}, with paired positive and negative examples with an edit distance of 1). 
+We report results separately on each test set. 
+
 
 \section{Results} \label{sec:results}
 
