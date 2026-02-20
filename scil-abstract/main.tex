@@ -42,7 +42,7 @@
 \newcommand{\sarah}[1]{\textcolor{cyan}{(SP: {#1})}}
 \newcommand{\logan}[1]{\textcolor{orange}{(LS: {#1})}}
 
-\title{Instructions for *ACL Proceedings}
+\title{State Merging Algorithms Need Short Strings, Neural Networks Need Long Ones \sarah{super tentative title pls feel free to change}}
 
 % Author information can be set in various styles:
 % For several authors from the same institution:
@@ -111,7 +111,7 @@
 
 \begin{document}
 \maketitle
-\logan{From SCiL site: ``abstract submissions should not have abstracts.''}
+%\logan{From SCiL site: ``abstract submissions should not have abstracts.''}
 % \begin{abstract}
 % \sarah{I basically just copied Jeff's abstract with a few edits. Probably should be shortened considerably}
 %  \citet{adil23} examine the performance of the state-merging algorithms RPNI, EDSM, and ALERGIA on an early version of MLRegTest, a benchmark for the learning of regular  languages \citep{mlregtest}. 
@@ -137,12 +137,14 @@ Following \citeauthor{adil23}, we compare performance of both state merging and 
 \section{Learning Systems} \label{sec:bg}
 
 \subsection{State-Merging Systems}
-Following \citet{adil23}, we make use of the state-merging algorithms provided by \textsc{FlexFringe} \citep{flexfringe-short, flexfringe}.\footnote{\todo{add a link to the exact version of FlexFringe we used, since it wasn't the most up-to-date. SP has this from Adil}}
+Following \citet{adil23}, we make use of the state-merging algorithms provided by \textsc{FlexFringe} \citep{flexfringe-short, flexfringe}.\footnote{We use the same version of \textsc{FlexFringe} used by \citeauthor{adil23}: commit \texttt{4d1449c} of the software available 
+\href{https://github.com/tudelft-cda-lab/FlexFringe/commit/4d1449c4d0cfb3fc5f9a954d5c3a24a11a593a5c\#diff-67290ef9e84d355c83cbd9a0bda3be39e2e14836990458cfcc070506a7e448c2}{here}.
+}
 \textsc{FlexFringe} provides implementations of the EDSM \citep{edsm} and RPNI \citep{rpni}state-merging algorithms:\footnote{We exclude ALERGIA from consideration because of the infeasibly high compute demands and comparatively low performance noted by \citeauthor{adil23}} both take as input a set of strings labeled by their membership in the target langauge, and construct a prefix tree from these strings. 
 A search is then conducted for pairs of states to merge: RPNI does so in a breadth-first fashion, selecting pairs closest to the initial state. 
 EDSM instead computes a score for all possible pairs and attempts to merge the one with the highest score.\footnote{Notably, the implementation of RPNI in \textsc{FlexFringe} differs slightly from that in \citet{rpni}: while \citeauthor{rpni} merged states in length-lexicographic order when ties arise, \textsc{FlexFringe} instead calculates a score, akin to EDSM. } 
 
-\textsc{FlexFringe} also provides several other parameters which impact learning behavior. To find the best model, we conducted a limited gridsearch over the following subset\footnote{We held several other parameters in their default state, because we found that modifying them led to errors in the \textsc{FlexFringe} executable. These are: \textsc{ReverseTraces}, \textsc{DepthCheck}, \textsc{SymbolCheck}, and \textsc{SinksOn}, \textsc{SinkCount}, and \textsc{MergeScore}}:
+\textsc{FlexFringe} also provides several other parameters which impact learning behavior. To find the best model, we conducted a limited gridsearch over the following subset\footnote{We held several other parameters at their default state because modifying them led to errors in the \textsc{FlexFringe} executable. These are: \textsc{ReverseTraces}, \textsc{DepthCheck}, \textsc{SymbolCheck}, \textsc{SinksOn}, \textsc{SinkCount}, and \textsc{MergeScore}.}:
 \begin{itemize}
 \item \textsc{PerformFirst:}  whether the algorithm should perform EDSM or RPNI 
 \item \textsc{Extend}: extend (color red) blue states that cannot be merged with any red
@@ -183,7 +185,7 @@ All neural networks are implemented with TensorFlow and Keras \citep{tensorflow,
 \hline
 \end{tabular}
 \end{small}
-\caption{The values used in our experimental setup. \sarah{could put this in the appendix if we need to}}
+\caption{The values used in our experimental setup.}
 \label{tab:experimental-setup}
 \end{table}
 
@@ -205,52 +207,54 @@ We report results separately on each test set.
 
 \section{Results} \label{sec:results}
 
-\begin{table}[h!]
-\begin{small}
+\begin{table}[t!]
+\begin{scriptsize}
 \centering
-\begin{tabular}{|c|c|c|c|c|c|c|c|}
+\begin{tabular}{|r|c|c|c|c|c|c|c|}
 \hline
-\textsc{Model} & \textsc{OnlyShort} & \multicolumn{3}{|c|}{\textsc{PlusShort}} & \multicolumn{3}{|c|}{\textsc{OnlyLong}}\\
+\textsc{Model} & \textsc{OS} & \multicolumn{3}{|c|}{\textsc{PlusShort}} & \multicolumn{3}{|c|}{\textsc{OnlyLong}}\\
 & & S & M & L & S & M & L \\
 \hline \hline
-FF & 0.73 & 0.75 & X & X & X & X & X \\
+FF & 0.709 & 0.747 & 0.775 & \textcolor{red}{X} & 0.534 & 0.560 &  \textcolor{red}{X} \\
 \hline
-Simple & X & X & X & X & X & X & X \\
+Simple & 0.679 & 0.732 & 0.780 & 0.834 & 0.720 & 0.774 & 0.832 \\
 \hline
-GRU & X & X & X & X & X & X & X \\
+GRU & \textbf{0.792} & \textbf{0.907} & \textbf{0.957} & 0.963 & \textbf{0.847} & \textbf{0.942} & 0.949 \\
 \hline
-LSTM & X & X & X & X & X & X & X \\
+LSTM & 0.646 & 0.727 & 0.868 & 0.924 & 0.638 & 0.837 & 0.912 \\
 \hline
-Trans. & X & X & X & X & X & X & X \\
+Trans. & 0.709 & 0.762 & 0.809 & 0.856 & 0.754 & 0.806 & 0.806 \\
 \hline
 \end{tabular}
-\end{small}
-\caption{F1 score of each model, averaged across all languages and test types.}
+\end{scriptsize}
+\caption{F1 score by model, averaged across languages and test types. \sarah{this might be too wide}}
 \label{tab:overall-scores}
 \end{table}
 
-\begin{table}[h!]
-\begin{small}
+\begin{figure}[t]
 \centering
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\textsc{Model} & SR & SA & LR & LA\\
-\hline \hline
-FF & X & X & X & X \\
-\hline
-Simple & X & X & X & X \\
-\hline
-GRU & X & X & X & X \\
-\hline
-LSTM & X & X & X & X  \\
-\hline
-Trans. & X & X & X & X \\
-\hline
-\end{tabular}
-\end{small}
-\caption{F1 score of each model by test type. On \todo{OnlyShort?} data only.}
-\label{tab:OS-by-test}
-\end{table}
+\includegraphics[width=\linewidth]{../analysis/figs/F1-diff-ps-os.pdf}
+\caption{Difference in F1 between \textsc{PlusShort} (small training) and \textsc{OnlyShort} by model \& test type.}
+\label{fig:f1-diff-ps-os}
+\end{figure}
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{../analysis/figs/F1-diff-ps-ol.pdf}
+\caption{Difference in F1 between \textsc{PlusShort} and \textsc{OnlyLong} (small size) by model \& test type.}
+\label{fig:f1-diff-ps-ol}
+\end{figure}
+
+
+
+Table \ref{tab:overall-scores} gives the F1 score of each model, averaged across languages and test types; breakdowns by test type are given in Tables \ref{tab:OS-by-test}-\ref{tab:OL-by-test} in the Appendix.
+Though the GRU consistently outperforms the other models, we note that it takes much greater of a hit in performance between \textsc{PlusShort} and \textsc{OnlyShort} than \textsc{FlexFringe}, which outperforms all other neural architectures on \textsc{OnlyShort}. 
+Figure \ref{fig:f1-diff-ps-os} illustrates the difference in average F1 between the \textsc{PlusShort} small train size and \textsc{OnlyShort} by model and test set: \textsc{FlexFringe} has the smallest difference in performance on the random test sets, and is comparable to the \textsc{Simple} RNN on the adversarial ones; the GRU shows the largest difference in performance on these test sets. 
+
+Similarly, we note that \textsc{FlexFringe} sees the largest jump in performance from \textsc{OnlyLong} to \textsc{PlusShort}; this is illustrated in Figure \ref{fig:f1-diff-ps-ol}. 
+Taken together, these results suggest that \textsc{FlexFringe} benefits far more from the inclusion of short strings, while the neural models --- particularly the GRU --- rely heavily on long strings to achieve their performance. 
+Further breakdowns of performance by language class are given in Figures \ref{fig:os-by-class}-\ref{fig:ol-by-class} in the Appendix.
 
 
 \section{Discussion}\label{sec:disc}
@@ -280,5 +284,131 @@ Trans. & X & X & X & X \\
 \label{sec:appendix}
 
 \todo{add graphs?}
+\sarah{my pref would be to have one or two punchy graphs in the main text and lots of numbers in the appendix}
+
+\begin{table}[h!]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textsc{Model} & SR & SA & LR & LA\\
+\hline \hline
+FF & 0.808 & 0.662 & 0.746 & 0.620 \\
+Simple & 0.826 & 0.587 & 0.738 & 0.566 \\
+GRU & 0.903 & 0.713 & 0.861 & 0.692 \\
+LSTM & 0.795 & 0.545 & 0.732 & 0.510 \\
+Trans. & 0.867 & 0.629 & 0.778 & 0.562 \\
+\hline
+\end{tabular}
+\end{center}
+\end{small}
+\caption{F1  by model \& test type on \textsc{OnlyShort}}
+\label{tab:OS-by-test}
+\end{table}
+
+\begin{table}[h!]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textsc{Small} & SR & SA & LR & LA\\
+\hline \hline
+FF & 0.827 & 0.701 & 0.785 & 0.676 \\
+Simple & 0.892 & 0.622 & 0.820 & 0.596 \\
+GRU & 0.978 & 0.847 & 0.966 & 0.836 \\
+LSTM & 0.880 & 0.618 & 0.836 & 0.575 \\
+Trans. & 0.906 & 0.676 & 0.846 & 0.620 \\
+\hline
+\hline
+\textsc{Mid} & SR & SA & LR & LA\\
+\hline \hline
+FF & 0.846 & 0.729 & 0.817 & 0.707 \\
+Simple & 0.940 & 0.692 & 0.844 & 0.645 \\
+GRU & 0.994 & 0.925 & 0.988 & 0.921 \\
+LSTM & 0.972 & 0.808 & 0.942 & 0.751 \\
+Trans. & 0.956 & 0.762 & 0.854 & 0.663 \\
+\hline
+\hline
+\textsc{Large} & SR & SA & LR & LA\\
+\hline \hline
+FF &  \textcolor{red}{X}& \textcolor{red}{X} & \textcolor{red}{X}  & \textcolor{red}{X} \\
+Simple & 0.982 & 0.824 & 0.830 & 0.701 \\
+GRU & 0.992 & 0.936 & 0.990 & 0.934 \\
+LSTM & 0.997 & 0.902 & 0.953 & 0.844 \\
+Trans. & 0.989 & 0.858 & 0.861 & 0.714 \\
+\hline
+\end{tabular}
+\end{center}
+\end{small}
+\caption{F1 by model, test type, and train size on \textsc{PlusShort}}
+\label{tab:PS-by-test}
+\end{table}
+
+
+\begin{table}[h!]
+\begin{small}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textsc{Small} & SR & SA & LR & LA\\
+\hline \hline
+FF & 0.557 & 0.519 & 0.545 & 0.513 \\
+Simple & 0.880 & 0.601 & 0.812 & 0.585 \\
+GRU & 0.937 & 0.769 & 0.918 & 0.762 \\
+LSTM & 0.790 & 0.521 & 0.755 & 0.487 \\
+Trans. & 0.898 & 0.659 & 0.840 & 0.619 \\
+\hline
+\hline
+\textsc{Mid} & SR & SA & LR & LA\\
+\hline \hline
+FF & 0.585 & 0.544 & 0.571 & 0.538 \\
+Simple & 0.936 & 0.690 & 0.830 & 0.640 \\
+GRU & 0.981 & 0.908 & 0.976 & 0.905 \\
+LSTM & 0.942 & 0.778 & 0.911 & 0.716 \\
+Trans. & 0.952 & 0.761 & 0.848 & 0.662 \\
+\hline
+\hline 
+\textsc{Large} & SR & SA & LR & LA\\
+\hline \hline
+FF &  \textcolor{red}{X}& \textcolor{red}{X} & \textcolor{red}{X}  & \textcolor{red}{X} \\
+Simple & 0.978 & 0.822 & 0.826 & 0.700 \\
+GRU & 0.976 & 0.925 & 0.974 & 0.922 \\
+LSTM & 0.983 & 0.895 & 0.941 & 0.831 \\
+Trans. & 0.987 & 0.859 & 0.860 & 0.716 \\
+\hline
+\end{tabular}
+\end{center}
+\end{small}
+\caption{F1 by model, test type and trainsize on \textsc{OnlyLong}}
+\label{tab:OL-by-test}
+\end{table}
+
+%\begin{figure*}
+%\centering
+%\includegraphics[width=\linewidth]{../analysis/figs/f1-by-datatype.pdf}
+%\caption{Average F1 by model, test set, and datatype, averaged across training sizes. \todo{should we average across sizes? If so, update when Large is in for FF}}
+%\label{fig:f1-by-datatype}
+%\end{figure*}
+
+\begin{figure*}
+\centering
+\includegraphics[width=\linewidth]{../analysis/figs/os-by-class.pdf}
+\caption{Average F1 by model, test set, and language class for \textsc{OnlyShort}}
+\label{fig:os-by-class}
+\end{figure*}
+
+\begin{figure*}
+\centering
+\includegraphics[width=\linewidth]{../analysis/figs/ps-by-class.pdf}
+\caption{Average F1 by model, test set, and language class for \textsc{PlusShort}, averaged across training sizes \todo{re-make once Large FF is in}}
+\label{fig:ps-by-class}
+\end{figure*}
+
+\begin{figure*}
+\centering
+\includegraphics[width=\linewidth]{../analysis/figs/ol-by-class.pdf}
+\caption{Average F1 by model, test set, and language class for \textsc{OnlyLong}, averaged across training sizes \todo{re-make once Large FF is in}}
+\label{fig:ol-by-class}
+\end{figure*}
 
 \end{document}

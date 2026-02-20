@@ -3,7 +3,6 @@ library(tidyr)
 library(stringr)
 library(ggplot2)
 
-#################### ANALYZING EVERYTHING TOGETHER ############################
 
 # Helper function to add column adding the data types 
 add_type <- function(df, type){
@@ -71,272 +70,133 @@ load_ff <- function(path){
   return(ff_df)
 }
 
-
+# Load in the data
 all_neural <- load_nn("../neural")
 all_ff <- load_ff("../FlexFringe/FlexFringe")
 everything <- rbind(all_neural, all_ff)
 
+# Make Table 2 in the paper 
+table2 <- everything %>%
+  group_by(model, data_type, train_size) %>%
+  summarize(meanf1 = round(mean(f1), 3))
 
-# Look at size related performance for plus short 
+# Make Table 3 in the paper 
+table3 <- everything %>%
+  filter(data_type == "OS") %>%
+  group_by(model, split) %>% 
+  summarize(meanf1 = round(mean(f1), 3))
+
+# Make Table 4 in the paper 
+table4 <- everything %>% 
+  filter(data_type == "PS" & train_size == "Small") %>%
+  group_by(model, split) %>% 
+  summarize(meanf1 = round(mean(f1), 3))
+
+# Make Table 5 in the paper 
+table5 <- everything %>% 
+  filter(data_type == "OL" & train_size == "Small") %>% 
+  group_by(model, split) %>% 
+  summarize(meanf1 = round(mean(f1), 3))
+
+
+# Let's try looking at a comparison 
+temp <- everything %>% 
+  filter(data_type == "PS" & train_size == "Small") %>%
+  group_by(model, split) %>% 
+  summarize(meanf1_ps = round(mean(f1), 3))
+
+# Explore the difference in F1 scores between PS and OS 
+diff <- inner_join(temp, table3, by=c("model", "split"))
+diff$f1_diff = diff$meanf1_ps - diff$meanf1
+diff %>%
+  ggplot(aes(x = model, y = f1_diff, fill = model)) + 
+  geom_col(alpha = 0.7) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  theme_bw() + 
+  ylab("Difference in F1 Score") + 
+  xlab("") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
+        legend.position = "none"
+        ) + 
+  ggtitle("Difference in F1 Score from PS-small to OS by Model")
+ggsave("figs/F1-diff-ps-os.pdf", width=6, height=4)
+
+# Explore the difference in F1 scores between PS on OL
+diff <- inner_join(temp, table5, by=c("model", "split"))
+diff$f1_diff = diff$meanf1_ps - diff$meanf1
+diff %>%
+  ggplot(aes(x = model, y = f1_diff, fill = model)) + 
+  geom_col(alpha = 0.7) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  theme_bw() + 
+  ylab("Difference in F1 Score") + 
+  xlab("") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
+        legend.position = "none"
+  ) + 
+  ggtitle("Difference in F1 Score from PS-small to OL-small by Model")
+ggsave("figs/F1-diff-ps-ol.pdf", width=6, height=4)
+
+
+# F1 by datatype 
 everything %>%
-  filter(data_type == "PS") %>%
-  filter(train_size != "Large") %>%
-  ggplot(aes(x = model, y = f1, fill = factor(train_size, levels = c("Small", "Mid")))) +
+  ggplot(aes(x = model, y = f1, fill = factor(data_type, levels=c("OS", "PS", "OL")))) +
   geom_boxplot(alpha=0.6) + 
-  facet_wrap(~split) + 
-  labs(fill="Train Size") + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("F1 Score") + 
   xlab("Model") + 
+  labs(fill = "Data Type") +
   theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average F1 by Size + Model on PlusShort") 
-
-# Look at size related performance for only long 
-everything %>%
-  filter(data_type == "OL") %>%
-  filter(train_size != "Large") %>%
-  ggplot(aes(x = model, y = f1, fill = factor(train_size, levels = c("Small", "Mid")))) +
-  geom_boxplot(alpha=0.6) + 
-  facet_wrap(~split) + 
-  labs(fill="Train Size") + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average F1 by Size + Model on OnlyLong") 
-
-# Accuracy by training size on each of the test sets 
-everything %>%
-  filter(split == "SR") %>% 
-  filter(train_size != "Large") %>%
-  ggplot(aes(x = model, y = f1, fill = factor(train_size, levels = c("Small", "Mid")))) +
-  geom_boxplot(alpha=0.6) + 
-  facet_wrap(~factor(data_type, levels=c("OS", "PS", "OL"))) + 
-  labs(fill="Train Size") + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) + 
-  ggtitle("Performance by Model and Training Size on Short Random Test")
-
-everything %>%
-  filter(split == "SA") %>% 
-  filter(train_size != "Large") %>%
-  ggplot(aes(x = model, y = f1, fill = factor(train_size, levels = c("Small", "Mid")))) +
-  geom_boxplot(alpha=0.6) + 
-  facet_wrap(~factor(data_type, levels=c("OS", "PS", "OL"))) + 
-  labs(fill="Train Size") + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) + 
-  ggtitle("Performance by Model and Training Size on Short Adversarial Test")
-
-everything %>%
-  filter(split == "LR") %>% 
-  filter(train_size != "Large") %>%
-  ggplot(aes(x = model, y = f1, fill = factor(train_size, levels = c("Small", "Mid")))) +
-  geom_boxplot(alpha=0.6) + 
-  facet_wrap(~factor(data_type, levels=c("OS", "PS", "OL"))) + 
-  labs(fill="Train Size") + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) + 
-  ggtitle("Performance by Model and Training Size on Long Random Test")
-
-
-everything %>%
-  filter(split == "LA") %>% 
-  filter(train_size != "Large") %>%
-  ggplot(aes(x = model, y = f1, fill = factor(train_size, levels = c("Small", "Mid")))) +
-  geom_boxplot(alpha=0.6) + 
-  facet_wrap(~factor(data_type, levels=c("OS", "PS", "OL"))) + 
-  labs(fill="Train Size") + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) + 
-  ggtitle("Performance by Model and Training Size on Long Adversarial Test")
-
-
-
-####################### CONSIDERING ONLY ONE SIZE ##############################
-
-
-
-# Global variable for size
-size = "Mid"
-
-
-# Functions to make the FF and NN outputs compatible bc they didn't for some reason 
-cleanup_nn <- function(df, size, type){
-  new_df <- df %>% filter(train_set_size == size) %>%
-    mutate(data_type = type) %>%
-    mutate(recall = tp / (tp+fn)) %>%
-    filter(alph < 64) %>%
-    select(data_type,
-           alphabet_size = alph, 
-           tier_size = tier, 
-           language_class = class, 
-           factor_width = k, 
-           threshold = j, 
-           index = i, 
-           split = test_type,
-           accuracy, 
-           precision, 
-           recall, 
-           f1 = fscore,
-           brier_score = brier,
-           model = network_type
-    ) 
-  return(new_df)
-}
-
-cleanup_ff <- function(df, type){
-  new_df <- df %>%
-    mutate(split = str_remove(split, "Test")) %>%
-    filter(!split %in% c("Train", "Dev")) %>%
-    mutate(model = "FF") %>%
-    mutate(data_type = type) %>%
-    filter(alphabet_size < 64) %>%
-    select(-data_size, -ini, -model_path, -data_path, -last_modified)
-}
-
-
-# Load in and cleanup the neural stuff 
-neural_os <- read.csv("../neural/onlyshort_evals.csv")
-neural_ps <- read.csv("../neural/plusshort_evals.csv")
-neural_ol <- read.csv("../neural/standard_evals.csv")
-neural_ps_size <- cleanup_nn(neural_ps, size, "PS")
-neural_os_size <- cleanup_nn(neural_os, size, "OS")
-neural_ol_size <- cleanup_nn(neural_ol, size, "OL")
-
-# Load in and cleanup the FF stuff 
-ff_os <- read.csv("../FlexFringe/FlexFringe/models-os/0.0.1.0.0.0.searchdeep.0.ini/eval_combined.csv")
-full_ps_path <- paste0("../FlexFringe/FlexFringe/models-ps-", tolower(size), "/0.0.1.0.0.0.searchdeep.0.ini/eval_combined.csv")
-ff_ps_size <- read.csv(full_ps_path)
-full_ol_path <- paste0("../FlexFringe/FlexFringe/models-reg-", tolower(size), "/0.0.1.0.0.0.searchdeep.0.ini/eval_combined.csv")
-ff_ol_size <- read.csv(full_ol_path)
-ff_os <- cleanup_ff(ff_os, "OS")
-ff_ps_size <- cleanup_ff(ff_ps_size, "PS")
-ff_ol_size <- cleanup_ff(ff_ol_size, "OL")
-
-# Make the combined DFs
-both_ps <- rbind(ff_ps_size, neural_ps_size)
-both_os <- rbind(ff_os, neural_os_size)
-both_ol <- rbind(ff_ol_size, neural_ol_size)
-all <- rbind(both_ps, both_os, both_ol)
-
-
-
-# Plot averaged accuracy by test set for each model on PS
-both_ps %>%
-  ggplot(aes(x = model, y = f1, fill=model)) + 
-  geom_boxplot(alpha = 0.5) + 
-  facet_wrap(~split) + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle(paste0("Average F1 for PlusShort Data, size = ", size)) 
-ggsave("figs/f1-PS.pdf")
-  
-
-# Plot averaged accuracy by test set for each model on OS
-both_os %>%
-  ggplot(aes(x = model, y = f1, fill = model)) + 
-  geom_boxplot(alpha=0.5) + 
-  facet_wrap(~split) + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle(paste0("Average F1 for OnlyShort Data, size = ", size)) 
-ggsave("figs/f1-OS.pdf")
-
-
-# Plot averaged accuracy by test set for each model on OL 
-both_ol %>%
-  ggplot(aes(x = model, y = f1, fill = model)) + 
-  geom_boxplot(alpha=0.5) + 
-  facet_wrap(~split) + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle(paste0("Average F1 for OnlyLong Data, size = ", size)) 
-ggsave("figs/f1-OL.pdf")
-
-# Plot them together 
-all %>%
-  ggplot(aes(x = model, y = f1, fill = data_type)) +
-  geom_boxplot(alpha=0.6) + 
-  facet_wrap(~split) + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
+        axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 by Data Type") 
 ggsave("figs/f1-by-datatype.pdf")
 
-# Get the performance in a table 
-summarized <- all %>% group_by(model, data_type, split) %>%
-  summarise(meanf1 = mean(f1))
 
-
-# Now plotting by language class, like Adil's Figure 2. First PS 
-both_ps %>% 
+# Performance by language class
+everything %>%
+  filter(data_type =="OS") %>% 
   ggplot(aes(x = language_class, y = f1, fill = model)) + 
   geom_boxplot(alpha=0.6) + 
-  facet_wrap(~split) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("F1 Score") + 
-  xlab("Model") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average F1 by Language Class + Model on PlusShort") 
-ggsave("figs/ps-by-class.pdf", width = 15, height = 7)
-
-# Same thing but on only short 
-both_os %>% 
-  ggplot(aes(x = language_class, y = f1, fill = model)) + 
-  geom_boxplot(alpha=0.6) + 
-  facet_wrap(~split) + 
-  theme_bw() + 
-  ylab("F1 Score") + 
-  xlab("Model") + 
+  labs(fill="Model")+
+  xlab("Language Class") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 by Language Class + Model on OnlyShort") 
 ggsave("figs/os-by-class.pdf", width = 15, height = 7)
 
-# Finally, same thing but only long 
-both_ol %>% ggplot(aes(x = language_class, y = f1, fill = model)) + 
+
+everything %>%
+  filter(data_type =="PS") %>% 
+  ggplot(aes(x = language_class, y = f1, fill = model)) + 
   geom_boxplot(alpha=0.6) + 
-  facet_wrap(~split) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("F1 Score") + 
-  xlab("Model") + 
+  labs(fill="Model")+
+  xlab("Language Class") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
+  ggtitle("Average F1 by Language Class + Model on PlusShort") 
+ggsave("figs/ps-by-class.pdf", width = 15, height = 7)
+
+everything %>%
+  filter(data_type =="OL") %>% 
+  ggplot(aes(x = language_class, y = f1, fill = model)) + 
+  geom_boxplot(alpha=0.6) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  theme_bw() + 
+  ylab("F1 Score") + 
+  labs(fill="Model")+
+  xlab("Language Class") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 by Language Class + Model on OnlyLong") 
 ggsave("figs/ol-by-class.pdf", width = 15, height = 7)
-  
-
-
-
-
-
 
 
