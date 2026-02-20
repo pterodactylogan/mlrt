@@ -122,6 +122,24 @@ diff %>%
   ggtitle("Difference in F1 Score from PS-small to OS by Model")
 ggsave("figs/F1-diff-ps-os.pdf", width=6, height=4)
 
+diffs <- everything %>%
+  filter(train_size == "Small") %>%
+  select(-c(brier_score, recall, precision, accuracy)) %>%
+  pivot_wider(names_from = data_type, values_from = f1) %>%
+  drop_na()
+diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  theme_bw() + 
+  ylab("Difference in F1 Score") + 
+  xlab("") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
+        legend.position = "none"
+  ) + 
+  ggtitle("Difference in F1 Score from PS-small to OS by Model")
+ggsave("figs/F1-diff-ps-os.pdf", width=6, height=4)
+
 # Explore the difference in F1 scores between PS on OL
 diff <- inner_join(temp, table5, by=c("model", "split"))
 diff$f1_diff = diff$meanf1_ps - diff$meanf1
@@ -137,6 +155,19 @@ diff %>%
         legend.position = "none"
   ) + 
   ggtitle("Difference in F1 Score from PS-small to OL-small by Model")
+ggsave("figs/F1-diff-ps-ol.pdf", width=6, height=4)
+
+diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  theme_bw() + 
+  ylab("Difference in F1 Score") + 
+  xlab("") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
+        legend.position = "none"
+  ) + 
+  ggtitle("Difference in F1 Score from PS to OL by Model (Small train)")
 ggsave("figs/F1-diff-ps-ol.pdf", width=6, height=4)
 
 
@@ -159,7 +190,7 @@ ggsave("figs/f1-by-datatype.pdf")
 everything %>%
   filter(data_type =="OS") %>% 
   ggplot(aes(x = language_class, y = f1, fill = model)) + 
-  geom_boxplot(alpha=0.6) + 
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("F1 Score") + 
@@ -174,7 +205,7 @@ ggsave("figs/os-by-class.pdf", width = 15, height = 7)
 everything %>%
   filter(data_type =="PS") %>% 
   ggplot(aes(x = language_class, y = f1, fill = model)) + 
-  geom_boxplot(alpha=0.6) + 
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("F1 Score") + 
@@ -188,7 +219,7 @@ ggsave("figs/ps-by-class.pdf", width = 15, height = 7)
 everything %>%
   filter(data_type =="OL") %>% 
   ggplot(aes(x = language_class, y = f1, fill = model)) + 
-  geom_boxplot(alpha=0.6) + 
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("F1 Score") + 
