@@ -42,7 +42,8 @@
 \newcommand{\sarah}[1]{\textcolor{cyan}{(SP: {#1})}}
 \newcommand{\logan}[1]{\textcolor{orange}{(LS: {#1})}}
 
-\title{State Merging Algorithms Need Short Strings, Neural Networks Need Long Ones \sarah{super tentative title pls feel free to change}}
+
+\title{Short Strings Matter More for State Merging Algorithms than NNs}
 
 % Author information can be set in various styles:
 % For several authors from the same institution:
@@ -127,82 +128,56 @@
 % \end{abstract}
 
 \section{Introduction}
-\logan{If we have time, we could run RPNI and EDSM separately also. But for now we just have results from our single gridsearch winner (RPNI-like)}
-This paper compares the results of a state merging algorithm and four neural network architectures on an extension of \textsc{MLRegTest}, a benchmark for the  learning of regular languages \citep{mlregtest}.
-The training data of \textsc{MLRegTest} contains only strings of at least length 20, but \citet{adil23} demonstrated that augmenting this with shorter strings led to significant improvement in the performance of the state merging algorithms. 
-Following \citeauthor{adil23}, we compare performance of both state merging and neural models when trained on the original \textsc{MLRegTest} data, the augmented \citeauthor{adil23} data, and training data containing \textit{only} strings of length 19 or less.  
-\todo{We find that neural models outperform state merging on the original and augmented datasets, but that the state merging algorithms are less hindered by the absence of long strings, outperforming most neural archetectures on the short string only data.}
+%\logan{If we have time, we could run RPNI and EDSM separately also. But for now we just have results from our single gridsearch winner (RPNI-like)}
+This paper compares the results of a state merging algorithm and four neural network (NN) architectures on an extension of \textsc{MLRegTest}, a benchmark for the  learning of subregular language classes relevant to natural language \citep{mlregtest}.
+The \textsc{MLRegTest} data contains only strings of at  least length 20, but \citet{adil23} demonstrated that augmenting a preliminary version with shorter strings improved performance of the state merging algorithm. 
+We replicate \citeauthor{adil23} and \citeauthor{mlregtest} on the final version of \textsc{MLRegTest}, comparing performance of a state merging algorithm with four NNs trained on the original \textsc{MLRegTest} data, this data augmented with short strings, and  data containing \textit{only} short strings.  
+We find that the state merging algorithm benefits greatly from short strings, while the neural networks rely  more  on  long strings. 
+%\todo{We find that neural models outperform state merging on the original and augmented datasets, but that the state merging algorithms are less hindered by the absence of long strings, outperforming most neural archetectures on the short string only data.}
 
 
 \section{Learning Systems} \label{sec:bg}
 
 \subsection{State-Merging Systems}
-Following \citet{adil23}, we make use of the state-merging algorithms provided by \textsc{FlexFringe} \citep{flexfringe-short, flexfringe}.\footnote{We use the same version of \textsc{FlexFringe} used by \citeauthor{adil23}: commit \texttt{4d1449c} of the software available 
+Following \citet{adil23}, we use the state-merging software  \textsc{FlexFringe} \citep{flexfringe-short, flexfringe},\footnote{We use the same version of \textsc{FlexFringe} used by \citeauthor{adil23}: commit \texttt{4d1449c} of the software available 
 \href{https://github.com/tudelft-cda-lab/FlexFringe/commit/4d1449c4d0cfb3fc5f9a954d5c3a24a11a593a5c\#diff-67290ef9e84d355c83cbd9a0bda3be39e2e14836990458cfcc070506a7e448c2}{here}.
 }
-\textsc{FlexFringe} provides implementations of the EDSM \citep{edsm} and RPNI \citep{rpni}state-merging algorithms:\footnote{We exclude ALERGIA from consideration because of the infeasibly high compute demands and comparatively low performance noted by \citeauthor{adil23}} both take as input a set of strings labeled by their membership in the target langauge, and construct a prefix tree from these strings. 
-A search is then conducted for pairs of states to merge: RPNI does so in a breadth-first fashion, selecting pairs closest to the initial state. 
-EDSM instead computes a score for all possible pairs and attempts to merge the one with the highest score.\footnote{Notably, the implementation of RPNI in \textsc{FlexFringe} differs slightly from that in \citet{rpni}: while \citeauthor{rpni} merged states in length-lexicographic order when ties arise, \textsc{FlexFringe} instead calculates a score, akin to EDSM. } 
+which implements the EDSM \citep{edsm} and RPNI \citep{rpni} state-merging algorithms.\footnote{We exclude ALERGIA from consideration because of the infeasibly high compute demands and comparatively low performance noted by \citeauthor{adil23}.} 
+Both algorithms construct a prefix tree from their input and search for pairs of states to merge; RPNI does so in a breadth-first fashion, while EDSM  computes a score for all possible pairs and attempts to merge the one with the highest score.\footnote{Notably, the implementation of RPNI in \textsc{FlexFringe} differs slightly from that in \citet{rpni}: while \citeauthor{rpni} merged states in length-lexicographic order when ties arise, \textsc{FlexFringe} instead calculates a score, akin to EDSM. } 
 
-\textsc{FlexFringe} also provides several other parameters which impact learning behavior. To find the best model, we conducted a limited gridsearch over the following subset\footnote{We held several other parameters at their default state because modifying them led to errors in the \textsc{FlexFringe} executable. These are: \textsc{ReverseTraces}, \textsc{DepthCheck}, \textsc{SymbolCheck}, \textsc{SinksOn}, \textsc{SinkCount}, and \textsc{MergeScore}.}:
-\begin{itemize}
-\item \textsc{PerformFirst:}  whether the algorithm should perform EDSM or RPNI 
-\item \textsc{Extend}: extend (color red) blue states that cannot be merged with any red
-\item \textsc{ShallowFirst}: consider coloring blue states closest to the root first
-\item \textsc{SearchStrategy}: searchdeep, searchlocal, searchglobal, searchpartial, none \todo{They have absolutely no documentation of what these parameters do, should we  just guess? }
-\end{itemize} 
-
-Grid searching was carried out on the small partition of the \textsc{PlusShort} data using overall accuracy on the development set (see \S \ref{sec:eval}). 
-The best performing model, used in the remainder of the paper, was \textsc{PerformFirst = 0} (i.e., RPNI), \textsc{Extend = 1}, \textsc{ShallowFirst = 0}, and \textsc{SearchStrategy = SearchDeep}. 
+\textsc{FlexFringe}  provides several  parameters which impact learning behavior. To find the best model, we conducted a limited gridsearch over the following subset:\footnote{We held several other parameters at their default state because modifying them led to errors in the \texttt{FlexFringe} executable. These are: \texttt{ReverseTraces}, \texttt{DepthCheck}, \texttt{SymbolCheck}, \texttt{SinksOn}, \texttt{SinkCount}, and \texttt{MergeScore}.}
+\texttt{PerformFirst} (EDSM vs. RPNI),  
+\texttt{Extend} (color blue states red that cannot be merged with any red), 
+\texttt{ShallowFirst} (consider coloring blue states closest to the root first), and 
+\texttt{SearchStrategy} (searchdeep, searchlocal, searchglobal, searchpartial, or none). 
+Grid searching was done on the small partition of the \textsc{PlusShort} data using overall accuracy on the development set (see \S \ref{sec:eval}). 
+The best performing model, used in the remainder of the paper, was \texttt{PerformFirst = 0} (i.e., RPNI), \texttt{Extend = 1}, \texttt{ShallowFirst = 0}, and \texttt{SearchStrategy = SearchDeep}. 
 
 
 \subsection{Neural Systems}
 Following \citet{mlregtest}, we test four neural architectures, all consisting of a trainable embedding layer followed by a unidirectional recurrent module (either a \textbf{\textsc{Simple}} RNN, a \textbf{GRU}, or an \textbf{LSTM}) or two consecutive \textbf{\textsc{Transformer}} blocks, dense feed-forward layers, dropout, layer normalization, and softmax activation. 
-All neural networks are implemented with TensorFlow and Keras \citep{tensorflow, keras} and use the same hyperparameters as \citet{mlregtest}.\footnote{Implementations of the neural networks are available at: \href{https://github.com/heinz-jeffrey/subregular-learning/}{https://github.com/heinz-jeffrey/subregular-learning/}}
+All NNs are implemented with TensorFlow and Keras \citep{tensorflow, keras} and use the same hyperparameters as \citet{mlregtest}.\footnote{Implementations of the neural networks are available at: \href{https://github.com/heinz-jeffrey/subregular-learning/}{https://github.com/heinz-jeffrey/subregular-learning/}}
 
 \section{Evaluation}\label{sec:eval}
 
-\begin{table}[t!]
-\begin{small}
-\centering
-\begin{tabular}{| r || l |}
-\hline
-\textsc{Factor} & \textsc{Possible Levels} \\ 
-\hline \hline
-\texttt{AlphabetSize} & 4, 16\\
-\texttt{Tier} & 3, 4, 7, 16\\ 
-\texttt{LanguageClass} & SL, coSL, TSL, TcoSL, SP, \\
-& coSP, LT, TLT, PT, LTT, TLTT, \\
-& PLT, TPLT, SF, Zp, Reg\\
-\texttt{FactorWidth} & 0, 2, 3, 4, 5, 6 \\ 
-\texttt{ThresholdSize} & 0, 1, 2, 3, 5\\ 
-\texttt{Index} & 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 \\
-\texttt{TrainSize} & Small (1k), Mid (10k), Large (100k)\\
-\texttt{DataType} & \textsc{OnlyShort, PlusShort}\\
-& \textsc{OnlyLong}\\
-\texttt{Model} & \textsc{FlexFringe, Simple}\\
-& \textsc{GRU, LSTM, Transformer}\\
-\hline
-\end{tabular}
-\end{small}
-\caption{The values used in our experimental setup.}
-\label{tab:experimental-setup}
-\end{table}
+\textsc{MLRegTest} \citep{mlregtest}  contains training, development, and test data  from 1,800 languages; we follow \citet{adil23} in excluding  languages with alphabet sizes of 64 due to unicode errors, thus considering 1,140. 
+The strings in \textsc{MLRegTest} are of length 20-29 to balance the number of positive and number examples in train.
+\citeauthor{adil23} found that augmenting train with roughly 1,000 short training strings (length 1-19) significantly improved \textsc{FlexFringe} performance despite sacrificing the balance of positive and negative examples.
 
-We evaluate our learning models with an extension of \textsc{MLRegTest} \citep{mlregtest}, which contains training, development, and test data with and equal number of positive and negative examples of strings from 1,800 languages.
-We follow \citet{adil23} in excluding those languages with alphabet sizes of 64 due to unicode errors, thus considering 1,140  languages. 
+We build on \citeauthor{adil23} by considering three training setups:
+\vspace{-0.8em}
+\paragraph{\textsc{OnlyShort}:}  only strings of length 1-19
+\todo{we regenerated them, Logan should talk about how. This was with final MLRT while the Soubki one was not on the final version}
+\vspace{-0.8em}
+\paragraph{\textsc{PlusShort}:} \textsc{MLRegTest}  augmented with short strings, replicating \citet{adil23}.
+\vspace{-0.8em}
+\paragraph{\textsc{OnlyLong}:}  original \textsc{MLRegTest} data.
 
-The original \textsc{MLRegTest} training data contains strings with length 20-29.
-\citeauthor{adil23} conducted a follow-up experiment in which this was augemented with roughly 1,000 short training strings (length 1-19). 
-The authors found that this change significantly improved the performance of \textsc{FlexFringe} models.
-In the current work, we build on \citeauthor{adil23} by considering three training setups:
-\paragraph{\textsc{OnlyShort}:} models are trained on only the short strings from \citet{adil23}
-\paragraph{\textsc{PlusShort}:} models are trained on  \textsc{MLRegTest}  augmented with short strings, replicating \citet{adil23}
-\paragraph{\textsc{OnlyLong}:} models are trained on the original \textsc{MLRegTest} data
-
-\textsc{MLRegTest} is designed to investigate a number of potential factors which may contribute to model performance, summarized with our additions in Table \ref{tab:experimental-setup}. 
-It additionally contains four testing sets per language, based on the length of the strings (\textsc{Short} = 20-29, \textsc{Long} = 31-50) and the method of generation (\textsc{Random}, sampled randomly without replacement or \textsc{Adversarial}, with paired positive and negative examples with an edit distance of 1). 
-We report results separately on each test set. 
+\textsc{MLRegTest} 
+%is designed to investigate a number of factors which may contribute to model performance, summarized with our additions in Table \ref{tab:experimental-setup}. 
+%It  
+contains four test sets per language, based on the length of the strings (\textsc{Short} = 20-29, \textsc{Long} = 31-50) and the method of generation (\textsc{Random}, sampled randomly without replacement or \textsc{Adversarial}, with paired positive and negative examples with an edit distance of 1). 
+%We report results separately on each test set. 
 
 
 \section{Results} \label{sec:results}
@@ -227,13 +202,13 @@ Trans. & 0.709 & 0.762 & 0.809 & 0.856 & 0.754 & 0.806 & 0.806 \\
 \hline
 \end{tabular}
 \end{scriptsize}
-\caption{F1 score by model, averaged across languages and test types. \sarah{this might be too wide}}
+\caption{F1 score by model.}
 \label{tab:overall-scores}
 \end{table}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../analysis/figs/F1-diff-ps-os.pdf}
+\includegraphics[width=0.8\linewidth]{../analysis/figs/F1-diff-ps-os.pdf}
 \caption{Difference in F1 between \textsc{PlusShort} (small training) and \textsc{OnlyShort} by model \& test type.}
 \label{fig:f1-diff-ps-os}
 \end{figure}
@@ -241,20 +216,22 @@ Trans. & 0.709 & 0.762 & 0.809 & 0.856 & 0.754 & 0.806 & 0.806 \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../analysis/figs/F1-diff-ps-ol.pdf}
+\includegraphics[width=0.8\linewidth]{../analysis/figs/F1-diff-ps-ol.pdf}
 \caption{Difference in F1 between \textsc{PlusShort} and \textsc{OnlyLong} (small size) by model \& test type.}
 \label{fig:f1-diff-ps-ol}
 \end{figure}
 
 
 
-Table \ref{tab:overall-scores} gives the F1 score of each model, averaged across languages and test types; breakdowns by test type are given in Tables \ref{tab:OS-by-test}-\ref{tab:OL-by-test} in the Appendix.
-Though the GRU consistently outperforms the other models, we note that it takes much greater of a hit in performance between \textsc{PlusShort} and \textsc{OnlyShort} than \textsc{FlexFringe}, which outperforms all other neural architectures on \textsc{OnlyShort}. 
-Figure \ref{fig:f1-diff-ps-os} illustrates the difference in average F1 between the \textsc{PlusShort} small train size and \textsc{OnlyShort} by model and test set: \textsc{FlexFringe} has the smallest difference in performance on the random test sets, and is comparable to the \textsc{Simple} RNN on the adversarial ones; the GRU shows the largest difference in performance on these test sets. 
+Table \ref{tab:overall-scores} gives the F1 score of each model, averaged across languages and test types.
+%; breakdowns by test type are given in Tables \ref{tab:OS-by-test}-\ref{tab:OL-by-test} in the Appendix.
+Though the GRU consistently outperforms the other models, its performance decreases far more between \textsc{PlusShort} and \textsc{OnlyShort} than \textsc{FlexFringe}, which outperforms all other NNs on \textsc{OnlyShort}. 
+Figure \ref{fig:f1-diff-ps-os} shows the difference in average F1 between  \textsc{PlusShort} (small train) and \textsc{OnlyShort}.
+%: \textsc{FlexFringe} has the smallest difference in performance on the random test sets, and is comparable to the \textsc{Simple} RNN on the adversarial ones; the GRU shows the largest difference in performance on these test sets. 
 
-Similarly, we note that \textsc{FlexFringe} sees the largest jump in performance from \textsc{OnlyLong} to \textsc{PlusShort}; this is illustrated in Figure \ref{fig:f1-diff-ps-ol}. 
-Taken together, these results suggest that \textsc{FlexFringe} benefits far more from the inclusion of short strings, while the neural models --- particularly the GRU --- rely heavily on long strings to achieve their performance. 
-Further breakdowns of performance by language class are given in Figures \ref{fig:os-by-class}-\ref{fig:ol-by-class} in the Appendix.
+Similarly, \textsc{FlexFringe} sees the largest jump in performance from \textsc{OnlyLong} to \textsc{PlusShort}; this is illustrated in Figure \ref{fig:f1-diff-ps-ol}. 
+Taken together, these results suggest that \textsc{FlexFringe} benefits far more from the inclusion of short strings, while the neural models --- particularly the GRU --- rely more heavily on long strings to achieve their performance. 
+%Further breakdowns of performance by language class are given in Figures \ref{fig:os-by-class}-\ref{fig:ol-by-class} in the Appendix.
 
 
 \section{Discussion}\label{sec:disc}
@@ -271,6 +248,9 @@ Further breakdowns of performance by language class are given in Figures \ref{fi
 
 \section{Conclusions}
 
+\section*{Limitations}
+\todo{Add sucky gridsearch}
+
 
 % Bibliography entries for the entire Anthology, followed by custom entries
 %\bibliography{custom,anthology-overleaf-1,anthology-overleaf-2}
@@ -282,6 +262,33 @@ Further breakdowns of performance by language class are given in Figures \ref{fi
 
 \section{Appendix}
 \label{sec:appendix}
+
+\begin{table}[t!]
+\begin{footnotesize}
+\centering
+\begin{tabular}{| r || l |}
+\hline
+\textsc{Factor} & \textsc{Possible Levels} \\ 
+\hline \hline
+\texttt{AlphabetSize} & 4, 16\\
+\texttt{Tier} & 3, 4, 7, 16\\ 
+\texttt{LanguageClass} & SL, coSL, TSL, TcoSL, SP, \\
+& coSP, LT, TLT, PT, LTT, TLTT, \\
+& PLT, TPLT, SF, Zp, Reg\\
+\texttt{FactorWidth} & 0, 2, 3, 4, 5, 6 \\ 
+\texttt{ThresholdSize} & 0, 1, 2, 3, 5\\ 
+\texttt{Index} & 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 \\
+\texttt{TrainSize} & Small (1k), Mid (10k), Large (100k)\\
+\texttt{DataType} & \textsc{OnlyShort, PlusShort}\\
+& \textsc{OnlyLong}\\
+\texttt{Model} & \textsc{FlexFringe, Simple}\\
+& \textsc{GRU, LSTM, Transformer}\\
+\hline
+\end{tabular}
+\end{footnotesize}
+\caption{The values used in our experimental setup.}
+\label{tab:experimental-setup}
+\end{table}
 
 \todo{add graphs?}
 \sarah{my pref would be to have one or two punchy graphs in the main text and lots of numbers in the appendix}
