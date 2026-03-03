@@ -139,7 +139,7 @@ We find that the state merging algorithm benefits greatly from short strings, wh
 \section{Learning Systems} \label{sec:bg}
 
 \subsection{State-Merging Systems}
-Following \citet{adil23}, we use the state-merging software  \textsc{FlexFringe} \citep{flexfringe-short, flexfringe},\footnote{We use the same version of \textsc{FlexFringe} used by \citeauthor{adil23}: commit \texttt{4d1449c} of the software available 
+Following \citet{adil23}, we use the state-merging software  \textsc{FlexFringe} \citep{flexfringe},\footnote{We use the same version of \textsc{FlexFringe} used by \citeauthor{adil23}: commit \texttt{4d1449c} of the software available 
 \href{https://github.com/tudelft-cda-lab/FlexFringe/commit/4d1449c4d0cfb3fc5f9a954d5c3a24a11a593a5c\#diff-67290ef9e84d355c83cbd9a0bda3be39e2e14836990458cfcc070506a7e448c2}{here}.
 }
 which implements the EDSM \citep{edsm} and RPNI \citep{rpni} algorithms.\footnote{We exclude ALERGIA from consideration because of the infeasibly high compute demands and comparatively low performance noted by \citeauthor{adil23}.} 
@@ -156,7 +156,7 @@ The best performing model, used in the remainder of the paper, was \texttt{Perfo
 
 \subsection{Neural Systems}
 Following \citet{mlregtest}, we test four neural architectures, all consisting of a trainable embedding layer followed by a unidirectional recurrent module (either a \textbf{\textsc{Simple}} RNN, a \textbf{GRU}, or an \textbf{LSTM}) or two consecutive \textbf{\textsc{Transformer}} blocks, dense feed-forward layers, dropout, layer normalization, and softmax activation. 
-All NNs are implemented with TensorFlow and Keras \citep{tensorflow, keras} and use the same hyperparameters as \citet{mlregtest}.\footnote{Implementations of the neural networks are available at: \href{https://github.com/heinz-jeffrey/subregular-learning/}{https://github.com/heinz-jeffrey/subregular-learning/}}
+All NNs use the same hyperparameters as \citet{mlregtest}.\footnote{Implementations of the neural networks are available at: \href{https://github.com/heinz-jeffrey/subregular-learning/}{https://github.com/heinz-jeffrey/subregular-learning/}}
 
 \section{Evaluation}\label{sec:eval}
 
@@ -170,9 +170,9 @@ We build on \citeauthor{adil23} by considering three training setups:
 For each length, 25 positive (negative) strings were sampled with replacement.
 If no positive (negative) strings of a given length existed, none were drawn.
 % \todo{we regenerated them, Logan should talk about how. This was with final MLRT while the Soubki one was not on the final version}
-\vspace{-0.8em}
+\vspace{-1.2em}
 \paragraph{\textsc{PlusShort}:} \textsc{MLRegTest}  augmented with short strings, replicating \citet{adil23}.
-\vspace{-0.8em}
+\vspace{-1.2em}
 \paragraph{\textsc{OnlyLong}:}  original \textsc{MLRegTest} data.
 
 \textsc{MLRegTest} 
@@ -192,15 +192,15 @@ contains four test sets per language, based on the length of the strings (\texts
 \textsc{Model} & \textsc{OS} & \multicolumn{3}{|c|}{\textsc{PlusShort}} & \multicolumn{3}{|c|}{\textsc{OnlyLong}}\\
 & & S & M & L & S & M & L \\
 \hline \hline
-FF & 0.709 & 0.747 & 0.775 & \textcolor{red}{X} & 0.534 & 0.560 &  \textcolor{red}{X} \\
+FF & .709 & .747 & .775 & \textcolor{red}{X} & .534 & .560 &  \textcolor{red}{X} \\
 \hline
-Simple & 0.679 & 0.732 & 0.782 & 0.837& 0.720 & 0.774 & 0.832 \\
+Simple & .679 & .732 & .782 & .837& .720 & .774 & .832 \\
 \hline
-GRU & \textbf{0.792} & \textbf{0.906} & \textbf{0.957} & 0.965 & \textbf{0.847} & \textbf{0.942} & 0.949 \\
+GRU & \textbf{.792} & \textbf{.906} & \textbf{.957} & .965 & \textbf{.847} & \textbf{.942} & .949 \\
 \hline
-LSTM & 0.646 & 0.727 & 0.870 &  0.926 & 0.638 & 0.837 & 0.912 \\
+LSTM & .646 & .727 & .870 &  .926 & .638 & .837 & .912 \\
 \hline
-Trans. & 0.709 & 0.762 & 0.811 & 0.857 & 0.754 & 0.806 & 0.806 \\
+Trans. & .709 & .762 & .811 & .857 & .754 & .806 & .806 \\
 \hline
 \end{tabular}
 \end{scriptsize}
@@ -208,12 +208,12 @@ Trans. & 0.709 & 0.762 & 0.811 & 0.857 & 0.754 & 0.806 & 0.806 \\
 \label{tab:overall-scores}
 \end{table}
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.8\linewidth]{../analysis/figs/F1-diff-ps-os.pdf}
-\caption{Difference in F1 between \textsc{PlusShort} (small training) and \textsc{OnlyShort} by model \& test type.}
-\label{fig:f1-diff-ps-os}
-\end{figure}
+% \begin{figure}[t]
+% \centering
+% \includegraphics[width=0.8\linewidth]{../analysis/figs/F1-diff-ps-os.pdf}
+% \caption{Difference in F1 between \textsc{PlusShort} (small training) and \textsc{OnlyShort} by model \& test type.}
+% \label{fig:f1-diff-ps-os}
+% \end{figure}
 
 
 \begin{figure}[t]
@@ -228,30 +228,23 @@ Trans. & 0.709 & 0.762 & 0.811 & 0.857 & 0.754 & 0.806 & 0.806 \\
 Table \ref{tab:overall-scores} gives the F1 score of each model, averaged across languages and test types.
 %; breakdowns by test type are given in Tables \ref{tab:OS-by-test}-\ref{tab:OL-by-test} in the Appendix.
 Though the GRU consistently outperforms the other models, its performance decreases far more between \textsc{PlusShort} and \textsc{OnlyShort} than \textsc{FlexFringe}, which outperforms all other NNs on \textsc{OnlyShort}. 
-Figure \ref{fig:f1-diff-ps-os} shows the difference in average F1 between  \textsc{PlusShort} (small train) and \textsc{OnlyShort}.
+% Figure \ref{fig:f1-diff-ps-os} shows the difference in average F1 between  \textsc{PlusShort} (small train) and \textsc{OnlyShort}.
 %: \textsc{FlexFringe} has the smallest difference in performance on the random test sets, and is comparable to the \textsc{Simple} RNN on the adversarial ones; the GRU shows the largest difference in performance on these test sets. 
 
 Similarly, \textsc{FlexFringe} sees the largest jump in performance from \textsc{OnlyLong} to \textsc{PlusShort}; this is illustrated in Figure \ref{fig:f1-diff-ps-ol}. 
-Taken together, these results suggest that \textsc{FlexFringe} benefits far more from the inclusion of short strings, while the neural models --- particularly the GRU --- rely more heavily on long strings to achieve their performance. 
+Taken together, these results suggest that \textsc{FlexFringe} benefits far more from the inclusion of short strings, while the neural models --- particularly the GRU --- rely more on long strings to achieve their performance. 
 %Further breakdowns of performance by language class are given in Figures \ref{fig:os-by-class}-\ref{fig:ol-by-class} in the Appendix.
 
-
-\section{Discussion}\label{sec:disc}
-\todo{
-  key points:
-  \begin{itemize}
-    \item GRU seems to be strongest overall
-    \item FF gets more benefit from short strings than neural models do
-    \item FF generally is more competitive on the small training data
-    \item natural language = short + small
-  \end{itemize}
-}
-
-
 \section{Conclusions}
+The strongest model overall was the GRU, which performed best across partitions.
+Strikingly, however, the state merging algorithm recieved a greater boost from the addition of short strings than any of the neural models, performing most competitively on \textsc{OnlyShort}.
+Meanwhile, increasing the size of the training set was less helpful for the state merging approach than for the neural models.
+This shows a certain attunement of the state merging algorithm to the kinds of input samples that are relevant for learning natural languages--i.e., short and small.
 
-\section*{Limitations}
-\todo{Add sucky gridsearch}
+Future research could include expanding the gridsearch to cover additional parameters provided by the \textsc{FlexFringe} library, which were omitted from this study due to bugs in the version of the library used here.
+
+% \section*{Limitations}
+% \todo{Add sucky gridsearch}
 
 
 % Bibliography entries for the entire Anthology, followed by custom entries
