@@ -129,8 +129,8 @@
 
 \section{Introduction}
 %\logan{If we have time, we could run RPNI and EDSM separately also. But for now we just have results from our single gridsearch winner (RPNI-like)}
-This paper compares the results of a state merging algorithm and four neural network (NN) architectures on an extension of \textsc{MLRegTest}, a benchmark for the  learning of subregular language classes relevant to natural language \citep{mlregtest}.
-The \textsc{MLRegTest} data contains only strings of at  least length 20, but \citet{adil23} demonstrated that augmenting a preliminary version with shorter strings improved performance of the state merging algorithm. 
+This paper compares the results of a state merging algorithm and four neural network (NN) architectures on an extension of \textsc{MLRegTest}, a benchmark for learning subregular language classes relevant to natural language \citep{mlregtest}.
+The \textsc{MLRegTest} data contains only strings of length 20-29, but \citet{adil23} demonstrated that augmenting a preliminary version with shorter strings improved performance of the state merging algorithm. 
 We replicate \citeauthor{adil23} and \citeauthor{mlregtest} on the final version of \textsc{MLRegTest}, comparing performance of a state merging algorithm with four NNs trained on the original \textsc{MLRegTest} data, this data augmented with short strings, and  data containing \textit{only} short strings.  
 We find that the state merging algorithm benefits greatly from short strings, while the neural networks rely  more  on  long strings. 
 %\todo{We find that neural models outperform state merging on the original and augmented datasets, but that the state merging algorithms are less hindered by the absence of long strings, outperforming most neural archetectures on the short string only data.}
@@ -142,7 +142,7 @@ We find that the state merging algorithm benefits greatly from short strings, wh
 Following \citet{adil23}, we use the state-merging software  \textsc{FlexFringe} \citep{flexfringe-short, flexfringe},\footnote{We use the same version of \textsc{FlexFringe} used by \citeauthor{adil23}: commit \texttt{4d1449c} of the software available 
 \href{https://github.com/tudelft-cda-lab/FlexFringe/commit/4d1449c4d0cfb3fc5f9a954d5c3a24a11a593a5c\#diff-67290ef9e84d355c83cbd9a0bda3be39e2e14836990458cfcc070506a7e448c2}{here}.
 }
-which implements the EDSM \citep{edsm} and RPNI \citep{rpni} state-merging algorithms.\footnote{We exclude ALERGIA from consideration because of the infeasibly high compute demands and comparatively low performance noted by \citeauthor{adil23}.} 
+which implements the EDSM \citep{edsm} and RPNI \citep{rpni} algorithms.\footnote{We exclude ALERGIA from consideration because of the infeasibly high compute demands and comparatively low performance noted by \citeauthor{adil23}.} 
 Both algorithms construct a prefix tree from their input and search for pairs of states to merge; RPNI does so in a breadth-first fashion, while EDSM  computes a score for all possible pairs and attempts to merge the one with the highest score.\footnote{Notably, the implementation of RPNI in \textsc{FlexFringe} differs slightly from that in \citet{rpni}: while \citeauthor{rpni} merged states in length-lexicographic order when ties arise, \textsc{FlexFringe} instead calculates a score, akin to EDSM. } 
 
 \textsc{FlexFringe}  provides several  parameters which impact learning behavior. To find the best model, we conducted a limited gridsearch over the following subset:\footnote{We held several other parameters at their default state because modifying them led to errors in the \texttt{FlexFringe} executable. These are: \texttt{ReverseTraces}, \texttt{DepthCheck}, \texttt{SymbolCheck}, \texttt{SinksOn}, \texttt{SinkCount}, and \texttt{MergeScore}.}
@@ -161,13 +161,15 @@ All NNs are implemented with TensorFlow and Keras \citep{tensorflow, keras} and 
 \section{Evaluation}\label{sec:eval}
 
 \textsc{MLRegTest} \citep{mlregtest}  contains training, development, and test data  from 1,800 languages; we follow \citet{adil23} in excluding  languages with alphabet sizes of 64 due to unicode errors, thus considering 1,140. 
-The strings in \textsc{MLRegTest} are of length 20-29 to balance the number of positive and number examples in train.
-\citeauthor{adil23} found that augmenting train with roughly 1,000 short training strings (length 1-19) significantly improved \textsc{FlexFringe} performance despite sacrificing the balance of positive and negative examples.
+The strings in \textsc{MLRegTest} are of length 20-29, balanced evenly between positive and negative examples.
+\citeauthor{adil23} found that augmenting train with roughly 1,000 short strings (length 1-19) significantly improved \textsc{FlexFringe} performance despite sacrificing the balance of positive and negative examples.
 
 We build on \citeauthor{adil23} by considering three training setups:
 \vspace{-0.8em}
 \paragraph{\textsc{OnlyShort}:}  only strings of length 1-19
-\todo{we regenerated them, Logan should talk about how. This was with final MLRT while the Soubki one was not on the final version}
+For each length, 25 positive (negative) strings were sampled with replacement.
+If no positive (negative) strings of a given length existed, none were drawn.
+% \todo{we regenerated them, Logan should talk about how. This was with final MLRT while the Soubki one was not on the final version}
 \vspace{-0.8em}
 \paragraph{\textsc{PlusShort}:} \textsc{MLRegTest}  augmented with short strings, replicating \citet{adil23}.
 \vspace{-0.8em}
