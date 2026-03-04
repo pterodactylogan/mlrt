@@ -134,6 +134,45 @@ diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
   ggtitle("Difference in F1 Score from PS to OL by Model (Small train)")
 ggsave("figs/F1-diff-ps-ol.pdf", width=6, height=4)
 
+# Combined boxplot
+diffs$'PS-OS' <- diffs$PS - diffs$OS
+diffs$'PS-OL' <- diffs$PS - diffs$OL
+
+# Color by difference type
+diffs %>% 
+  pivot_longer(c('PS-OS', 'PS-OL'), names_to = "Difference", values_to = "val") %>%
+  ggplot(aes(x = model, y = val, fill = Difference, alpha = Difference)) + 
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  scale_fill_manual(values = c("PS-OS" = "purple", "PS-OL" = "turquoise")) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  theme_bw() + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
+  ) + 
+  ylab("Difference in F1 Score") + 
+  xlab("") + 
+  ggtitle("Difference in F1 Score Across Conditions by Model")
+ggsave("figs/overall-diff-v2.pdf", width=6, height=4)
+
+# Color by model, alpha by difference type 
+diffs %>% 
+  pivot_longer(c('PS-OS', 'PS-OL'), names_to = "Difference", values_to = "val") %>%
+  ggplot(aes(x = model, y = val, fill = model, alpha = Difference)) + 
+  scale_alpha_manual(values = c(0.25, 1)) +
+  geom_boxplot(outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  theme_bw() + 
+  guides(
+    fill = "none",
+    alpha = guide_legend(override.aes = list(fill = "gray40"))
+  ) + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
+  ) + 
+  ylab("Difference in F1 Score") + 
+  xlab("") + 
+  ggtitle("Difference in F1 Score Across Conditions by Model")
+ggsave("figs/overall-diff.pdf", width=6, height=4)
 
 # Box plots of the overall difference 
 temp <- everything %>% 
