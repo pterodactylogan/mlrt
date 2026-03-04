@@ -156,7 +156,7 @@ The best performing model, used in the remainder of the paper, was \texttt{Perfo
 
 \subsection{Neural Systems}
 Following \citet{mlregtest}, we test four neural architectures, all consisting of a trainable embedding layer followed by a unidirectional recurrent module (either a \textbf{\textsc{Simple}} RNN, a \textbf{GRU}, or an \textbf{LSTM}) or two consecutive \textbf{\textsc{Transformer}} blocks, dense feed-forward layers, dropout, layer normalization, and softmax activation. 
-All NNs use the same hyperparameters as \citet{mlregtest}.\footnote{Implementations of the neural networks are available at: \href{https://github.com/heinz-jeffrey/subregular-learning/}{https://github.com/heinz-jeffrey/subregular-learning/}}
+All NNs use the same hyperparameters as \citeauthor{mlregtest}.\footnote{Implementations of the neural networks are available at: \href{https://github.com/heinz-jeffrey/subregular-learning/}{https://github.com/heinz-jeffrey/subregular-learning/}}
 
 \section{Evaluation}\label{sec:eval}
 
@@ -166,7 +166,7 @@ The strings in \textsc{MLRegTest} are of length 20-29, balanced evenly between p
 
 We build on \citeauthor{adil23} by considering three training setups:
 \vspace{-0.8em}
-\paragraph{\textsc{OnlyShort}:}  only strings of length 1-19
+\paragraph{\textsc{OnlyShort}:}  only strings of length 1-19.
 For each length, 25 positive (negative) strings were sampled with replacement.
 If no positive (negative) strings of a given length existed, none were drawn.
 % \todo{we regenerated them, Logan should talk about how. This was with final MLRT while the Soubki one was not on the final version}
@@ -218,20 +218,21 @@ Trans. & .709 & .762 & .811 & .857 & .754 & .806 & .806 \\
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.8\linewidth]{../analysis/figs/F1-diff-ps-ol.pdf}
-\caption{Difference in F1 between \textsc{PlusShort} and \textsc{OnlyLong} (small size) by model \& test type.}
-\label{fig:f1-diff-ps-ol}
+\includegraphics[width=\linewidth]{../analysis/figs/overall-diff.pdf}
+\caption{Difference in F1 between \textsc{PlusShort} and other training setups by model \& test type.}
+\vspace{-1em}
+\label{fig:overall-diff}
 \end{figure}
 
 
 
-Table \ref{tab:overall-scores} gives the F1 score of each model, averaged across languages and test types.
+Table \ref{tab:overall-scores} gives the F1 score of each model, averaged across languages and test types\footnote{We are still running flexfringe models for the large partition. These will be done for the final version and do not bear on our key takeaways.}.
 %; breakdowns by test type are given in Tables \ref{tab:OS-by-test}-\ref{tab:OL-by-test} in the Appendix.
 Though the GRU consistently outperforms the other models, its performance decreases far more between \textsc{PlusShort} and \textsc{OnlyShort} than \textsc{FlexFringe}, which outperforms all other NNs on \textsc{OnlyShort}. 
 % Figure \ref{fig:f1-diff-ps-os} shows the difference in average F1 between  \textsc{PlusShort} (small train) and \textsc{OnlyShort}.
 %: \textsc{FlexFringe} has the smallest difference in performance on the random test sets, and is comparable to the \textsc{Simple} RNN on the adversarial ones; the GRU shows the largest difference in performance on these test sets. 
 
-Similarly, \textsc{FlexFringe} sees the largest jump in performance from \textsc{OnlyLong} to \textsc{PlusShort}; this is illustrated in Figure \ref{fig:f1-diff-ps-ol}. 
+Similarly, \textsc{FlexFringe} sees the largest jump in performance from \textsc{OnlyLong} to \textsc{PlusShort}; this is illustrated in Figure \ref{fig:overall-diff}. 
 Taken together, these results suggest that \textsc{FlexFringe} benefits far more from the inclusion of short strings, while the neural models --- particularly the GRU --- rely more on long strings to achieve their performance. 
 %Further breakdowns of performance by language class are given in Figures \ref{fig:os-by-class}-\ref{fig:ol-by-class} in the Appendix.
 
@@ -253,164 +254,164 @@ Future research could include expanding the gridsearch to cover additional param
 % Custom bibliography entries only
 \bibliography{custom}
 
-\appendix
+% \appendix
 
-\section{Appendix}
-\label{sec:appendix}
+% \section{Appendix}
+% \label{sec:appendix}
 
-\begin{table}[t!]
-\begin{footnotesize}
-\centering
-\begin{tabular}{| r || l |}
-\hline
-\textsc{Factor} & \textsc{Possible Levels} \\ 
-\hline \hline
-\texttt{AlphabetSize} & 4, 16\\
-\texttt{Tier} & 3, 4, 7, 16\\ 
-\texttt{LanguageClass} & SL, coSL, TSL, TcoSL, SP, \\
-& coSP, LT, TLT, PT, LTT, TLTT, \\
-& PLT, TPLT, SF, Zp, Reg\\
-\texttt{FactorWidth} & 0, 2, 3, 4, 5, 6 \\ 
-\texttt{ThresholdSize} & 0, 1, 2, 3, 5\\ 
-\texttt{Index} & 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 \\
-\texttt{TrainSize} & Small (1k), Mid (10k), Large (100k)\\
-\texttt{DataType} & \textsc{OnlyShort, PlusShort}\\
-& \textsc{OnlyLong}\\
-\texttt{Model} & \textsc{FlexFringe, Simple}\\
-& \textsc{GRU, LSTM, Transformer}\\
-\hline
-\end{tabular}
-\end{footnotesize}
-\caption{The values used in our experimental setup.}
-\label{tab:experimental-setup}
-\end{table}
+% \begin{table}[t!]
+% \begin{footnotesize}
+% \centering
+% \begin{tabular}{| r || l |}
+% \hline
+% \textsc{Factor} & \textsc{Possible Levels} \\ 
+% \hline \hline
+% \texttt{AlphabetSize} & 4, 16\\
+% \texttt{Tier} & 3, 4, 7, 16\\ 
+% \texttt{LanguageClass} & SL, coSL, TSL, TcoSL, SP, \\
+% & coSP, LT, TLT, PT, LTT, TLTT, \\
+% & PLT, TPLT, SF, Zp, Reg\\
+% \texttt{FactorWidth} & 0, 2, 3, 4, 5, 6 \\ 
+% \texttt{ThresholdSize} & 0, 1, 2, 3, 5\\ 
+% \texttt{Index} & 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 \\
+% \texttt{TrainSize} & Small (1k), Mid (10k), Large (100k)\\
+% \texttt{DataType} & \textsc{OnlyShort, PlusShort}\\
+% & \textsc{OnlyLong}\\
+% \texttt{Model} & \textsc{FlexFringe, Simple}\\
+% & \textsc{GRU, LSTM, Transformer}\\
+% \hline
+% \end{tabular}
+% \end{footnotesize}
+% \caption{The values used in our experimental setup.}
+% \label{tab:experimental-setup}
+% \end{table}
 
-\todo{add graphs?}
-\sarah{my pref would be to have one or two punchy graphs in the main text and lots of numbers in the appendix}
+% \todo{add graphs?}
+% \sarah{my pref would be to have one or two punchy graphs in the main text and lots of numbers in the appendix}
 
-\begin{table}[h!]
-\begin{small}
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\textsc{Model} & SR & SA & LR & LA\\
-\hline \hline
-FF & 0.808 & 0.662 & 0.746 & 0.620 \\
-Simple & 0.826 & 0.587 & 0.738 & 0.566 \\
-GRU & 0.903 & 0.713 & 0.861 & 0.692 \\
-LSTM & 0.795 & 0.545 & 0.732 & 0.510 \\
-Trans. & 0.867 & 0.629 & 0.778 & 0.562 \\
-\hline
-\end{tabular}
-\end{center}
-\end{small}
-\caption{F1  by model \& test type on \textsc{OnlyShort}}
-\label{tab:OS-by-test}
-\end{table}
+% \begin{table}[h!]
+% \begin{small}
+% \begin{center}
+% \begin{tabular}{|c|c|c|c|c|}
+% \hline
+% \textsc{Model} & SR & SA & LR & LA\\
+% \hline \hline
+% FF & 0.808 & 0.662 & 0.746 & 0.620 \\
+% Simple & 0.826 & 0.587 & 0.738 & 0.566 \\
+% GRU & 0.903 & 0.713 & 0.861 & 0.692 \\
+% LSTM & 0.795 & 0.545 & 0.732 & 0.510 \\
+% Trans. & 0.867 & 0.629 & 0.778 & 0.562 \\
+% \hline
+% \end{tabular}
+% \end{center}
+% \end{small}
+% \caption{F1  by model \& test type on \textsc{OnlyShort}}
+% \label{tab:OS-by-test}
+% \end{table}
 
-\begin{table}[h!]
-\begin{small}
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\textsc{Small} & SR & SA & LR & LA\\
-\hline \hline
-FF & 0.827 & 0.701 & 0.785 & 0.676 \\
-Simple & 0.892 & 0.622 & 0.820 & 0.596 \\
-GRU & 0.978 & 0.847 & 0.966 & 0.836 \\
-LSTM & 0.880 & 0.618 & 0.836 & 0.575 \\
-Trans. & 0.906 & 0.676 & 0.846 & 0.620 \\
-\hline
-\hline
-\textsc{Mid} & SR & SA & LR & LA\\
-\hline \hline
-FF & 0.846 & 0.729 & 0.817 & 0.707 \\
-Simple & 0.940 & 0.692 & 0.844 & 0.645 \\
-GRU & 0.994 & 0.925 & 0.988 & 0.921 \\
-LSTM & 0.972 & 0.808 & 0.942 & 0.751 \\
-Trans. & 0.956 & 0.762 & 0.854 & 0.663 \\
-\hline
-\hline
-\textsc{Large} & SR & SA & LR & LA\\
-\hline \hline
-FF &  \textcolor{red}{X}& \textcolor{red}{X} & \textcolor{red}{X}  & \textcolor{red}{X} \\
-Simple & 0.982 & 0.824 & 0.830 & 0.701 \\
-GRU & 0.992 & 0.936 & 0.990 & 0.934 \\
-LSTM & 0.997 & 0.902 & 0.953 & 0.844 \\
-Trans. & 0.989 & 0.858 & 0.861 & 0.714 \\
-\hline
-\end{tabular}
-\end{center}
-\end{small}
-\caption{F1 by model, test type, and train size on \textsc{PlusShort}}
-\label{tab:PS-by-test}
-\end{table}
+% \begin{table}[h!]
+% \begin{small}
+% \begin{center}
+% \begin{tabular}{|c|c|c|c|c|}
+% \hline
+% \textsc{Small} & SR & SA & LR & LA\\
+% \hline \hline
+% FF & 0.827 & 0.701 & 0.785 & 0.676 \\
+% Simple & 0.892 & 0.622 & 0.820 & 0.596 \\
+% GRU & 0.978 & 0.847 & 0.966 & 0.836 \\
+% LSTM & 0.880 & 0.618 & 0.836 & 0.575 \\
+% Trans. & 0.906 & 0.676 & 0.846 & 0.620 \\
+% \hline
+% \hline
+% \textsc{Mid} & SR & SA & LR & LA\\
+% \hline \hline
+% FF & 0.846 & 0.729 & 0.817 & 0.707 \\
+% Simple & 0.940 & 0.692 & 0.844 & 0.645 \\
+% GRU & 0.994 & 0.925 & 0.988 & 0.921 \\
+% LSTM & 0.972 & 0.808 & 0.942 & 0.751 \\
+% Trans. & 0.956 & 0.762 & 0.854 & 0.663 \\
+% \hline
+% \hline
+% \textsc{Large} & SR & SA & LR & LA\\
+% \hline \hline
+% FF &  \textcolor{red}{X}& \textcolor{red}{X} & \textcolor{red}{X}  & \textcolor{red}{X} \\
+% Simple & 0.982 & 0.824 & 0.830 & 0.701 \\
+% GRU & 0.992 & 0.936 & 0.990 & 0.934 \\
+% LSTM & 0.997 & 0.902 & 0.953 & 0.844 \\
+% Trans. & 0.989 & 0.858 & 0.861 & 0.714 \\
+% \hline
+% \end{tabular}
+% \end{center}
+% \end{small}
+% \caption{F1 by model, test type, and train size on \textsc{PlusShort}}
+% \label{tab:PS-by-test}
+% \end{table}
 
 
-\begin{table}[h!]
-\begin{small}
-\begin{center}
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\textsc{Small} & SR & SA & LR & LA\\
-\hline \hline
-FF & 0.557 & 0.519 & 0.545 & 0.513 \\
-Simple & 0.880 & 0.601 & 0.812 & 0.585 \\
-GRU & 0.937 & 0.769 & 0.918 & 0.762 \\
-LSTM & 0.790 & 0.521 & 0.755 & 0.487 \\
-Trans. & 0.898 & 0.659 & 0.840 & 0.619 \\
-\hline
-\hline
-\textsc{Mid} & SR & SA & LR & LA\\
-\hline \hline
-FF & 0.585 & 0.544 & 0.571 & 0.538 \\
-Simple & 0.936 & 0.690 & 0.830 & 0.640 \\
-GRU & 0.981 & 0.908 & 0.976 & 0.905 \\
-LSTM & 0.942 & 0.778 & 0.911 & 0.716 \\
-Trans. & 0.952 & 0.761 & 0.848 & 0.662 \\
-\hline
-\hline 
-\textsc{Large} & SR & SA & LR & LA\\
-\hline \hline
-FF &  \textcolor{red}{X}& \textcolor{red}{X} & \textcolor{red}{X}  & \textcolor{red}{X} \\
-Simple & 0.978 & 0.822 & 0.826 & 0.700 \\
-GRU & 0.976 & 0.925 & 0.974 & 0.922 \\
-LSTM & 0.983 & 0.895 & 0.941 & 0.831 \\
-Trans. & 0.987 & 0.859 & 0.860 & 0.716 \\
-\hline
-\end{tabular}
-\end{center}
-\end{small}
-\caption{F1 by model, test type and trainsize on \textsc{OnlyLong}}
-\label{tab:OL-by-test}
-\end{table}
+% \begin{table}[h!]
+% \begin{small}
+% \begin{center}
+% \begin{tabular}{|c|c|c|c|c|}
+% \hline
+% \textsc{Small} & SR & SA & LR & LA\\
+% \hline \hline
+% FF & 0.557 & 0.519 & 0.545 & 0.513 \\
+% Simple & 0.880 & 0.601 & 0.812 & 0.585 \\
+% GRU & 0.937 & 0.769 & 0.918 & 0.762 \\
+% LSTM & 0.790 & 0.521 & 0.755 & 0.487 \\
+% Trans. & 0.898 & 0.659 & 0.840 & 0.619 \\
+% \hline
+% \hline
+% \textsc{Mid} & SR & SA & LR & LA\\
+% \hline \hline
+% FF & 0.585 & 0.544 & 0.571 & 0.538 \\
+% Simple & 0.936 & 0.690 & 0.830 & 0.640 \\
+% GRU & 0.981 & 0.908 & 0.976 & 0.905 \\
+% LSTM & 0.942 & 0.778 & 0.911 & 0.716 \\
+% Trans. & 0.952 & 0.761 & 0.848 & 0.662 \\
+% \hline
+% \hline 
+% \textsc{Large} & SR & SA & LR & LA\\
+% \hline \hline
+% FF &  \textcolor{red}{X}& \textcolor{red}{X} & \textcolor{red}{X}  & \textcolor{red}{X} \\
+% Simple & 0.978 & 0.822 & 0.826 & 0.700 \\
+% GRU & 0.976 & 0.925 & 0.974 & 0.922 \\
+% LSTM & 0.983 & 0.895 & 0.941 & 0.831 \\
+% Trans. & 0.987 & 0.859 & 0.860 & 0.716 \\
+% \hline
+% \end{tabular}
+% \end{center}
+% \end{small}
+% \caption{F1 by model, test type and trainsize on \textsc{OnlyLong}}
+% \label{tab:OL-by-test}
+% \end{table}
 
-%\begin{figure*}
-%\centering
-%\includegraphics[width=\linewidth]{../analysis/figs/f1-by-datatype.pdf}
-%\caption{Average F1 by model, test set, and datatype, averaged across training sizes. \todo{should we average across sizes? If so, update when Large is in for FF}}
-%\label{fig:f1-by-datatype}
-%\end{figure*}
+% %\begin{figure*}
+% %\centering
+% %\includegraphics[width=\linewidth]{../analysis/figs/f1-by-datatype.pdf}
+% %\caption{Average F1 by model, test set, and datatype, averaged across training sizes. \todo{should we average across sizes? If so, update when Large is in for FF}}
+% %\label{fig:f1-by-datatype}
+% %\end{figure*}
 
-\begin{figure*}
-\centering
-\includegraphics[width=\linewidth]{../analysis/figs/os-by-class.pdf}
-\caption{Average F1 by model, test set, and language class for \textsc{OnlyShort}}
-\label{fig:os-by-class}
-\end{figure*}
+% \begin{figure*}
+% \centering
+% \includegraphics[width=\linewidth]{../analysis/figs/os-by-class.pdf}
+% \caption{Average F1 by model, test set, and language class for \textsc{OnlyShort}}
+% \label{fig:os-by-class}
+% \end{figure*}
 
-\begin{figure*}
-\centering
-\includegraphics[width=\linewidth]{../analysis/figs/ps-by-class.pdf}
-\caption{Average F1 by model, test set, and language class for \textsc{PlusShort}, averaged across training sizes \todo{re-make once Large FF is in}}
-\label{fig:ps-by-class}
-\end{figure*}
+% \begin{figure*}
+% \centering
+% \includegraphics[width=\linewidth]{../analysis/figs/ps-by-class.pdf}
+% \caption{Average F1 by model, test set, and language class for \textsc{PlusShort}, averaged across training sizes \todo{re-make once Large FF is in}}
+% \label{fig:ps-by-class}
+% \end{figure*}
 
-\begin{figure*}
-\centering
-\includegraphics[width=\linewidth]{../analysis/figs/ol-by-class.pdf}
-\caption{Average F1 by model, test set, and language class for \textsc{OnlyLong}, averaged across training sizes \todo{re-make once Large FF is in}}
-\label{fig:ol-by-class}
-\end{figure*}
+% \begin{figure*}
+% \centering
+% \includegraphics[width=\linewidth]{../analysis/figs/ol-by-class.pdf}
+% \caption{Average F1 by model, test set, and language class for \textsc{OnlyLong}, averaged across training sizes \todo{re-make once Large FF is in}}
+% \label{fig:ol-by-class}
+% \end{figure*}
 
 \end{document}
