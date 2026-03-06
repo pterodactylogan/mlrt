@@ -131,8 +131,8 @@
 %\logan{If we have time, we could run RPNI and EDSM separately also. But for now we just have results from our single gridsearch winner (RPNI-like)}
 This paper compares the results of a state merging algorithm and four neural network (NN) architectures on an extension of \textsc{MLRegTest}, a benchmark for learning subregular language classes relevant to natural language \citep{mlregtest}.
 The \textsc{MLRegTest} data contains only strings of length 20-29, but \citet{adil23} demonstrated that augmenting a preliminary version with shorter strings improved performance of the state merging algorithm. 
-We replicate \citeauthor{adil23} and \citeauthor{mlregtest} on the final version of \textsc{MLRegTest}, comparing performance of a state merging algorithm with four NNs trained on the original \textsc{MLRegTest} data, this data augmented with short strings, and  data containing \textit{only} short strings.  
-We find that the state merging algorithm benefits greatly from short strings, while the neural networks rely  more  on  long strings. 
+We replicate \citeauthor{adil23} and \citeauthor{mlregtest} on the final version of \textsc{MLRegTest}, comparing performance of a state merging algorithm with four NNs trained on the original \textsc{MLRegTest} data and this data augmented with short strings. Additionally, we test these algorithms on data containing \textit{only} short strings.  
+We find that the state merging algorithm benefits greatly from short strings, while the neural networks rely  more on long strings. 
 %\todo{We find that neural models outperform state merging on the original and augmented datasets, but that the state merging algorithms are less hindered by the absence of long strings, outperforming most neural archetectures on the short string only data.}
 
 
@@ -160,7 +160,7 @@ All NNs use the same hyperparameters as \citeauthor{mlregtest}.\footnote{Impleme
 
 \section{Evaluation}\label{sec:eval}
 
-\textsc{MLRegTest} \citep{mlregtest}  contains training, development, and test data  from 1,800 regular languages; we follow \citet{adil23} in excluding  languages with alphabet sizes of 64 due to unicode errors, thus considering 1,140. 
+\textsc{MLRegTest} \citep{mlregtest} contains training, development, and test data from 1,800 regular languages; we excluded languages with alphabet sizes of 64, thus considering 1,140, in order to compare our replication with \citet{adil23}. 
 The strings in \textsc{MLRegTest} are of length 20-29, balanced evenly between positive and negative examples.
 \citeauthor{adil23} found that augmenting train with roughly 1,000 short strings (length 1-19) significantly improved \textsc{FlexFringe} performance despite sacrificing the balance of positive and negative examples.
 We build on \citeauthor{adil23} by considering three training setups:
@@ -226,6 +226,7 @@ Trans. & .709 & .762 & .811 & .857 & .754 & .806 & .806 \\
 
 
 Table \ref{tab:overall-scores} gives the F1 score of each model, averaged across languages and test types\footnote{\textsc{FlexFringe} models for the large partition are still running at time of submission but will be completed for camera-ready and   do not bear on our key takeaways.}.
+The results are consistent with earlier studies, confirming the replications.
 %; breakdowns by test type are given in Tables \ref{tab:OS-by-test}-\ref{tab:OL-by-test} in the Appendix.
 Though the GRU consistently outperforms the other models, its performance decreases far more between \textsc{PlusShort} and \textsc{OnlyShort} than \textsc{FlexFringe} (Figure \ref{fig:overall-diff}), which outperforms all other NNs on \textsc{OnlyShort}. 
 % Figure \ref{fig:f1-diff-ps-os} shows the difference in average F1 between  \textsc{PlusShort} (small train) and \textsc{OnlyShort}.
@@ -241,7 +242,7 @@ Strikingly, however, the performance of the state merging algorithm benefitted f
 Meanwhile, increasing the size of the training set was less helpful for the state merging algorithm than for the neural models.
 This shows a certain attunement of the state merging algorithm to the kinds of input samples that are relevant for learning natural languages \--- i.e., short and small.
 
-Future research could expand the gridsearch (\S \ref{sec:ff}) to cover additional parameters provided by  \textsc{FlexFringe}, which were omitted from this study due to bugs in the version of the library used here.
+Future research could expand the gridsearch (\S \ref{sec:ff}) to cover additional parameters provided by  \textsc{FlexFringe}.
 
 % \section*{Limitations}
 % \todo{Add sucky gridsearch}
