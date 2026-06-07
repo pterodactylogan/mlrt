@@ -68,7 +68,7 @@
 \newcommand{\AlgoType}{\tttx{AlgoType}}
 
 % Code repository url
-\newcommand{\repo}{https://github.com/adil-soubki/mlrt}
+%\newcommand{\repo}{https://github.com/adil-soubki/mlrt}
 
 % Use these to change spacing of lists.
 \usepackage{enumitem}
@@ -302,10 +302,72 @@ same hyperparameters as \citeauthor{mlregtest}.\footnote{The
 
 \textsc{MLRegTest} \citep{mlregtest} contains training, development,
 and test data from 1,800 regular languages. The languages were
-organized along three dimensions: alphabet size (4, 16, 64), logical
-complexity (monadic second order, first order, propositional,
-conjunctions of negative literals, disjunctions of positive literals),
-and ordering relation (successor, precedence, tier-successor).
+organized along three dimensions: alphabet size, logical complexity,
+and model-theoretic representations of the ordering relation in
+strings. The logical complexity and ordering relations gave rise to 16
+distinct classes, shown in Table~\ref{tab:classes} (reproduced from
+\citet{adil23}).
+
+Five logics are considered: Monadic Second Order (MSO), First Order
+(FO), Propositional (Prop), Conjunctions of Negative literals (CNL)
+and Disjunctions of Positive Literals (DPL).  CNL and DPL are
+complements of the other and both are properly contained within Prop,
+which is properly contained in FO, which is contained within MSO.  The
+three model-theoretic ordering relations are successor
+($\triangleleft$), tier-successor ($\triangleleft_T$), and precedence
+($<$), which correspond to the concepts of substring, tier-substring,
+and subsequence, respectively.  A tier $T$ is a subset of the alphabet
+which can lead to a change of state. Non-tier elements are neutral and
+can be freely inserted or deleted \citep{Lambert2023}. MLRegTest
+considers an additional subclass of purely periodic languages they
+call Zp. For example, the language whose words contain an even number
+of $a$ symbols belongs to Zp. 
+
+The names of these classes are given in Table~\ref{tab:classes},
+alongside their logical characterization. These classes and their
+relationships are discussed by many, including
+\citet{McNaughtonPapert1971, Thomas1982, Thomas1997, RogersPullum2011,
+  Rogers-HeinzEtAl-2013-CSC, rogers-lambert-2019-classes}. See
+\citet{Lambert+2021-TESRL} for an approach to learning these classes
+individually. Readers are referred to \citet{mlregtest} for additional
+details regarding these language classes.
+\begin{table}[!t]
+  \centering
+  \begin{tabular}{cccc}
+    \toprule
+    Logic                 & Representation       & Language Name                     & Abbrevation          \\
+    \midrule
+    \multirow{3}{*}{MSO}  & $\triangleleft$      & \multirow{3}{*}{Regular}          & \multirow{3}{*}{Reg} \\
+                          & $\triangleleft_T$    &                                   &                      \\
+                          & $<$                  &                                   &                      \\
+    \midrule
+    \multirow{3}{*}{FO}   & $\triangleleft$      & Locally Threshold Testable        & LTT                  \\
+                          & $\triangleleft_T$    & Tier Locally Threshold Testable   & TLTT                 \\
+                          & $<$                  & Star-Free                         & SF                   \\
+    \midrule
+    \multirow{4}{*}{Prop} & $\triangleleft_T, <$ & Tier Piecewise Locally Testable   & TPLT                 \\
+                          & $\triangleleft, <$   & Piecewise Locally Testable        & PLT                  \\
+                          & $\triangleleft_T$    & Tier Locally Testable             & TLT                  \\
+                          & $\triangleleft$      & Locally Testable                  & LT                   \\
+                          & $<$                  & Piecewise Testable                & PT                   \\
+    \midrule
+    \multirow{3}{*}{CNL}  & $\triangleleft$      & Strictly Local                    & SL                   \\
+                          & $\triangleleft_T$    & Tier Strictly Local               & TSL                  \\
+                          & $<$                  & Strictly Piecewise                & SP                   \\
+    \midrule
+    \multirow{3}{*}{DPL}  & $\triangleleft$      & Complement of Strictly Local      & coSL                 \\
+                          & $\triangleleft_T$    & Complement of Tier Strictly Local & TcoSL                \\
+                          & $<$                  & Complement of Strictly Piecewise  & coSP                 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Logical characterizations and names of classes in MLRegTest.}
+  \label{tab:classes}
+\end{table}
+
+\citet{mlregtest} use the Language Toolkit \citep{Lambert2024} to
+verify that every language in some class A in MLRegTest belongs to A
+and does not belong to any other class B, where B is a subclass of A
+or is incomparable with A.
 
 The datasets for each language come in three sizes: \textsc{Small}
 (1,000 strings), \textsc{Medium} (10,000 strings), and \textsc{Large}
@@ -349,10 +411,11 @@ sampled with replacement.  If no positive negative strings of a given
 length existed, none were drawn for that length.
 
 In this work, we rebuilt the short training sets using that same
-recipe because \citeauthor{adil23} used a preliminary version, and we
-used the published version.\footnote{MLRegTest is publicly available
-  with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the
-  license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication}
+recipe because \citeauthor{adil23} used a preliminary version of
+\textsc{MLRegTest}, and we used the published
+version.\footnote{MLRegTest is publicly available with Dryad
+  \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license
+  \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication}
   (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}
 
 We conducted three kinds of experiments. In the \textsc{OnlyShort}
@@ -385,32 +448,30 @@ learning regular languages.
 
 \section{Results} \label{sec:results}
 
-% FF
-%   Mid_OL    Mid_PS  Small_OL  Small_OS  Small_PS 
-% 0.5886030 0.7991419 0.5465408 0.7374390 0.7750243 
+We use the same non-parametric methods as \citet{mlregtest} and
+\citet{adil23} in our analysis as advocated by \citet{Demsar2006} and
+\citet{Stapor2017}. We report aggregate accuracy for the models as the
+primary measurement of performance since the test sets are balanced,
+and very strong correlations were found across performance
+measures. Experimental observations are aggregated over the variables
+\Tier, \kay, \jay, \eye and \Alpha. These are held as blocking
+variables, and factors \Class, \TrainSize, \TestType, and \AlgoType
+are treatment variables which average accuracy is computed over. The
+Friedman rank sum test is used to determine if the factor being held
+for treatment contributes significantly to predicting model accuracy
+by holding the null hypothesis that all variations of the value
+contribute equally. Additional analysis using the
+Nemenyi-Wilcoxon-Wilcox all-pairs test identified which pairs differ
+significantly.
 
-% Simple
-%    Mid_OL    Mid_PS  Small_OL  Small_OS  Small_PS 
-% 0.7650535 0.7761876 0.7037516 0.6649203 0.7224823 
+\subsection{Effect of Short Training Strings}
 
-% GRU
-% Mid_OL    Mid_PS  Small_OL  Small_OS  Small_PS 
-% 0.9165559 0.9531099 0.8329323 0.7941359 0.9094917 
-
-% LSTM
-%  Mid_OL    Mid_PS  Small_OL  Small_OS  Small_PS 
-% 0.8234046 0.8692251 0.6054237 0.6336763 0.7201030 
-
-% Transformer
-%   Mid_OL    Mid_PS  Small_OL  Small_OS  Small_PS 
-%   0.8010169 0.8136149 0.7488404 0.6965861 0.7623821
-
-\subsection{Overall performance}
-
-Table \ref{tab:overall-scores} gives the mean F1 score of each model
-across languages, experiments, and test sets. Importantly, the results
-in the \textsc{PlusShort} and \textsc{OnlyLong} experiments are
-consistent with \citet{adil23} and \citet{mlregtest}, respectively.
+Table \ref{tab:overall-scores} gives the mean accuracy score of each
+model across languages, experiments, and test sets. The Friedman rank
+sum test indicated that the training condition was significant for
+every model (\(p < \num{2.2e-16}\)). Importantly, the results in the
+\textsc{PlusShort} and \textsc{OnlyLong} experiments are consistent
+with \citet{adil23} and \citet{mlregtest}, respectively.
 
 \begin{table}[t!]
 \centering
@@ -419,17 +480,26 @@ consistent with \citet{adil23} and \citet{mlregtest}, respectively.
                  & \textsc{Only } & \textsc{Small}      & \textsc{Medium}     & \textsc{Only}  & \textsc{Only}   \\
   \textsc{Model} & \textsc{Short} & \textsc{Plus Short} & \textsc{Plus Short} & \textsc{Small} & \textsc{Medium} \\
   \midrule
-  FlexFringe     & .737           & .775                & .799                & .547           & .589            \\
-  Simple         & .665           & .722                & .776                & .704           & .765            \\
-  LSTM           & .634           & .720                & .869                & .605           & .823            \\
-  Transformer    & .697           & .762                & .814                & .749           & .801            \\
-  GRU            & \textbf{.794}  & \textbf{.909}       & \textbf{.953}       & \textbf{.833}  & \textbf{.917}   \\
+  FlexFringe     & 0.762          & 0.784               & 0.808               & 0.557          & 0.592           \\
+  Simple         & 0.671          & 0.733               & 0.785               & 0.714          & 0.780           \\
+  LSTM           & 0.649          & 0.730               & 0.866               & 0.685          & 0.856           \\
+  Transformer    & 0.712          & 0.770               & 0.822               & 0.758          & 0.815           \\
+  GRU            & \textbf{0.793} & \textbf{0.912}      & \textbf{0.947}      & \textbf{0.837} & \textbf{0.940}  \\
   \bottomrule
 \end{tabular}
-\caption{Mean F1 score across all test sets for all languages by
+\caption{Mean accuracy score across all test sets for all languages by
   experiment type and model.}
 \label{tab:overall-scores}
 \end{table}
+
+% emacs pro tip: To round numbers to 3 decimal places use
+% query-replace-regexp interactively:
+
+% [C-M-%] [0-9]+\.[0-9]+ [RET] \,(format "%0.3f" \#&) [RET]
+
+% The \,(...) in the replacement text means to interpolate the result
+% of calling the parenthesized Lisp expression, and \#& means
+% "whatever the entire pattern matched, converted to a number."
 
 The GRU consistently outperforms the other models across all
 experiments. Interestingly however, \textsc{FlexFringe} outperforms
@@ -451,7 +521,8 @@ sets as shown in Figure \ref{fig:overall-diff}. \todo{fix caption in
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{../analysis/figs/F1-diff-ps-ol-box.pdf}
-\caption{Difference in F1 between \textsc{Small Plus Short} and \textsc{Only Short} by model \& test type.}
+\caption{Difference in F1 between \textsc{Small Plus Short} and
+  \textsc{Only Short} by model \& test type.}
 \vspace{-1em}
 \label{fig:overall-diff}
 \end{figure}
@@ -475,102 +546,194 @@ which see the large perfomance increases in the \textsc{Small} and
 % Figures \ref{fig:os-by-class}-\ref{fig:ol-by-class} in the Appendix.
 
 % \begin{figure}[t]
-% \centering
-% \includegraphics[width=0.8\linewidth]{../analysis/figs/F1-diff-ps-os.pdf}
-% \caption{Difference in F1 between \textsc{PlusShort} (small training) and \textsc{OnlyShort} by model \& test type.}
-% \label{fig:f1-diff-ps-os}
+%   \centering
+%   \includegraphics[width=0.8\linewidth]{../analysis/figs/F1-diff-ps-os.pdf}
+%   \caption{Difference in F1 between \textsc{PlusShort} (small
+%   training) and \textsc{OnlyShort} by model \& test type.}
+%   \label{fig:f1-diff-ps-os}
 % \end{figure}
 
 \subsection{FlexFringe Performance by Test Set}
 
+\citet{mlregtest} found that the performance of the neural models
+varied significantly depending on the test sets. In particular, the
+accuracy on the adversarial test sets was much lower as compared to
+the random test sets. the Friedman rank sum test for the FlexFringe
+model tested here is also significant (\(p < \num{2.2e-16}\)), with
+the biggest factor again being the adversariality of the test sets
+(Table~\ref{tab:ff-acc-test-set}).
+\begin{table}[t]
+  \centering
+  \begin{tabular}{cccc}
+    \toprule
+    SR    & LR    & SA    & LA    \\
+    \midrule                   
+    0.741 & 0.714 & 0.662 & 0.641 \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textsc{FlexFringe} mean accuracy by test set}
+ \label{tab:ff-acc-test-set}
+\end{table}
 
-% Friedman chi-sqaured is very significant 
-
-% overall across all 5 conditions
-%       LA        LR        SA        SR 
-% 0.6407679 0.7141708 0.6618726 0.7405880 
-
-
-% For each condition, it is also very significant; highest p-value = 8.724e-15
-
+Interestingly, the drop in performance from the random conditions to
+the adversarial conditions (roughly 7-8 points) did not seem to be as
+great as was reported for the neural models in earlier research. To
+investigate further, Table~\ref{tab:ff-acc-test-set-by-train} reports
+the mean accuracies in these test sets by training condition.
 \begin{table}[t]
   \centering
   \begin{tabular}{lcccc}
   \toprule
-    Training condition & SR        & LR        & SA        & LA        \\
+    Training condition & SR    & LR    & SA    & LA    \\
     \midrule                                                
-    Only Short         & 0.8223427 & 0.7690632 & 0.6998229 & 0.6585271 \\ 
-    Small Plus Short   & 0.8412837 & 0.8074588 & 0.7388100 & 0.7125448 \\ 
-    Medium Plus Short  & 0.8562071 & 0.8313988 & 0.7655567 & 0.7434051 \\ 
-    Only Small         & 0.5698005 & 0.5607705 & 0.5315451 & 0.5240472 \\ 
-    Only Medium        & 0.6133061 & 0.6021627 & 0.5736281 & 0.5653152 \\
+    Only Short         & 0.832 & 0.791 & 0.725 & 0.698  \\ 
+    Small Plus Short   & 0.845 & 0.815 & 0.749 & 0.727  \\ 
+    Medium Plus Short  & 0.862 & 0.840 & 0.774 & 0.755  \\ 
+    Only Small         & 0.576 & 0.569 & 0.544 & 0.539  \\ 
+    Only Medium        & 0.613 & 0.603 & 0.579 & 0.571  \\
     \bottomrule
 \end{tabular}
-\caption{Mean F1 scores by test type and training condition}
+\caption{Mean FlexFringe accuracy by test type and training condition}
+ \label{tab:ff-acc-test-set-by-train}
 \end{table}
+
+Table~\ref{tab:ff-acc-test-set-by-train} shows that, even in the Only
+Short training condition, the performance drop is at most roughly
+10-11 points. This is in contrast to the neural models, which shows at
+best about a 15 point drop in accuracy in the Only Short condition
+(the GRU; see Tables~\ref{tab:gru-acc-test-set-by-train}) and at worst
+about a 20 point drop in accuracy (see
+Tables~\ref{tab:simple-acc-test-set-by-train}
+to~\ref{tab:trans-acc-test-set-by-train} in the appendix). In the
+Medium Plus Short condition, the situation between FlexFringe and the
+GRU reverses, with the GRU model only showing about a 5 point drop,
+and FlexFringe showing about 9 point drop.
+
+To sum up, when only Short Strings are provided, FlexFringe is more
+resilient to adversarial test sets than the neural models. With
+additional training data, the neural models, and especially the GRU,
+become more resilient to adversarial tests.
 
 \subsection{FlexFringe Performance by Language Class}
 
-%      coSL      coSP        LT       LTT       PLT        PT       Reg        SF        SL        SP     TcoSL       TLT      TLTT      TPLT 
-% 0.7253188 0.5412781 0.6997698 0.7037642 0.7064781 0.6119616 0.7249771 0.7626772 0.7476214 0.6459687 0.6545515 0.6437818 0.6659095 0.6532684 
-%       TSL        Zp 
-% 0.6859998 0.8562712 
+The Friedman test shows that the language class is significant factor
+for accuracy for the FlexFringe model tested here
+(\(p < \num{2.2e-16}\)). Table~\ref{tab:ff-acc-lang} shows mean
+accuracy aggregated across training conditions and test sets.
+\begin{table}[t]
+  \centering
+  \begin{tabular}{llllllll}
+    \toprule
+    Accuracy & Class & Accuracy & Class & Accuracy & Class & Accuracy & Class \\
+    \midrule
+    0.865    & Zp    & 0.721    & Reg   & 0.686    & TcoSL & 0.652    & TLT   \\
+    0.761    & SF    & 0.718    & PLT   & 0.686    & TSL   & 0.652    & PT    \\
+    0.753    & SL    & 0.713    & LT    & 0.665    & TPLT  & 0.617    & SP    \\
+    0.749    & coSL  & 0.696    & LTT   & 0.656    & TLTT  & 0.615    & coSP  \\
+    \bottomrule
+  \end{tabular}
+  \caption{Aggregate mean accuracy over all training conditions and
+    test sets of FlexFring in decreasing order by language \Class.}
+  \label{tab:ff-acc-lang}
+\end{table}
 
+Examination of the post-hoc Nemenyi-Wilcoxon-Wilcox all-pairs test,
+however, shows that most pairwise comparisons are not
+significant. Significant differences generally only occur between the
+highest performing classes (Zp, SF, SL, coSL) and the lowest ones (SP,
+coSP).
 
-\subsection{FlexFringe Performance by Logical Level}
+However, it is striking how well the Flexfringe model performs on the
+Zp class. Languages in this class are counting modulo some natural
+number \(n\). In contrast, the highest performing neural model is the
+GRU, which obtains a mean accuracy of 0.741.
 
+Table~\ref{tab:ff-acc-lang-onlyshort} examines Flexfringe's
+performance in the Short Only training condition. While the order of
+is not the same, it is interesting to observe some trends. First, the
+extremes have much in common: Zp, SL, coSL are in the top four and SP,
+coSP, and PT are in the bottom four. Second, the mean accuracy is
+generally higher in Table~\ref{tab:ff-acc-lang-onlyshort} than in
+Table~\ref{tab:ff-acc-lang}. This is probably due to the fact that
+Table~\ref{tab:ff-acc-lang} aggregates results from all training
+conditions, including the \textsc{Only Small} and \textsc{Only Medium}
+conditions, which Flexfringe performs much less well.
+\begin{table}[t]
+  \centering
+  \begin{tabular}{llllllll}
+    \toprule
+    Accuracy & Class & Accuracy & Class & Accuracy & Class & Accuracy & Class \\
+    \midrule
+    0.915    & Zp    & 0.810    & SF    & 0.764    & TcoSL & 0.712    & TPLT  \\
+    0.859    & SL    & 0.808    & LT    & 0.763    & TSL   & 0.651    & PT    \\
+    0.846    & coSL  & 0.782    & LTT   & 0.719    & TLTT  & 0.628    & SP    \\
+    0.811    & PLT   & 0.780    & Reg   & 0.716    & TLT   & 0.621    & coSP  \\
+    \bottomrule
+  \end{tabular}
+  \caption{Aggregate mean accuracy over all test sets in the Only
+    Short training condition of FlexFringe in decreasing order by
+    language \Class.}
+  \label{tab:ff-acc-lang-onlyshort}
+\end{table}
 
-% 	Friedman rank sum test
+\subsection{FlexFringe Performance by Logical Level and Order Relation}
 
-% data:  data.matrix
-% Friedman chi-squared = 12.4, df = 4, p-value = 0.01461
+We also checked to see whether the logical level or the ordering
+relation was a significant factor. The languages are grouped by the
+logical level as shown in Table~\ref{tab:classes}, with the addition
+that Zp is grouped together with Reg. The Friedman rank sum test is
+not significant (Friedman chi-squared = 6.95, df = 4, p-value = 0.1386).
 
-% > # POST HOC MULTIPLE COMPARISONS ANALYSIS
-% > frdAllPairsNemenyiTest(data.matrix)
+To examine the ordering relation, we grouped the languages into four
+categories as shown in Table~\ref{tab:order-relation}.
+\begin{table}[ht]
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    \tbf{Abbrev.}  & \tbf{Order Relation} & \tbf{Lang. Classes}   \\
+    \midrule
+    \textsc{succ}  & Successor            & SL, coSL, LT, LTT     \\
+    \textsc{prec}  & Precedence           & coSP, PT, SF, SP      \\
+    \textsc{Tsucc} & Tier Successor       & TcoSL, TLT, TLTT, TSL \\
+    \textsc{other} & Other                & PLT, TPLT, Reg, Zp    \\
+    \bottomrule
+  \end{tabular}
+  \caption{Langauge classes grouped by order relation.}
+  \label{tab:order-relation}
+\end{table}
 
-% 	Pairwise comparisons using Nemenyi-Wilcoxon-Wilcox all-pairs test for a two-way balanced complete block design
-
-% data: y
-%      CNL   DPL   FO    PROP 
-% DPL  0.520 -     -     -    
-% FO   0.992 0.797 -     -    
-% PROP 0.899 0.100 0.665 -    
-% REG  0.166 0.963 0.380 0.015
-
-
-%      REG       DPL       CNL        FO      PROP 
-% 0.7203313 0.7776397 0.7818242 0.7826672 0.7868925 
-
-
-\subsection{FlexFringe Performance by }
-
-% Friedman rank sum test
-
-% data:  data.matrix
-% Friedman chi-squared = 13.5, df = 3, p-value = 0.003671
-
-% > # POST HOC MULTIPLE COMPARISONS ANALYSIS
-% > frdAllPairsNemenyiTest(data.matrix)
-
-% 	Pairwise comparisons using Nemenyi-Wilcoxon-Wilcox all-pairs test for a two-way balanced complete block design
-
-% data: y
-%       OTHER  PREC   SUCC  
-% PREC  0.8443 -      -     
-% SUCC  0.0655 0.0056 -     
-% TSUCC 0.9472 0.9928 0.0138
-
-% P value adjustment method: single-step
-% > sort(colMeans(data.matrix))
-%      PREC     TSUCC     OTHER      SUCC 
-% 0.7555907 0.7768234 0.7768576 0.8064181 
-
-
+The Friedman test is insignificant but marginally so (Friedman
+chi-squared = 12.675, df = 3, p-value = 0.005395). We follow
+\citet{mlregtest}, who cite \citet{Benjamin2018} in setting the
+significance threshold to 0.005. Due to its closeness to the
+signficance threshold, we also report Nemenyi-Wilcoxon-Wilcox
+all-pairs test (Table~\ref{tab:nww-ord}). It indicates that this
+marginal significance is due entirely to the pairwise comparison of
+\textsc{succ} with \textsc{prec} and \textsc{Tsucc}.
+\begin{table}[t]
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+          & OTHER & PREC  & SUCC  \\
+    \midrule
+    PREC  & 0.692 & \(-\) & \(-\) \\
+    SUCC  & 0.169 & 0.009 & \(-\) \\
+    TSUCC & 0.773 & 0.999 & 0.014 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Nemenyi-Wilcoxon-Wilcon all-pairs test for the ordering relation}
+  \label{tab:nww-ord}
+\end{table}
+To sum up, the flexfringe model does not especially appear to be
+sensitive to the logical level or the ordering relation. This is not
+unexpected given that the state-merging algorithms it is based
+(e.g. RPNI and EDSM) on are intended to learn the class of
+deterministic finite-state automata.
 
 \section{Conclusions}
 The strongest model overall was the GRU, which performed best across
 partitions.  Strikingly, however, the performance of the state merging
-algorithm benefitted far more from the addition of short strings than
+algorithm benefited far more from the addition of short strings than
 that of any of the neural models: it performed most competitively on
 \textsc{OnlyShort}.  Meanwhile, increasing the size of the training
 set was less helpful for the state merging algorithm than for the
@@ -587,8 +750,9 @@ additional parameters provided by \textsc{FlexFringe}.
   on the Stony Brook SeaWulf HPC cluster maintained by Research
   Computing and Cyberinfrastructure, and the Institute for Advanced
   Computational Science at Stony Brook University and made possible by
-  NSF grant \#1531492. We also thank Sicco Verweer for his assistance
-  with FlexFringe.}
+  NSF grant \#1531492. JH acknowledges the additional support of NSF
+  grant \#2416183. We also thank Sicco Verweer for his assistance with
+  FlexFringe.}
 
 
 % \section*{Code Availability}
@@ -598,8 +762,107 @@ additional parameters provided by \textsc{FlexFringe}.
 \newpage
 \appendix
 
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{lcccc}
+  \toprule
+    Training condition & SR    & LR    & SA    & LA    \\
+    \midrule                                                
+    Only Short         & 0.799 & 0.718 & 0.598 & 0.567  \\ 
+    Small Plus Short   & 0.873 & 0.801 & 0.647 & 0.610  \\ 
+    Medium Plus Short  & 0.925 & 0.828 & 0.728 & 0.659  \\ 
+    Only Small         & 0.851 & 0.790 & 0.621 & 0.594  \\ 
+    Only Medium        & 0.925 & 0.819 & 0.726 & 0.651  \\
+    \bottomrule
+\end{tabular}
+\caption{Mean Simple RNN accuracy by test type and training condition}
+ \label{tab:simple-acc-test-set-by-train}
+\end{table}
+                  
+\begin{table}[t]
+  \centering
+  \begin{tabular}{lcccc}
+  \toprule
+    Training condition & SR    & LR    & SA    & LA    \\
+    \midrule                                                
+    Only Short         & 0.765 & 0.721 & 0.565 & 0.544  \\ 
+    Small Plus Short   & 0.860 & 0.822 & 0.636 & 0.604  \\ 
+    Medium Plus Short  & 0.956 & 0.923 & 0.820 & 0.767  \\ 
+    Only Small         & 0.805 & 0.783 & 0.586 & 0.565  \\ 
+    Only Medium        & 0.948 & 0.912 & 0.812 & 0.751  \\
+    \bottomrule
+\end{tabular}
+\caption{Mean LSTM accuracy by test type and training condition}
+\label{tab:lstm-acc-test-set-by-train}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{lcccc}
+  \toprule
+    Training condition & SR    & LR    & SA    & LA    \\
+    \midrule                                                
+    Only Short         & 0.846 & 0.766 & 0.649 & 0.588  \\ 
+    Small Plus Short   & 0.894 & 0.836 & 0.706 & 0.646  \\ 
+    Medium Plus Short  & 0.946 & 0.852 & 0.792 & 0.697  \\ 
+    Only Small         & 0.879 & 0.827 & 0.684 & 0.640  \\ 
+    Only Medium        & 0.942 & 0.843 & 0.786 & 0.688  \\
+    \bottomrule
+\end{tabular}
+\caption{Mean Transformer accuracy by test type and training condition}
+\label{tab:trans-acc-test-set-by-train}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{lcccc}
+  \toprule
+    Training condition & SR    & LR    & SA    & LA    \\
+    \midrule                                                
+    Only Short         & 0.882 & 0.850 & 0.732 & 0.708  \\ 
+    Small Plus Short   & 0.971 & 0.961 & 0.867 & 0.851  \\ 
+    Medium Plus Short  & 0.975 & 0.971 & 0.924 & 0.916  \\ 
+    Only Small         & 0.911 & 0.899 & 0.774 & 0.762  \\ 
+    Only Medium        & 0.972 & 0.970 & 0.913 & 0.905  \\
+    \bottomrule
+\end{tabular}
+\caption{Mean GRU accuracy by test type and training condition}
+\label{tab:gru-acc-test-set-by-train}
+\end{table}
+
+
 \vskip 0.2in
 \bibliography{refs}
 
 
 \end{document}
+
+
+ FF 
+
+	Friedman rank sum test
+
+data:  data.matrix
+Friedman chi-squared = 260.15, df = 15, p-value < 2.2e-16
+
+
+	Pairwise comparisons using Nemenyi-Wilcoxon-Wilcox all-pairs test for a two-way balanced complete block design
+
+data: y
+     coSL    coSP    LT      LTT     PLT     PT      Reg     SF      SL      SP      TcoSL   TLT     TLTT    TPLT    TSL    
+coSP  1.1e-07 -       -       -       -       -       -       -       -       -       -       -       -       -       -      
+LT    0.00099 0.94965 -       -       -       -       -       -       -       -       -       -       -       -       -      
+LTT   7.4e-05 0.99897 1.00000 -       -       -       -       -       -       -       -       -       -       -       -      
+PLT   0.03119 0.42731 0.99997 0.99068 -       -       -       -       -       -       -       -       -       -       -      
+PT    0.01608 0.56911 1.00000 0.99797 1.00000 -       -       -       -       -       -       -       -       -       -      
+Reg   0.31476 0.05343 0.94356 0.65786 0.99998 0.99971 -       -       -       -       -       -       -       -       -      
+SF    0.99971 9.5e-11 5.3e-06 2.2e-07 0.00047 0.00019 0.01608 -       -       -       -       -       -       -       -      
+SL    0.99999 5.1e-10 1.9e-05 9.1e-07 0.00136 0.00058 0.03652 1.00000 -       -       -       -       -       -       -      
+SP    1.9e-05 0.99995 0.99999 1.00000 0.95524 0.98491 0.46196 4.3e-08 1.9e-07 -       -       -       -       -       -      
+TcoSL 0.04263 0.36105 0.99988 0.98244 1.00000 1.00000 1.00000 0.00072 0.00205 0.92985 -       -       -       -       -      
+TLT   1.9e-09 1.00000 0.62275 0.92985 0.10742 0.17617 0.00599 1.0e-12 5.8e-12 0.98244 0.08209 -       -       -       -      
+TLTT  3.1e-06 1.00000 0.99919 1.00000 0.82794 0.91399 0.24537 5.0e-09 2.4e-08 1.00000 0.77192 0.99870 -       -       -      
+TPLT  2.5e-05 0.99991 1.00000 1.00000 0.96503 0.98900 0.49732 5.8e-08 2.5e-07 1.00000 0.94356 0.97657 1.00000 -       -      
+TSL   0.10057 0.19750 0.99750 0.92220 1.00000 1.00000 1.00000 0.00250 0.00657 0.80092 1.00000 0.03376 0.56911 0.82794 -      
+Zp    0.03119 1.9e-13 3.5e-13 1.5e-13 1.1e-10 2.8e-11 3.7e-08 0.44453 0.28578 1.2e-13 2.2e-10 1.6e-13 2.0e-13 1.3e-13 1.6e-09

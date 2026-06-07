@@ -3,7 +3,6 @@ library(tidyr)
 library(stringr)
 library(ggplot2)
 
-
 # Helper function to add column adding the data types 
 add_type <- function(df, type){
   new_df <- df %>% mutate(data_type = type)
@@ -74,6 +73,8 @@ load_ff <- function(path){
 all_neural <- load_nn("../neural")
 all_ff <- load_ff("../FlexFringe/FlexFringe")
 everything <- rbind(all_neural, all_ff)
+
+# write.csv(everything, "everything.csv", row.names = FALSE)
 
 # Make Table 1 in the paper 
 table1 <- everything %>%
@@ -272,5 +273,9 @@ everything %>%
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average F1 by Language Class + Model on OnlyLong") 
 ggsave("figs/ol-by-class.pdf", width = 15, height = 7)
+
+
+
+
 
 
