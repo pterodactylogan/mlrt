@@ -112,28 +112,28 @@ diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
-  ylab("Difference in F1 Score") + 
+  ylab("Difference in Accuracy") + 
   xlab("") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in F1 Score from PS-small to OS by Model")
-ggsave("figs/F1-diff-ps-os.pdf", width=6, height=4)
+  ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
+ggsave("figs/acc-diff-ps-os.pdf", width=6, height=4)
 
 # PS vs. OL
 diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
-  ylab("Difference in F1 Score") + 
+  ylab("Difference in Accuracy") + 
   xlab("") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in F1 Score from PS to OL by Model (Small train)")
-ggsave("figs/F1-diff-ps-ol.pdf", width=6, height=4)
+  ggtitle("Difference in Accuracy from Small Plus Short to Only Small by Model")
+ggsave("figs/acc-diff-ps-ol.pdf", width=6, height=4)
 
 # Combined boxplot
 diffs$'PS-OS' <- diffs$PS - diffs$OS
@@ -150,9 +150,9 @@ diffs %>%
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
   ) + 
-  ylab("Difference in F1 Score") + 
+  ylab("Difference in Accuracy") + 
   xlab("") + 
-  ggtitle("Difference in F1 Score Across Conditions by Model")
+  ggtitle("Difference in Accuracy Across Conditions by Model")
 ggsave("figs/overall-diff-v2.pdf", width=6, height=4)
 
 # Color by model, alpha by difference type 
@@ -170,9 +170,9 @@ diffs %>%
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
   ) + 
-  ylab("Difference in F1 Score") + 
+  ylab("Difference in Accuracy") + 
   xlab("") + 
-  ggtitle("Difference in F1 Score Across Conditions by Model")
+  ggtitle("Difference in Accuracy Across Conditions by Model")
 ggsave("figs/overall-diff.pdf", width=6, height=4)
 
 # Box plots of the overall difference 
@@ -189,14 +189,14 @@ diff %>%
   geom_col(alpha = 0.7) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
-  ylab("Difference in F1 Score") + 
+  ylab("Difference in Accuracy") + 
   xlab("") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in F1 Score from PS-small to OS by Model")
-ggsave("figs/F1-diff-ps-os-box.pdf", width=6, height=4)
+  ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
+ggsave("figs/acc-diff-ps-os-box.pdf", width=6, height=4)
 
 # Explore the difference in F1 scores between PS on OL
 diff <- inner_join(temp, table4, by=c("model", "split"))
@@ -206,14 +206,14 @@ diff %>%
   geom_col(alpha = 0.7) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
-  ylab("Difference in F1 Score") + 
+  ylab("Difference in Accuracy") + 
   xlab("") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in F1 Score from PS-small to OL-small by Model")
-ggsave("figs/F1-diff-ps-ol-box.pdf", width=6, height=4)
+  ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
+ggsave("figs/acc-diff-ps-ol-box.pdf", width=6, height=4)
 
 # F1 by datatype 
 everything %>%
@@ -221,13 +221,13 @@ everything %>%
   geom_boxplot(alpha=0.6) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
-  ylab("F1 Score") + 
+  ylab("Accuracy") + 
   xlab("Model") + 
   labs(fill = "Data Type") +
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
-  ggtitle("Average F1 by Data Type") 
-ggsave("figs/f1-by-datatype.pdf")
+  ggtitle("Average Accuracy by Data Type") 
+ggsave("figs/acc-by-datatype.pdf")
 
 
 # Performance by language class
@@ -237,12 +237,12 @@ everything %>%
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
-  ylab("F1 Score") + 
+  ylab("Accuracy") + 
   labs(fill="Model")+
   xlab("Language Class") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average F1 by Language Class + Model on OnlyShort") 
+  ggtitle("Average Accuracy by Language Class + Model on Only Short") 
 ggsave("figs/os-by-class.pdf", width = 15, height = 7)
 
 
@@ -252,12 +252,12 @@ everything %>%
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
-  ylab("F1 Score") + 
+  ylab("Accuracy") + 
   labs(fill="Model")+
   xlab("Language Class") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average F1 by Language Class + Model on PlusShort") 
+  ggtitle("Average Accuracy by Language Class + Model on Plus Short") 
 ggsave("figs/ps-by-class.pdf", width = 15, height = 7)
 
 everything %>%
@@ -266,16 +266,11 @@ everything %>%
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
-  ylab("F1 Score") + 
+  ylab("Accuracy") + 
   labs(fill="Model")+
   xlab("Language Class") + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average F1 by Language Class + Model on OnlyLong") 
+  ggtitle("Average Accuracy by Language Class + Model on Only Long") 
 ggsave("figs/ol-by-class.pdf", width = 15, height = 7)
-
-
-
-
-
 
