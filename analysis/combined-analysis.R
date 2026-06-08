@@ -79,32 +79,32 @@ everything <- rbind(all_neural, all_ff)
 # Make Table 1 in the paper 
 table1 <- everything %>%
   group_by(model, data_type, train_size) %>%
-  summarize(meanf1 = round(mean(f1), 3))
+  summarize(meanaccuracy = round(mean(accuracy), 3))
 
 # Make Table 2 in the paper 
 table2 <- everything %>%
   filter(data_type == "OS") %>%
   group_by(model, split) %>% 
-  summarize(meanf1 = round(mean(f1), 3))
+  summarize(meanaccuracy = round(mean(accuracy), 3))
 
 # Make Table 3 in the paper 
 table3 <- everything %>% 
   filter(data_type == "PS" & train_size == "Small") %>%
   group_by(model, split) %>% 
-  summarize(meanf1 = round(mean(f1), 3))
+  summarize(meanaccuracy = round(mean(accuracy), 3))
 
 # Make Table 4 in the paper 
 table4 <- everything %>% 
   filter(data_type == "OL" & train_size == "Small") %>% 
   group_by(model, split) %>% 
-  summarize(meanf1 = round(mean(f1), 3))
+  summarize(meanaccuracy = round(mean(accuracy), 3))
 
 
 # Get the differences in performance by language and make boxplots
 diffs <- everything %>%
   filter(train_size == "Small") %>%
-  select(-c(brier_score, recall, precision, accuracy)) %>%
-  pivot_wider(names_from = data_type, values_from = f1) %>%
+  select(-c(brier_score, recall, precision, f1)) %>%
+  pivot_wider(names_from = data_type, values_from = accuracy) %>%
   drop_na()
 
 # PS vs. OS 
@@ -132,7 +132,7 @@ diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in Accuracy from Small Plus Short to Only Small by Model")
+  ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
 ggsave("figs/acc-diff-ps-ol.pdf", width=6, height=4)
 
 # Combined boxplot
@@ -179,13 +179,13 @@ ggsave("figs/overall-diff.pdf", width=6, height=4)
 temp <- everything %>% 
   filter(data_type == "PS" & train_size == "Small") %>%
   group_by(model, split) %>% 
-  summarize(meanf1_ps = round(mean(f1), 3))
+  summarize(meanaccuracy_ps = round(mean(accuracy), 3))
 
-# Explore the difference in F1 scores between PS and OS 
+# Explore the difference in accuracy scores between PS and OS 
 diff <- inner_join(temp, table2, by=c("model", "split"))
-diff$f1_diff = diff$meanf1_ps - diff$meanf1
+diff$accuracy_diff = diff$meanaccuracy_ps - diff$meanaccuracy
 diff %>%
-  ggplot(aes(x = model, y = f1_diff, fill = model)) + 
+  ggplot(aes(x = model, y = accuracy_diff, fill = model)) + 
   geom_col(alpha = 0.7) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
@@ -198,11 +198,11 @@ diff %>%
   ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
 ggsave("figs/acc-diff-ps-os-box.pdf", width=6, height=4)
 
-# Explore the difference in F1 scores between PS on OL
+# Explore the difference in accuracy scores between PS on OL
 diff <- inner_join(temp, table4, by=c("model", "split"))
-diff$f1_diff = diff$meanf1_ps - diff$meanf1
+diff$accuracy_diff = diff$meanaccuracy_ps - diff$meanaccuracy
 diff %>%
-  ggplot(aes(x = model, y = f1_diff, fill = model)) + 
+  ggplot(aes(x = model, y = accuracy_diff, fill = model)) + 
   geom_col(alpha = 0.7) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
@@ -215,9 +215,9 @@ diff %>%
   ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
 ggsave("figs/acc-diff-ps-ol-box.pdf", width=6, height=4)
 
-# F1 by datatype 
+# accuracy by datatype 
 everything %>%
-  ggplot(aes(x = model, y = f1, fill = factor(data_type, levels=c("OS", "PS", "OL")))) +
+  ggplot(aes(x = model, y = accuracy, fill = factor(data_type, levels=c("OS", "PS", "OL")))) +
   geom_boxplot(alpha=0.6) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
@@ -233,7 +233,7 @@ ggsave("figs/acc-by-datatype.pdf")
 # Performance by language class
 everything %>%
   filter(data_type =="OS") %>% 
-  ggplot(aes(x = language_class, y = f1, fill = model)) + 
+  ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
@@ -248,7 +248,7 @@ ggsave("figs/os-by-class.pdf", width = 15, height = 7)
 
 everything %>%
   filter(data_type =="PS") %>% 
-  ggplot(aes(x = language_class, y = f1, fill = model)) + 
+  ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
@@ -262,7 +262,7 @@ ggsave("figs/ps-by-class.pdf", width = 15, height = 7)
 
 everything %>%
   filter(data_type =="OL") %>% 
-  ggplot(aes(x = language_class, y = f1, fill = model)) + 
+  ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
@@ -273,4 +273,76 @@ everything %>%
         axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
   ggtitle("Average Accuracy by Language Class + Model on Only Long") 
 ggsave("figs/ol-by-class.pdf", width = 15, height = 7)
+
+
+# Want to show that when short strings are included, FF does better on adversarial than NN
+
+# Get the differences between adversarial and regular performance for L and S strings
+jeffstats <- everything %>% 
+  select(-precision, -recall, -f1, -brier_score) %>%
+  pivot_wider(
+    names_from = split, 
+    values_from = accuracy
+  )
+jeffstats$Ldiff = jeffstats$LR - jeffstats$LA
+jeffstats$Sdiff = jeffstats$SR - jeffstats$SA
+
+# For the long
+jeffstats %>% ggplot(aes(x = model, y = Ldiff, fill=model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
+  theme_bw() + 
+  xlab("") + 
+  ylab("Difference in Accuracy") + 
+  ggtitle("Difference in Accuracy between LR and LA Test Sets") + 
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) 
+ggsave("figs/lr-la-diff.pdf", width=6, height=4)
+
+
+# For the short
+jeffstats %>% ggplot(aes(x = model, y = Sdiff, fill=model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
+  theme_bw() + 
+  xlab("") + 
+  ylab("Difference in Accuracy") + 
+  ggtitle("Difference in Accuracy between SR and SA Test Sets") + 
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
+ggsave("figs/sr-sa-diff.pdf", width=6, height=4)
+
+
+# Now let's visualize the distribution and run the tests
+
+jeffstats %>% ggplot(aes(x = Ldiff, fill = model)) +
+  # Use bins or binwidth to control the bar sizes
+  geom_histogram(aes(alpha=0.6)) + 
+  facet_wrap(~model) + 
+  theme_bw() + 
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) 
+ggsave("figs/lr-la-hist.pdf", width=6, height=4)
+
+jeffstats %>% ggplot(aes(x = Ldiff, fill = model)) +
+  # Use bins or binwidth to control the bar sizes
+  geom_histogram(aes(alpha=0.6)) + 
+  facet_wrap(~model) + 
+  theme_bw() + 
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) 
+ggsave("figs/sr-sa-hist.pdf", width=6, height=4)
+
+# Ok these are clearly non-normal. CLT should still protect a paired t-test but tread lightly
+finaljeffstats <- jeffstats %>% 
+  select(-c(SR, SA, LR, LA)) %>%
+  pivot_wider(
+  names_from = model, 
+  values_from = c(Ldiff, Sdiff)
+)
+
+# Run the paired t-tests
+for (column in c("Ldiff_simple", "Ldiff_lstm", "Ldiff_transformer", "Ldiff_gru")){
+  print(column)
+  print(t.test(finaljeffstats[[column]], finaljeffstats$Ldiff_FF, paired=TRUE))
+}
+
+for (column in c("Sdiff_simple", "Sdiff_lstm", "Sdiff_transformer", "Sdiff_gru")){
+  print(column)
+  print(t.test(finaljeffstats[[column]], finaljeffstats$Sdiff_FF, paired=TRUE))
+}
 
