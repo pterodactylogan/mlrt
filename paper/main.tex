@@ -68,14 +68,14 @@
 \newcommand{\AlgoType}{\tttx{AlgoType}}
 
 % names of dataset sizes
-\newcommand{\small}{\textsc{Small}}
+\newcommand{\sm}{\textsc{Small}}
 \newcommand{\med}{\textsc{Medium}}
-\newcommand{\large}{\textsc{Long}}
+\newcommand{\lrg}{\textsc{Large}}
 
 % Names of train sets
 \newcommand{\short}{\textsc{Short}}
 \newcommand{\orig}{\textsc{Intermediate}}
-\newcommand{\long}{\textsc{Long}}
+\newcommand{\lng}{\textsc{Long}}
 
 % names of test sets
 \newcommand{\origRandFull}{\textsc{Intermediate Random}}
@@ -393,14 +393,14 @@ verify that every language in some class A in \textsc{MLRegTest} belongs to A
 and does not belong to any other class B, where B is a subclass of A
 or is incomparable with A.
 
-The datasets for each language come in three sizes: \textsc{Small}
-(1,000 strings), \textsc{Medium} (10,000 strings), and \textsc{Large}
+The datasets for each language come in three sizes: \sm{}
+(1,000 strings), \med{} (10,000 strings), and \lrg{}
 (100,000 strings). For each language, the datasets are nested;
 \textsc{Small} is contained in \textsc{Medium}, which is contained in
 \textsc{Large}. Each dataset includes equal numbers of positive and
 negative strings.
 
-The \textsc{MLRegTest} training sets (here referred to as \orig) contain strings of lengths 20-29, sampled with
+The \textsc{MLRegTest} training sets (here referred to as \orig{}) contain strings of lengths 20-29, sampled with
 replacement. The development sets also contain strings of lengths
 20-29, sampled without replacement in a manner to keep the development
 sets disjoint from the training set.
@@ -412,41 +412,41 @@ follows.
 For each string length (1-19), 25 positive and 25 negative strings were
 sampled with replacement.
 If no positive negative strings of a given length existed, none were drawn for that length.
-This method resulted in a supplemental \short training set for each language, containing up to 1,000 shorter strings.
-It is worth noting that a key difference between these \short sets and the \orig sets originally included in \textsc{MLRegTest} is that for many Regular languages, there is no guarantee that 25 positive (negative) strings can be generated for a given length.
+This method resulted in a supplemental \short{} training set for each language, containing up to 1,000 shorter strings.
+It is worth noting that a key difference between these \short{} sets and the \orig{} sets originally included in \textsc{MLRegTest} is that for many Regular languages, there is no guarantee that 25 positive (negative) strings can be generated for a given length.
 For example, many Regular languages contain \emph{no} strings of length 1 or 2.
-This has three important implications for the nature of the \small testing sets.
-Firstly, most \small test sets contain significantly less than 1,000 examples, and the number of examples is not standardized across languages.
-Second, due to the small numbers of positive (negative) strings for certain lengths and the procedure of sampling with replacement, specific strings are more likely to be repeated several times in the \small test sets.
-Finally, the \small test sets are not balanced between numbers of positive and negative strings.
+This has three important implications for the nature of the \sm{} testing sets.
+Firstly, most \sm{} test sets contain significantly less than 1,000 examples, and the number of examples is not standardized across languages.
+Second, due to the small numbers of positive (negative) strings for certain lengths and the procedure of sampling with replacement, specific strings are more likely to be repeated several times in the \sm{} test sets.
+Finally, the \sm{} test sets are not balanced between numbers of positive and negative strings.
 Some contain mostly positive examples, and some mostly negative.
 All these properties are generally undesirable in training data sets for machine learning, and the original \textsc{MLRegTest} excluded shorter string lengths for exactly this reason.
-This work, however, is intended to explicitly examine the impact of shorter strings on the learning of regular languages, and we therefore consider the \small training data to be nevertheless valuable.
+This work, however, is intended to explicitly examine the impact of shorter strings on the learning of regular languages, and we therefore consider the \sm{} training data to be nevertheless valuable.
 
 \textsc{MLRegTest} contains four test sets per language, based on the
 string length and the method of generation. 
-\orig test sets have strings of length 20-29, matching the training data, while \long sets have strings of length
+\orig{} test sets have strings of length 20-29, matching the training data, while \lng{} sets have strings of length
 31-50. 
 \textsc{Random} test sets were created by sampling without replacement in a manner to keep them disjoint from the corresponding training and development sets. 
 \textsc{Adversarial} sets sampled pairs of positive and negative examples with an edit distance of 1. 
 Like the \textsc{Random} test sets, these were also sampled in a manner to keep them disjoint from the training and
 development sets. 
-(Of course for the \long test sets nothing
+(Of course for the \lng{} test sets nothing
 needed to be done to ensure they were disjoint from the training and
 development sets, since these only included strings of shorter lengths.)
 Henceforth, we refer to these test sets as \origRand, \longRand, \origAdv, \longAdv for \textsc{\origRandFull, \longRandFull, \origAdvFull}, and \textsc{\longAdvFull}, respectively.
 
-Following \citet{mlregtest} and \citet{adil23}, we evaluate trained models only on the \textsc{Large} test sets (recall that the sets are nested, so the \textsc{Large} test sets contain the \textsc{Medium} and \textsc{Small} ones).
-Note that these test sets are limited to strings of \orig or \long length, and \short strings are not included in testing.
-This means that the undesirable properties of the \short sets described above are limited to our training regime, and do not impact our testing setup (in particular, our test sets maintain their balance between positive and negative examples).
-The purpose of including \short strings in training is to investigate how much these strings help models to generalize, and the \orig and \long testing data are adequate to evaluate this.
+Following \citet{mlregtest} and \citet{adil23}, we evaluate trained models only on the \lrg{} test sets (recall that the sets are nested, so the \lrg{} test sets contain the \med{} and \sm{} ones).
+Note that these test sets are limited to strings of \orig{} or \lng{} length, and \short{} strings are not included in testing.
+This means that the undesirable properties of the \short{} sets described above are limited to our training regime, and do not impact our testing setup (in particular, our test sets maintain their balance between positive and negative examples).
+The purpose of including \short{} strings in training is to investigate how much these strings help models to generalize, and the \orig{} and \lng{} testing data are adequate to evaluate this.
 
 % In this work, we rebuilt the short training sets using that same recipe because \citeauthor{adil23} used a preliminary version of \textsc{MLRegTest}, and we used the published version.\footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}
 \todo{Jeff: what is the difference between the version of MLRegTest used in this paper and the published version?}
 In their preliminary experiments, \citeauthor{adil23} used an early, unfinished version of \textsc{MLRegTest} and set the parameters of the \textsc{FlexFringe} model to fixed default settings.
 In this work, we replicate their analyses on the final, published version
 \footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}, 
-as well as conducting a gridsearch to identify the best-performing \textsc{FlexFringe} parameter settings and extending their experiments to provide a comparison against neural network models on the \short datasets.
+as well as conducting a gridsearch to identify the best-performing \textsc{FlexFringe} parameter settings and extending their experiments to provide a comparison against neural network models on the \short{} datasets.
 
 We conducted three kinds of experiments. 
 In the \onlyShort experiments, only the short training set was used for training. 
@@ -467,8 +467,8 @@ the aforementioned four test sets.
   
 % Terminology recap
 Note that we have now introduced terminology to categorize data sets according to two properties: the \emph{total number} of strings they contain, and the \emph{lengths} of these strings.
-The terms \small, \med, and \large refer to the number of examples in a dataset (1,000, 10,000, and 100,000 examples respectively).
-Meanwhile, the terms \short, \int, and \long refer to the lengths of the strings in a set (1-19, 20-29, and 30-39 characters respectively).
+The terms \sm{}, \med{}{}, and \lrg{} refer to the number of examples in a dataset (1,000, 10,000, and 100,000 examples respectively).
+Meanwhile, the terms \short{}, \orig{}, and \lng{} refer to the lengths of the strings in a set (1-19, 20-29, and 30-39 characters respectively).
 
 The \plusShort and \onlyInt experiments parallel the experiments in \citet{adil23} on a preliminary version of MLRegTest, with the additions of using \textsc{FlexFringe} parameter settings established by a gridsearch (see \ref{sec:ff}) and including neural models in the experimental setup. 
 The \onlyShort experiments for both \textsc{FlexFringe} and the neural models are novel to this paper and help clarify the role short training strings play for learning regular languages.
