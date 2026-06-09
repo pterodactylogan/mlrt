@@ -67,6 +67,31 @@
 \newcommand{\NNType}{\tttx{NNType}}
 \newcommand{\AlgoType}{\tttx{AlgoType}}
 
+% names of dataset sizes
+\newcommand{\small}{\textsc{Small}}
+\newcommand{\med}{\textsc{Medium}}
+\newcommand{\large}{\textsc{Long}}
+
+% Names of train sets
+\newcommand{\short}{\textsc{Short}}
+\newcommand{\orig}{\textsc{Intermediate}}
+\newcommand{\long}{\textsc{Long}}
+
+% names of test sets
+\newcommand{\origRandFull}{\textsc{Intermediate Random}}
+\newcommand{\origRand}{IR}
+\newcommand{\longRandFull}{\textsc{Long Random}}
+\newcommand{\longRand}{LR}
+\newcommand{\origAdvFull}{\textsc{Intermediate Adversarial}}
+\newcommand{\origAdv}{IA}
+\newcommand{\longAdvFull}{\textsc{Long Adversarial}}
+\newcommand{\longAdv}{LA}
+
+% names of experiment paradigms
+\newcommand{\onlyShort}{\textsc{onlyShort}}
+\newcommand{\plusShort}{\textsc{plusShort}}
+\newcommand{\onlyInt}{\textsc{onlyInt}}
+
 % Code repository url
 %\newcommand{\repo}{https://github.com/adil-soubki/mlrt}
 
@@ -143,7 +168,6 @@
 \editor{}
 
 \maketitle
-
 
 % trailing '%' for backward compatibility of .sty file
 \begin{abstract}%
@@ -365,7 +389,7 @@ details regarding these language classes.
 \end{table}
 
 \citet{mlregtest} use the Language Toolkit \citep{Lambert2024} to
-verify that every language in some class A in MLRegTest belongs to A
+verify that every language in some class A in \textsc{MLRegTest} belongs to A
 and does not belong to any other class B, where B is a subclass of A
 or is incomparable with A.
 
@@ -376,84 +400,86 @@ The datasets for each language come in three sizes: \textsc{Small}
 \textsc{Large}. Each dataset includes equal numbers of positive and
 negative strings.
 
-The training sets contain strings of lengths 20-29, sampled with
+The \textsc{MLRegTest} training sets (here referred to as \orig) contain strings of lengths 20-29, sampled with
 replacement. The development sets also contain strings of lengths
 20-29, sampled without replacement in a manner to keep the development
 sets disjoint from the training set.
+ 
+% \citeauthor{adil23} found that augmenting the training set with up to 1,000 positive and negative strings of length 1-19 significantly improved \textsc{FlexFringe} performance despite sacrificing the balance of positive and negative examples.
+\citeauthor{adil23} found that augmenting the training set with strings of length 1-19 significantly improved \textsc{FlexFringe} performance.
+\citeauthor{adil23} built a short training set for each language as
+follows. 
+For each string length (1-19), 25 positive and 25 negative strings were
+sampled with replacement.
+If no positive negative strings of a given length existed, none were drawn for that length.
+This method resulted in a supplemental \short training set for each language, containing up to 1,000 shorter strings.
+It is worth noting that a key difference between these \short sets and the \orig sets originally included in \textsc{MLRegTest} is that for many Regular languages, there is no guarantee that 25 positive (negative) strings can be generated for a given length.
+For example, many Regular languages contain \emph{no} strings of length 1 or 2.
+This has three important implications for the nature of the \small testing sets.
+Firstly, most \small test sets contain significantly less than 1,000 examples, and the number of examples is not standardized across languages.
+Second, due to the small numbers of positive (negative) strings for certain lengths and the procedure of sampling with replacement, specific strings are more likely to be repeated several times in the \small test sets.
+Finally, the \small test sets are not balanced between numbers of positive and negative strings.
+Some contain mostly positive examples, and some mostly negative.
+All these properties are generally undesirable in training data sets for machine learning, and the original \textsc{MLRegTest} excluded shorter string lengths for exactly this reason.
+This work, however, is intended to explicitly examine the impact of shorter strings on the learning of regular languages, and we therefore consider the \small training data to be nevertheless valuable.
 
 \textsc{MLRegTest} contains four test sets per language, based on the
-string length and the method of generation. \textsc{Short} sets have
-strings of length 20-29, and \textsc{Long} sets have strings of length
-31-50. \textsc{Random} test sets were created by sampling without
-replacement in a manner to keep the development sets disjoint from the
-training and development sets. \textsc{Adversarial} sets sampled pairs
-of positive and negative examples with an edit distance of 1 in a
-manner to keep the development sets disjoint from the training and
-development sets. (Of course for the \textsc{Long} test sets nothing
+string length and the method of generation. 
+\orig test sets have strings of length 20-29, matching the training data, while \long sets have strings of length
+31-50. 
+\textsc{Random} test sets were created by sampling without replacement in a manner to keep them disjoint from the corresponding training and development sets. 
+\textsc{Adversarial} sets sampled pairs of positive and negative examples with an edit distance of 1. 
+Like the \textsc{Random} test sets, these were also sampled in a manner to keep them disjoint from the training and
+development sets. 
+(Of course for the \long test sets nothing
 needed to be done to ensure they were disjoint from the training and
-development sets.)
+development sets, since these only included strings of shorter lengths.)
+Henceforth, we refer to these test sets as \origRand, \longRand, \origAdv, \longAdv for \textsc{\origRandFull, \longRandFull, \origAdvFull}, and \textsc{\longAdvFull}, respectively.
 
-Following \citet{mlregtest} and \citet{adil23}, we evaluate trained
-models only on the \textsc{Large} test sets. Henceforth, we refer to
-these test sets as SR, LR, SA, LA for \textsc{Short Random, Long
-  Random, Short Adversarial}, and \textsc{Long Adversarial},
-respectively.
+Following \citet{mlregtest} and \citet{adil23}, we evaluate trained models only on the \textsc{Large} test sets (recall that the sets are nested, so the \textsc{Large} test sets contain the \textsc{Medium} and \textsc{Small} ones).
+Note that these test sets are limited to strings of \orig or \long length, and \short strings are not included in testing.
+This means that the undesirable properties of the \short sets described above are limited to our training regime, and do not impact our testing setup (in particular, our test sets maintain their balance between positive and negative examples).
+The purpose of including \short strings in training is to investigate how much these strings help models to generalize, and the \orig and \long testing data are adequate to evaluate this.
 
-As mentioned, the training strings in \textsc{MLRegTest} are of length
-20-29.  \citeauthor{adil23} found that augmenting the training set
-with up to 1,000 positive and negative strings of length 1-19
-significantly improved \textsc{FlexFringe} performance despite
-sacrificing the balance of positive and negative examples.
+% In this work, we rebuilt the short training sets using that same recipe because \citeauthor{adil23} used a preliminary version of \textsc{MLRegTest}, and we used the published version.\footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}
+\todo{Jeff: what is the difference between the version of MLRegTest used in this paper and the published version?}
+In their preliminary experiments, \citeauthor{adil23} used an early, unfinished version of \textsc{MLRegTest} and set the parameters of the \textsc{FlexFringe} model to fixed default settings.
+In this work, we replicate their analyses on the final, published version
+\footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}, 
+as well as conducting a gridsearch to identify the best-performing \textsc{FlexFringe} parameter settings and extending their experiments to provide a comparison against neural network models on the \short datasets.
 
-\citeauthor{adil23} built a short training set for each language as
-follows. For each length, 25 positive and 25 negative strings were
-sampled with replacement.  If no positive negative strings of a given
-length existed, none were drawn for that length.
-
-In this work, we rebuilt the short training sets using that same
-recipe because \citeauthor{adil23} used a preliminary version of
-\textsc{MLRegTest}, and we used the published
-version.\footnote{MLRegTest is publicly available with Dryad
-  \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license
-  \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication}
-  (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}
-
-We conducted three kinds of experiments. In the \textsc{OnlyShort}
-experiments, only the short training set was used for training. In the
-\textsc{PlusShort} experiments, the training set was made up of the
-original \textsc{MLRegTest} training sets augmented with the short
-training set. In the \textsc{OnlyLong} experiments, the original
-\textsc{MLRegTest} training sets were used (without the short training
-set).
+We conducted three kinds of experiments. 
+In the \onlyShort experiments, only the short training set was used for training. 
+In the \plusShort experiments, the training set was made up of the original \textsc{MLRegTest} training sets augmented with the short
+training set. 
+In the \onlyInt experiments, the original \textsc{MLRegTest} training sets were used (without the short training set).
 
 We excluded languages with alphabet sizes of 64, thus considering
-1,140, in order to compare our results with \citet{adil23}. This
-submission also excludes the Large training sets because the
+1,140, in order to compare our results with \citet{adil23}. 
+This submission also excludes the Large training sets because the
 SearchDeep strategy caused \textsc{FlexFringe} to run too long during
-training.
+training (see \ref{sec:conclusion} for notes on future work in this direction).
 
 Thus for each language, for each learning system, we considered five
-training regimes: \textsc{Only Short, Small Plus Short, Medium Plus
-  Short, Only Small, Only Medium}. Each trained model was tested on
-the aforementioned four test sets.\footnote{Note that the
-  \textsc{Short} test sets contain strings of length 20-29, while the
-  Short training sets contain strings of length 1-19. We apologize for
-  any confusion.}
+training regimes: \onlyShort, \textsc{Small} \plusShort, \textsc{Small} \onlyInt, \textsc{Medium} \plusShort, \textsc{Medium} \onlyInt.
+Each trained model was tested on
+the aforementioned four test sets.
+  
+% Terminology recap
+Note that we have now introduced terminology to categorize data sets according to two properties: the \emph{total number} of strings they contain, and the \emph{lengths} of these strings.
+The terms \small, \med, and \large refer to the number of examples in a dataset (1,000, 10,000, and 100,000 examples respectively).
+Meanwhile, the terms \short, \int, and \long refer to the lengths of the strings in a set (1-19, 20-29, and 30-39 characters respectively).
 
-The \textsc{PlusShort} and \textsc{OnlyLong} experiments essentially
-replicate the experiments in \citet{adil23} on a preliminary version
-of MLRegTest. The \textsc{OnlyShort} experiments are novel to this
-paper and help clarify the role short training strings play for
-learning regular languages.
+The \plusShort and \onlyInt experiments parallel the experiments in \citet{adil23} on a preliminary version of MLRegTest, with the additions of using \textsc{FlexFringe} parameter settings established by a gridsearch (see \ref{sec:ff}) and including neural models in the experimental setup. 
+The \onlyShort experiments for both \textsc{FlexFringe} and the neural models are novel to this paper and help clarify the role short training strings play for learning regular languages.
 
 \section{Results} \label{sec:results}
 
-We use the same non-parametric methods as \citet{mlregtest} and
-\citet{adil23} in our analysis as advocated by \citet{Demsar2006} and
-\citet{Stapor2017}. We report aggregate accuracy for the models as the
-primary measurement of performance since the test sets are balanced,
-and very strong correlations were found across performance
-measures. Experimental observations are aggregated over the variables
+We use the same non-parametric methods as \citet{mlregtest} and \citet{adil23} in our analysis, as advocated by \citet{Demsar2006} and \citet{Stapor2017}. 
+% We report aggregate accuracy for the models as the primary measurement of performance since the test sets are balanced, and very strong correlations were found across performance measures. 
+We report aggregate accuracy as the primary measurement of performance for all models.
+Given the balanced nature of the tests sets, very strong correlations were found across performance measures.
+Experimental observations are aggregated over the variables
 \Tier, \kay, \jay, \eye and \Alpha. These are held as blocking
 variables, and factors \Class, \TrainSize, \TestType, and \AlgoType
 are treatment variables which average accuracy is computed over. The
@@ -577,7 +603,9 @@ the biggest factor again being the adversariality of the test sets
 
 Interestingly, the drop in performance from the random conditions to
 the adversarial conditions (roughly 7-8 points) did not seem to be as
-great as was reported for the neural models in earlier research. To
+great as was reported for the neural models in earlier research. 
+\todo{what was this drop?}
+To
 investigate further, Table~\ref{tab:ff-acc-test-set-by-train} reports
 the mean accuracies in these test sets by training condition.
 \begin{table}[t]
@@ -643,11 +671,13 @@ significant. Significant differences generally only occur between the
 highest performing classes (Zp, SF, SL, coSL) and the lowest ones (SP,
 coSP).
 
+\todo{direct numerical comparison here}
 However, it is striking how well the Flexfringe model performs on the
 Zp class. Languages in this class are counting modulo some natural
 number \(n\). In contrast, the highest performing neural model is the
 GRU, which obtains a mean accuracy of 0.741.
 
+\todo{rephrase. order of what?}
 Table~\ref{tab:ff-acc-lang-onlyshort} examines Flexfringe's
 performance in the Short Only training condition. While the order of
 is not the same, it is interesting to observe some trends. First, the
@@ -658,6 +688,8 @@ Table~\ref{tab:ff-acc-lang}. This is probably due to the fact that
 Table~\ref{tab:ff-acc-lang} aggregates results from all training
 conditions, including the \textsc{Only Small} and \textsc{Only Medium}
 conditions, which Flexfringe performs much less well.
+
+\todo{this table is visually really confusing. remake.}
 \begin{table}[t]
   \centering
   \begin{tabular}{llllllll}
@@ -730,14 +762,16 @@ unexpected given that the state-merging algorithms it is based
 (e.g. RPNI and EDSM) on are intended to learn the class of
 deterministic finite-state automata.
 
-\section{Conclusions}
+\section{Conclusions}  \label{sec:conclusion}
 The strongest model overall was the GRU, which performed best across
 partitions.  Strikingly, however, the performance of the state merging
 algorithm benefited far more from the addition of short strings than
 that of any of the neural models: it performed most competitively on
 \textsc{OnlyShort}.  Meanwhile, increasing the size of the training
 set was less helpful for the state merging algorithm than for the
-neural models.  This shows a certain attunement of the state merging
+neural models.  
+\todo{emphasize this a little. In the realm of natural language learning, overall accuracy is not the only important factor when evaluating what makes a good model of human language learning. Cite something by Sarah?? On the other hand, Zp is NOT a natural class--modulo counting is considered highly unnatural for human language}
+This shows a certain attunement of the state merging
 algorithm to the kinds of input samples that are relevant for learning
 natural languages \--- i.e., short and small.
 
