@@ -110,7 +110,7 @@ diffs <- everything %>%
 # PS vs. OS 
 diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("Difference in Accuracy") + 
   xlab("") + 
@@ -124,7 +124,7 @@ ggsave("figs/acc-diff-ps-os.pdf", width=6, height=4)
 # PS vs. OL
 diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("Difference in Accuracy") + 
   xlab("") + 
@@ -145,7 +145,7 @@ diffs %>%
   ggplot(aes(x = model, y = val, fill = Difference, alpha = Difference)) + 
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
   scale_fill_manual(values = c("PS-OS" = "purple", "PS-OL" = "turquoise")) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
@@ -161,7 +161,7 @@ diffs %>%
   ggplot(aes(x = model, y = val, fill = model, alpha = Difference)) + 
   scale_alpha_manual(values = c(0.25, 1)) +
   geom_boxplot(outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   guides(
     fill = "none",
@@ -187,7 +187,7 @@ diff$accuracy_diff = diff$meanaccuracy_ps - diff$meanaccuracy
 diff %>%
   ggplot(aes(x = model, y = accuracy_diff, fill = model)) + 
   geom_col(alpha = 0.7) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("Difference in Accuracy") + 
   xlab("") + 
@@ -195,7 +195,7 @@ diff %>%
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
+  ggtitle("Difference in Acc from Small-PS to OS by Model")
 ggsave("figs/acc-diff-ps-os-box.pdf", width=6, height=4)
 
 # Explore the difference in accuracy scores between PS on OL
@@ -204,7 +204,7 @@ diff$accuracy_diff = diff$meanaccuracy_ps - diff$meanaccuracy
 diff %>%
   ggplot(aes(x = model, y = accuracy_diff, fill = model)) + 
   geom_col(alpha = 0.7) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("Difference in Accuracy") + 
   xlab("") + 
@@ -212,14 +212,14 @@ diff %>%
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
+  ggtitle("Difference in Acc from Small-PS to OS by Model")
 ggsave("figs/acc-diff-ps-ol-box.pdf", width=6, height=4)
 
 # accuracy by datatype 
 everything %>%
   ggplot(aes(x = model, y = accuracy, fill = factor(data_type, levels=c("OS", "PS", "OL")))) +
   geom_boxplot(alpha=0.6) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("Accuracy") + 
   xlab("Model") + 
@@ -235,7 +235,7 @@ everything %>%
   filter(data_type =="OS") %>% 
   ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("Accuracy") + 
   labs(fill="Model")+
@@ -250,7 +250,7 @@ everything %>%
   filter(data_type =="PS") %>% 
   ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("Accuracy") + 
   labs(fill="Model")+
@@ -264,7 +264,7 @@ everything %>%
   filter(data_type =="OL") %>% 
   ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
   theme_bw() + 
   ylab("Accuracy") + 
   labs(fill="Model")+
@@ -304,7 +304,7 @@ jeffstats %>% ggplot(aes(x = model, y = Sdiff, fill=model)) +
   theme_bw() + 
   xlab("") + 
   ylab("Difference in Accuracy") + 
-  ggtitle("Difference in Accuracy between SR and SA Test Sets") + 
+  ggtitle("Difference in Accuracy between IR and IA Test Sets") + 
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
 ggsave("figs/sr-sa-diff.pdf", width=6, height=4)
 
