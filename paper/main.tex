@@ -51,6 +51,7 @@
 
 % Useful shorthand.
 \newcommand{\tsc}[1]{\textsc{#1}}
+\newcommand{\tscx}[1]{\textsc{#1}\xspace}
 \newcommand{\ttt}[1]{\texttt{#1}}
 \newcommand{\tbf}[1]{\textbf{#1}}
 
@@ -68,29 +69,29 @@
 \newcommand{\AlgoType}{\tttx{AlgoType}}
 
 % names of dataset sizes
-\newcommand{\sm}{\textsc{Small}}
-\newcommand{\med}{\textsc{Medium}}
-\newcommand{\lrg}{\textsc{Large}}
+\newcommand{\sm}{\tscx{Small}}
+\newcommand{\med}{\tscx{Medium}}
+\newcommand{\lrg}{\tscx{Large}}
 
 % Names of train sets
-\newcommand{\short}{\textsc{Short}}
-\newcommand{\orig}{\textsc{Intermediate}}
-\newcommand{\lng}{\textsc{Long}}
+\newcommand{\short}{\tscx{Short}}
+\newcommand{\orig}{\tscx{Intermediate}}
+\newcommand{\lng}{\tscx{Long}}
 
 % names of test sets
-\newcommand{\origRandFull}{\textsc{Intermediate Random}}
+\newcommand{\origRandFull}{\tscx{Intermediate Random}}
 \newcommand{\origRand}{IR}
-\newcommand{\longRandFull}{\textsc{Long Random}}
+\newcommand{\longRandFull}{\tscx{Long Random}}
 \newcommand{\longRand}{LR}
-\newcommand{\origAdvFull}{\textsc{Intermediate Adversarial}}
+\newcommand{\origAdvFull}{\tscx{Intermediate Adversarial}}
 \newcommand{\origAdv}{IA}
-\newcommand{\longAdvFull}{\textsc{Long Adversarial}}
+\newcommand{\longAdvFull}{\tscx{Long Adversarial}}
 \newcommand{\longAdv}{LA}
 
 % names of experiment paradigms
-\newcommand{\onlyShort}{\textsc{onlyShort}}
-\newcommand{\plusShort}{\textsc{plusShort}}
-\newcommand{\onlyInt}{\textsc{onlyInt}}
+\newcommand{\onlyShort}{\tscx{onlyShort}}
+\newcommand{\plusShort}{\tscx{plusShort}}
+\newcommand{\onlyInt}{\tscx{onlyInt}}
 
 % Code repository url
 %\newcommand{\repo}{https://github.com/adil-soubki/mlrt}
@@ -171,11 +172,13 @@
 
 % trailing '%' for backward compatibility of .sty file
 \begin{abstract}%
-  MLRegTest \citep{mlregtest} is a benchmark for learning regular
+	
+\todo{shorten and differentiate from intro}
+  \textsc{MLRegTest} \citep{mlregtest} is a benchmark for learning regular
   languages from positive and negative data.
   \citet{adil23} examine the performance of the
   state-merging algorithms RPNI, EDSM, and ALERGIA on a preliminary
-  version of MLRegTest and found that the neural learning models
+  version of \textsc{MLRegTest} and found that the neural learning models
   generally outperformed the state-merging algorithms on this
   benchmark.  However, since MLRegtTest excludes strings less than
   length 19 in order to achieve a balance of positive and negative
@@ -187,7 +190,7 @@
   models with shorter strings.
   
   In this context, this paper makes the following
-  contributions. First, it utilizes the final version of MLRegTest,
+  contributions. First, it utilizes the final version of \textsc{MLRegTest},
   not the preliminary version.  Second, instead of running RPNI and
   EDSM, it conductas a limited gridsearch over the parameters provided
   by the flexfringe software \citep{flexfringe-short, flexfringe} to
@@ -217,43 +220,35 @@
 
 \section{Introduction}
 
-\todo{Currently identical to abstract. Change abstract?}
 
-  MLRegTest \citep{mlregtest} is a benchmark for learning regular
-  languages from positive and negative data.
-  \citet{adil23} examine the performance of the
-  state-merging algorithms RPNI, EDSM, and ALERGIA on a preliminary
-  version of MLRegTest and found that the neural learning models
-  generally outperformed the state-merging algorithms on this
-  benchmark.  However, since MLRegtTest excludes strings less than
-  length 19 in order to achieve a balance of positive and negative
-  strings in training, development and test sets across all languages
-  in the benchmark, \citet{adil23} also report
-  follow-up experiments which included shorter training strings and
-  shows they dramatically improve the performance of the state-merging
-  algorithms. They did not examine the performance of the neural
-  models with shorter strings.
+\textsc{MLRegTest} \citep{mlregtest} is a benchmark for learning regular languages from positive and negative data.
+Using this benchmark, this paper compares the learning behavior of neural and state-merging learning algorithms on the regular languages, in particular exploring the role of string length in the algorithms' performance.
+  
+The performance of the state-merging algorithms RPNI, EDSM, and ALERGIA was examined by \citet{adil23} on a preliminary version of \textsc{MLRegTest} and found to be generally weaker than that of the neural learning models investigated by \citet{mlregtest}.
+However, since \textsc{MLRegtTest} excludes strings less than length 19 in order to achieve a balance of positive and negative strings in its datasets, \citet{adil23} also report follow-up experiments which included shorter training strings and show that they dramatically improve the performance of the state-merging algorithms.
+This indicates that string length may be an important factor in learning behavior for these algorithms, and opens the question of whether neural learning approaches are similarly impacted.
   
   In this context, this paper makes the following
-  contributions. First, it utilizes the final version of MLRegTest,
-  not the preliminary version.  Second, instead of running RPNI and
-  EDSM, it conductas a limited gridsearch over the parameters provided
+  contributions. 
+  First, we examine the performance of state merging algorithms on the final version of \textsc{MLRegTest}, not the preliminary version.
+  Second, instead of exclusively running RPNI and EDSM out of the box, we conduct a limited gridsearch over the parameters provided
   by the flexfringe software \citep{flexfringe-short, flexfringe} to
-  find suitable hyperparameters for merging states. Third, it reports
-  the results of this state-merging algorithm on five experimental
-  setups: only-short strings, the small data plus short strings, the
-  small data without short strings, the medium data plus short
-  strings, the medium data without short strings. Fourth, it subjects
+  find suitable hyperparameters for merging states.
+  Third, we report the results of this resulting state-merging algorithm on five experimental setups: short strings alone (\onlyShort), the small dataset of intermediate-length strings (\onlyInt \sm), the small dataset plus the short strings (\plusShort \sm), the medium dataset of intermediate-length strings (\onlyInt \med), and the medium dataset plus the short strings (\plusShort \med).
+  Finally, we subject
   the neural baselines from \citet{mlregtest} to these same
   experiments for comparison.
 
-  We conclude that the gated recurrent unit outperforms the
-  all state-merging algorithm in richer data regimes, with some interesting
-  caveats. The state-merging algorithm outperforms the neural methods
-  on regular languages that count modulo some positive
-  integer. Secondly, the state-merging algorithms do much better when
-  short strings are included, while the neural learning systems only
-  see moderate improvement.
+In terms of overall accuracy, we find that the gated recurrent unit generally outperforms all other algorithms tested (both neural and state-merging) across experiments.
+Interestingly, however, the state-merging algorithm outperforms the neural methods on regular languages that count modulo some positive integer. 
+Additionally, the state-merging algorithm benefits much more from the addition of short strings than the neural models do--both in terms of performance and in terms of resilience to adversarial testing data.
+The neural approaches, meanwhile, are far more sensitive to longer strings and see only moderate improvement with the addition of short ones. 
+
+The remainder of this paper is organized as follows.
+Section~\ref{sec:bg} introduces the learning algorithms that we examine, both the state-merging (\ref{sec:ff}) and neural (\ref{sec:neural}) systems.
+Section~\ref{sec:eval} summarizes the setup of the \textsc{MLRegTest} datasets, explains our addition of short strings to these datasets, and outlines our full experimental paradigm.
+Section~\ref{sec:results} reports our findings, examining the effects of string length (\ref{sec:res-short}), type of test set (\ref{sec:res-test}), specific language class (\ref{sec:res-class}), and the logical levels and ordering relations those classes are built on (\ref{sec:res-relation}).
+Finally, Section~\ref{sec:conclusion} offers ideas for future directions and concludes.
   
 \section{Learning Systems} \label{sec:bg}
 
@@ -311,7 +306,7 @@ parameters (Sicco Verweer, p.c.), and we believe we can avoid these
 errors in the future. We plan to run a more comprehensive grid search
 this summer.
 
-\subsection{Neural Systems}
+\subsection{Neural Systems} \label{sec:neural}
 Following \citet{mlregtest}, we test four neural architectures, all
 consisting of a trainable embedding layer followed by a unidirectional
 recurrent module (either a \textbf{\textsc{Simple}} RNN, a
@@ -342,7 +337,7 @@ three model-theoretic ordering relations are successor
 ($<$), which correspond to the concepts of substring, tier-substring,
 and subsequence, respectively.  A tier $T$ is a subset of the alphabet
 which can lead to a change of state. Non-tier elements are neutral and
-can be freely inserted or deleted \citep{Lambert2023}. MLRegTest
+can be freely inserted or deleted \citep{Lambert2023}. \textsc{MLRegTest}
 considers an additional subclass of purely periodic languages they
 call Zp. For example, the language whose words contain an even number
 of $a$ symbols belongs to Zp. 
@@ -384,7 +379,7 @@ details regarding these language classes.
                           & $<$                  & Complement of Strictly Piecewise  & coSP                 \\
     \bottomrule
   \end{tabular}
-  \caption{Logical characterizations and names of classes in MLRegTest.}
+  \caption{Logical characterizations and names of classes in \textsc{MLRegTest}.}
   \label{tab:classes}
 \end{table}
 
@@ -470,7 +465,7 @@ Note that we have now introduced terminology to categorize data sets according t
 The terms \sm{}, \med{}{}, and \lrg{} refer to the number of examples in a dataset (1,000, 10,000, and 100,000 examples respectively).
 Meanwhile, the terms \short{}, \orig{}, and \lng{} refer to the lengths of the strings in a set (1-19, 20-29, and 30-39 characters respectively).
 
-The \plusShort and \onlyInt experiments parallel the experiments in \citet{adil23} on a preliminary version of MLRegTest, with the additions of using \textsc{FlexFringe} parameter settings established by a gridsearch (see \ref{sec:ff}) and including neural models in the experimental setup. 
+The \plusShort and \onlyInt experiments parallel the experiments in \citet{adil23} on a preliminary version of \textsc{MLRegTest}, with the additions of using \textsc{FlexFringe} parameter settings established by a gridsearch (see \ref{sec:ff}) and including neural models in the experimental setup. 
 The \onlyShort experiments for both \textsc{FlexFringe} and the neural models are novel to this paper and help clarify the role short training strings play for learning regular languages.
 
 \section{Results} \label{sec:results}
@@ -490,7 +485,7 @@ contribute equally. Additional analysis using the
 Nemenyi-Wilcoxon-Wilcox all-pairs test identified which pairs differ
 significantly.
 
-\subsection{Effect of Short Training Strings}
+\subsection{Effect of Short Training Strings} \label{sec:res-short}
 
 Table \ref{tab:overall-scores} gives the mean accuracy score of each
 model across languages, experiments, and test sets. The Friedman rank
@@ -579,7 +574,7 @@ which see the large perfomance increases in the \textsc{Small} and
 %   \label{fig:f1-diff-ps-os}
 % \end{figure}
 
-\subsection{FlexFringe Performance by Test Set}
+\subsection{FlexFringe Performance by Test Set} \label{sec:res-test}
 
 \citet{mlregtest} found that the performance of the neural models
 varied significantly depending on the test sets. In particular, the
@@ -642,7 +637,7 @@ resilient to adversarial test sets than the neural models. With
 additional training data, the neural models, and especially the GRU,
 become more resilient to adversarial tests.
 
-\subsection{FlexFringe Performance by Language Class}
+\subsection{FlexFringe Performance by Language Class} \label{sec:res-class}
 
 The Friedman test shows that the language class is significant factor
 for accuracy for the FlexFringe model tested here
@@ -708,7 +703,7 @@ conditions, which Flexfringe performs much less well.
   \label{tab:ff-acc-lang-onlyshort}
 \end{table}
 
-\subsection{FlexFringe Performance by Logical Level and Order Relation}
+\subsection{FlexFringe Performance by Logical Level and Order Relation} \label{sec:res-relation}
 
 We also checked to see whether the logical level or the ordering
 relation was a significant factor. The languages are grouped by the
