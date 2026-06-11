@@ -118,7 +118,7 @@ diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
+  ggtitle("Difference in Acc from Small-PS to OS by Model")
 ggsave("figs/acc-diff-ps-os.pdf", width=6, height=4)
 
 # PS vs. OL
@@ -132,7 +132,7 @@ diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in Accuracy from Small Plus Short to Only Short by Model")
+  ggtitle("Difference in Acc from Small-PS to Small-OI by Model")
 ggsave("figs/acc-diff-ps-ol.pdf", width=6, height=4)
 
 # Combined boxplot
