@@ -212,7 +212,7 @@ diff %>%
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
-  ggtitle("Difference in Acc from Small-PS to OS by Model")
+  ggtitle("Difference in Acc from Small-PS to OI by Model")
 ggsave("figs/acc-diff-ps-ol-box.pdf", width=6, height=4)
 
 # accuracy by datatype 
