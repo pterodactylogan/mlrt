@@ -109,7 +109,7 @@
 }
 
 % Set the paper title here.
-\newcommand{\papertitle}{Short Strings Matter More for State Merging Algorithms than They Do for Neural Learning Systems}
+\newcommand{\papertitle}{The Long and Short of Learning Regular Languages}
 
 
 \newcommand{\todo}[1]{\textcolor{red}{(TODO: {#1})}}
@@ -176,7 +176,8 @@
 	We test the performance of state merging algorithms against four neural network architectures on \textsc{MLRegTest}, a benchmark for learning regular languages from positive and negative data \citep{mlregtest}.
 	Prior work by \citet{adil23} on a preliminary version of \textsc{MLRegTest} found that neural learning models generally outperformed state merging algorithms on this benchmark.
 	However, \citet{adil23} also note that \textsc{MLRegTest} excludes strings shorter than length 20 and report a follow-up experiment demonstrating that the addition of shorter strings dramatically improves the performance of state merging algorithms.
-	
+        They did not examine the performance of neural models with shorter strings.
+        
 	We expand on this work by conducting several experiments using the published version of \textsc{MLRegTest}.
 	Firstly, we conduct a gridsearch over the hyperparameters provided by the \textsc{FlexFringe} software \citep{flexfringe-short, flexfringe} to identify the best-performing state merging system.
 	We then report the results of this state merging algorithm on experimental setups which vary by training set size, inclusion of shorter training strings, and inclusion of intermediate-length training strings.
@@ -184,7 +185,7 @@
 	
 	We conclude that the gated recurrent unit has the strongest performance across the benchmarks, with some interesting caveats.
 	Namely, the state merging algorithm outperforms all neural architectures on regular languages which count modulo some positive integer.
-	Additionally, the state merging algorithm sees much greater improvement from the inclusion of shorter strings, while the neural models do much better with longer strings and larger data samples.
+	Additionally, the state merging algorithm sees much greater improvement and more resiliency to adversarial test sets from the inclusion of shorter strings, while the neural models do much better with longer strings and larger data samples.
 	These results suggest that state merging approaches may be more attuned to learning from shorter, smaller input data, while neural learners need the opposite.
 
 \end{abstract}
@@ -201,7 +202,7 @@
 Using this benchmark, this paper compares the learning behavior of neural and state-merging learning algorithms on the regular languages, in particular exploring the role of string length in the algorithms' performance.
   
 The performance of the state-merging algorithms RPNI, EDSM, and ALERGIA was examined by \citet{adil23} on a preliminary version of \textsc{MLRegTest} and found to be generally weaker than that of the neural learning models investigated by \citet{mlregtest}.
-However, since \textsc{MLRegtTest} excludes strings of length 19 or shorter in order to achieve a balance of positive and negative strings in its datasets, \citet{adil23} also report follow-up experiments which included shorter training strings and show that they dramatically improve the performance of the state-merging algorithms.
+However, since \textsc{MLRegTest} excludes strings of length 19 or shorter in order to achieve a balance of positive and negative strings in its datasets, \citet{adil23} also report follow-up experiments which included shorter training strings and show that they dramatically improve the performance of the state-merging algorithms.
 This indicates that string length may be an important factor in learning behavior for these algorithms, and opens the question of whether neural learning approaches are similarly impacted.
   
   In this context, this paper makes the following
@@ -210,7 +211,7 @@ This indicates that string length may be an important factor in learning behavio
   Second, instead of exclusively running RPNI and EDSM out of the box, we conduct a limited gridsearch over the parameters provided
   by the flexfringe software \citep{flexfringe-short, flexfringe} to
   find suitable hyperparameters for merging states.
-  Third, we report the results of this resulting state-merging algorithm on five experimental setups: short strings alone (\onlyShort), the small dataset of intermediate-length strings (\sm \onlyInt), the small dataset plus the short strings (\sm \plusShort), the medium dataset of intermediate-length strings (\med \onlyInt), and the medium dataset plus the short strings (\med \plusShort).
+  Third, we report the results of this resulting state-merging algorithm on five experimental setups: short strings alone (\onlyShort), the small-sized dataset of intermediate-length strings (\sm \onlyInt), the small-sized dataset plus the short strings (\sm \plusShort), the medium-sized dataset of intermediate-length strings (\med \onlyInt), and the medium-sized dataset plus the short strings (\med \plusShort).
   Finally, we subject
   the neural baselines from \citet{mlregtest} to these same
   experiments for comparison.
@@ -241,7 +242,7 @@ red/blue framework (see \citet{Higuera2010}).
 Generally speaking, these algorithms take as input a list of strings each labeled as to whether or not they belong in the target language.
 They first construct a prefix tree from this input, with accepting and non-accepting states notated accordingly.
 Then, states in the prefix tree are merged together until finally, a finite state acceptor is returned which represents the learned grammar.
-In general, pairs of states are scored for their ``mergability'', and states with sufficient scores are merged in a particular order as determined by the specific hyperparemeter settings being used.
+In general, pairs of states are scored for their ``mergability'', and states with sufficient scores are merged in a particular order as determined by the specific hyperparameter settings being used.
 These different hyperparameter settings correspond to different individual state-merging algorithms.
 For example, the EDSM \citep{edsm} and RPNI \citep{rpni} algorithms are particular strategies among the many which \textsc{FlexFringe} can instantiate.
 \textsc{FlexFringe} also can also learn stochastic regular
@@ -331,7 +332,7 @@ details regarding these language classes.
   \centering
   \begin{tabular}{cccc}
     \toprule
-    Logic                 & Representation       & Language Name                     & Abbrevation          \\
+    Logic                 & Representation       & Language Name                     & Abbreviation          \\
     \midrule
     \multirow{3}{*}{MSO}  & $\triangleleft$      & \multirow{3}{*}{Regular}          & \multirow{3}{*}{Reg} \\
                           & $\triangleleft_T$    &                                   &                      \\
@@ -394,8 +395,8 @@ Firstly, most \sm{} test sets contain significantly less than 1,000 examples, an
 Second, due to the small numbers of positive (negative) strings for certain lengths and the procedure of sampling with replacement, specific strings are more likely to be repeated several times in the \sm{} test sets.
 Finally, the \sm{} test sets are not balanced between numbers of positive and negative strings.
 Some contain mostly positive examples, and some mostly negative.
-All these properties are generally undesirable in training data sets for machine learning, and the original \textsc{MLRegTest} excluded shorter string lengths for exactly this reason.
-This work, however, is intended to explicitly examine the impact of shorter strings on the learning of regular languages, and we therefore consider the \sm{} training data to be nevertheless valuable.
+The original \textsc{MLRegTest} excluded shorter string lengths in order to run controlled experiments with balanced training sets.
+This work, however, is intended to explicitly examine the impact of shorter strings on the learning of regular languages, and we therefore consider the \sm{} training data to be valuable.
 
 \textsc{MLRegTest} contains four test sets per language, based on the
 string length and the method of generation. 
@@ -408,7 +409,7 @@ development sets.
 (Of course for the \lng{} test sets nothing
 needed to be done to ensure they were disjoint from the training and
 development sets, since these only included strings of shorter lengths.)
-Henceforth, we refer to these test sets as \origRand, \longRand, \origAdv, \longAdv for \textsc{\origRandFull, \longRandFull, \origAdvFull}, and \textsc{\longAdvFull}, respectively.
+Henceforth, we refer to these test sets as \origRand, \longRand, \origAdv, \longAdv for \textsc{\origRandFull, \longRandFull, \origAdvFull}, and \textsc{\longAdvFull}, respectively.\footnote{In \citet{mlregtest}, these were called Short Random (SR), Long Random (LR), Short Adversarial (SA), and Long Adversarial (LA), respectively.}
 
 Following \citet{mlregtest} and \citet{adil23}, we evaluate trained models only on the \lrg test sets (recall that the sets are nested, so the \lrg test sets contain the \med and \sm ones).
 Note that these test sets are limited to strings of \orig or \lng length, with \short strings absent from testing.
@@ -416,7 +417,7 @@ This means that the undesirable properties of the \short sets described above ar
 The purpose of including \short strings in training is to investigate how much these strings help models to generalize, and the \orig{} and \lng{} testing data are adequate to evaluate this.
 
 % In this work, we rebuilt the short training sets using that same recipe because \citeauthor{adil23} used a preliminary version of \textsc{MLRegTest}, and we used the published version.\footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}
-In their preliminary experiments, \citeauthor{adil23} used an early, unfinished version of \textsc{MLRegTest} which included issues with string sampling (see footnote 5 on page 19 of \citet{mlregtest}) as well as errors in the underlying automata for generating certain languages.
+In their preliminary experiments, \citeauthor{adil23} used an early, unfinished version of \textsc{MLRegTest} which included issues with string sampling (see footnote 5 on page 19 of \citet{mlregtest}) as well as some errors in the underlying automata for generating certain languages.
 Additionally, \citeauthor{adil23} tested only three state merging variants (corresponding to the RPNI, EDSM, and ALERGIA algorithms) by setting the parameters of the \textsc{FlexFringe} model to fixed default settings.
 In this work, we replicate their analyses on the final, published version of \textsc{MLRegTest}
 \footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}, 
@@ -443,7 +444,7 @@ the aforementioned four test sets.
 % Terminology recap
 Note that we have now introduced terminology to categorize data sets according to two properties: the \emph{total number} of strings they contain, and the \emph{lengths} of these strings.
 The terms \sm{}, \med{}{}, and \lrg{} refer to the number of examples in a dataset (1,000, 10,000, and 100,000 examples respectively).
-Meanwhile, the terms \short{}, \orig{}, and \lng{} refer to the lengths of the strings in a set (1-19, 20-29, and 30-39 characters respectively).
+Meanwhile, the terms \short{}, \orig{}, and \lng{} refer to the lengths of the strings in a set (1-19, 20-29, and 31-50 characters respectively).
 
 The \plusShort and \onlyInt experiments parallel the experiments in \citet{adil23} on a preliminary version of \textsc{MLRegTest}, with the additions of using \textsc{FlexFringe} parameter settings established by a gridsearch (see \S\ref{sec:ff}) and including neural models in the experimental setup. 
 The \onlyShort experiments for both \textsc{FlexFringe} and the neural models are novel to this paper and help clarify the role short training strings play for learning regular languages.
@@ -470,7 +471,7 @@ significantly.
 Table~\ref{tab:overall-scores} gives the mean accuracy score of each
 model across languages, experiments, and test sets. The Friedman rank
 sum test indicated that the training condition was significant for
-every model (\(p < \num{2.2e-16}\)). Importantly, the results in the
+every model (\(p < \num{2.2e-16}\)). The results in the
 \plusShort and \onlyInt experiments are consistent
 with \citet{adil23} and \citet{mlregtest}, respectively.
 
@@ -504,7 +505,7 @@ with \citet{adil23} and \citet{mlregtest}, respectively.
 
 The GRU consistently outperforms the other models across all
 experiments. 
-Interestingly, however, \textsc{FlexFringe} outperforms
+Interestingly, \textsc{FlexFringe} outperforms
 the other neural models in the \onlyShort and \sm \plusShort
 experiments. 
 In all other training conditions, the neural networks outperform
@@ -514,14 +515,13 @@ In all other training conditions, the neural networks outperform
 Another important observation is that the addition of the short training data makes a major impact on the performance of the \textsc{FlexFringe} model.
 Comparing the \onlyInt to the \plusShort training conditions, the \textsc{FlexFringe} model jumps at least 20 percentage points in each case.
 The neural models, on the other hand, are much less sensitive to the inclusion of the short training data, with the largest improvement being 10 points (for the LSTM model in the \med training regime) and the other models gaining less than 5 percentage points.
-These differences persist across the various test
-sets as shown in Figure \ref{fig:overall-diff}.
-
+These differences persist across test
+sets as shown in Figure \ref{fig:overall-diff} .\footnote{The boxes labeled SR and SA should be labeled IR and IA, respectively. This will be fixed if accepted to the conference.}
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../analysis/figs/acc-diff-ps-ol-box.pdf}
-\caption{Difference in overall accuracy between \sm \plusShort and
-  \sm \onlyInt by model \& test type.}
+\includegraphics[width=0.75\linewidth]{../analysis/figs/acc-diff-ps-ol-box.pdf}
+\caption{Difference in overall accuracy between \plusShort and
+  \onlyInt by model \& test type.}
 \vspace{-1em}
 \label{fig:overall-diff}
 \end{figure}
@@ -542,7 +542,7 @@ benefits far more from the inclusion of short strings, while the
 neural models rely more on long strings to achieve their
 performance. 
 This seems to be particularly true for the GRU and LSTM
-which see the large perfomance increases in the \sm and
+which see the large performance increases in the \sm and
 \med conditions.
 
 % Further breakdowns of performance by language class are given in
@@ -570,9 +570,9 @@ the biggest factor again being the adversariality of the test sets
   \centering
   \begin{tabular}{cccc}
     \toprule
-    \origRand    & \longRand    & \origAdv    & \longAdv    \\
+    \origRand & \longRand & \origAdv & \longAdv \\
     \midrule                   
-    0.741 & 0.714 & 0.662 & 0.641 \\
+    0.741     & 0.714     & 0.662    & 0.641    \\
     \bottomrule
   \end{tabular}
   \caption{\textsc{FlexFringe} mean accuracy by test set}
@@ -580,20 +580,20 @@ the biggest factor again being the adversariality of the test sets
 \end{table}
 
 Interestingly, the state merging algorithm demonstrated less of a drop in performance between the random and adversarial conditions than the neural models.
-To investigate further, Table~\ref{tab:ff-acc-test-set-by-train} reports
+Table~\ref{tab:ff-acc-test-set-by-train} reports
 the mean accuracies in these test sets by training condition.
 
 \begin{table}[t]
   \centering
   \begin{tabular}{lcccc}
   \toprule
-    Training condition & \origRand    & \longRand    & \origAdv    & \longAdv    \\
+    Training condition & \origRand & \longRand & \origAdv & \longAdv \\
     \midrule                                                
-    \onlyShort         & 0.832 & 0.791 & 0.725 & 0.698  \\ 
-    \sm \plusShort   & 0.845 & 0.815 & 0.749 & 0.727  \\
-    \sm \onlyInt         & 0.576 & 0.569 & 0.544 & 0.539  \\  
-    \med \plusShort  & 0.862 & 0.840 & 0.774 & 0.755  \\ 
-    \med \onlyInt        & 0.613 & 0.603 & 0.579 & 0.571  \\
+    \onlyShort         & 0.832     & 0.791     & 0.725    & 0.698    \\ 
+    \sm \plusShort     & 0.845     & 0.815     & 0.749    & 0.727    \\
+    \sm \onlyInt       & 0.576     & 0.569     & 0.544    & 0.539    \\  
+    \med \plusShort    & 0.862     & 0.840     & 0.774    & 0.755    \\ 
+    \med \onlyInt      & 0.613     & 0.603     & 0.579    & 0.571    \\
     \bottomrule
 \end{tabular}
 \caption{Mean \textsc{FlexFringe} accuracy by test type and training condition}
@@ -612,10 +612,22 @@ In the \med \plusShort condition, the situation between \textsc{FlexFringe} and 
 GRU reverses, with the GRU model only showing about a 5 point drop,
 and  \textsc{FlexFringe} showing about 9 point drop.
 
-In sum, when only short strings are provided,  \textsc{FlexFringe} is more
+To investigate whether the drops between FlexFringe and each neural model were statistically significant, we conducted statistical analyses using the paired t-test. Pairing was done by matching accuracy scores for FlexFringe and a neural model according to the factors \Alpha, \Class, \Tier, \kay, \jay, and \eye.  The differences between accuracy in the IR and IA test sets, and the differences between LR and LA test sets were examined separately. Since there were four neural models and 2 conditions (\orig and \lng), we ran 8 paired t-tests. Every test came back significant (\(p < \num{2.2e-16}\)). Figure~\ref{fig:test-diffs} shows the differences in accuracy between the test sets for each of the models.
+\begin{figure}[t!]
+  \centering
+  \includegraphics[width=0.45\linewidth]{../analysis/figs/sr-sa-diff.pdf}
+   \includegraphics[width=0.45\linewidth]{../analysis/figs/lr-la-diff.pdf} 
+  \caption{asd}
+  \label{fig:test-diffs}
+\end{figure}
+
+In general, the paired t-test should be used for normally distributed data when the numbers of data points are small. As the number of data points increases,
+he normal population assumption becomes less important
+because of the Central Limit Theorem \citep[pp. 119, 192-3]{Agresti2018}. Here, the histograms did not appear normally distribution, but there were over a thousand data points being analyzed, so we concluded the paired t-test was appropriate.
+
+In sum, when only short strings are provided, \textsc{FlexFringe} is more
 resilient to adversarial test sets than the neural models. 
-With longer strings and additional training data, the neural models, and especially the GRU,
-become more resilient to adversarial tests.
+With longer strings and additional training data, the neural models, and especially the GRU, become more resilient to adversarial tests.
 
 \subsection{FlexFringe Performance by Language Class} \label{sec:res-class}
 
@@ -690,10 +702,9 @@ relation was a significant factor. The languages are grouped by the
 logical level as shown in Table~\ref{tab:classes}, with the addition
 that Zp is grouped together with Reg. The Friedman rank sum test is
 not significant (Friedman chi-squared = 6.95, df = 4, p-value = 0.1386).
-
 To examine the ordering relation, we grouped the languages into four
 categories as shown in Table~\ref{tab:order-relation}.
-\begin{table}[ht]
+\begin{table}[t]
   \centering
   \begin{tabular}{lll}
     \toprule
@@ -705,7 +716,7 @@ categories as shown in Table~\ref{tab:order-relation}.
     \textsc{other} & Other                & PLT, TPLT, Reg, Zp    \\
     \bottomrule
   \end{tabular}
-  \caption{Langauge classes grouped by order relation.}
+  \caption{Language classes grouped by order relation.}
   \label{tab:order-relation}
 \end{table}
 
@@ -713,29 +724,18 @@ The Friedman test is insignificant but marginally so (Friedman
 chi-squared = 12.675, df = 3, p-value = 0.005395). We follow
 \citet{mlregtest}, who cite \citet{Benjamin2018} in setting the
 significance threshold to 0.005. Due to its closeness to the
-signficance threshold, we also report Nemenyi-Wilcoxon-Wilcox
-all-pairs test (Table~\ref{tab:nww-ord}). It indicates that this
-marginal significance is due entirely to the pairwise comparison of
-\textsc{succ} with \textsc{prec} and \textsc{Tsucc}.
-\begin{table}[t]
-  \centering
-  \begin{tabular}{llll}
-    \toprule
-          & OTHER & PREC  & SUCC  \\
-    \midrule
-    PREC  & 0.692 & \(-\) & \(-\) \\
-    SUCC  & 0.169 & 0.009 & \(-\) \\
-    TSUCC & 0.773 & 0.999 & 0.014 \\
-    \bottomrule
-  \end{tabular}
-  \caption{Nemenyi-Wilcoxon-Wilcon all-pairs test for the ordering relation}
-  \label{tab:nww-ord}
-\end{table}
+significance threshold, we also report Nemenyi-Wilcoxon-Wilcox
+all-pairs test (Table~\ref{tab:nww-ord} in the appendix). It indicates
+that this marginal significance is due entirely to the pairwise
+comparison of \textsc{succ} with \textsc{prec} and \textsc{Tsucc}.
+
 To sum up, the flexfringe model does not especially appear to be
 sensitive to the logical level or the ordering relation. This is not
 unexpected given that the state-merging algorithms it is based
 (e.g. RPNI and EDSM) on are intended to learn the class of
 deterministic finite-state automata.
+
+\vspace{-6ex}
 
 \section{Conclusions}  \label{sec:conclusion}
 The strongest model overall was the GRU, which performed best across partitions.
@@ -749,27 +749,28 @@ The neural methods, meanwhile, are more suited to large datasets and long string
 This finding is interesting because, in some settings, overall accuracy is not the only important factor when evaluating what makes a good learning model.
 In terms of modeling how humans learn natural language, for example, leveraging small data and short strings is a crucial property.
 Modulo counting, on the other hand, is generally considered to be outside the domain of human language patterns, so the success of the state-merging algorithm on the Zp languages may actually suggest it is in some ways \emph{too} powerful to be a good model for human language learning.
+State-merging algorithms which target aperiodic regular languages may therefore be of particular interest..
 Overall, the results of these experiments allow us to paint a more nuanced picture of which properties are relevant for learning regular languages and how different algorithms respond to different learning setups.
 
 Future research can continue to expand and refine these findings in several ways.
 Firstly, as noted in Section~\ref{sec:ff}, the gridsearch we conducted was limited to a small handful of the hyperparameters provided by \textsc{FlexFringe}.
-With a newer version of the code, it will be possible to vary more of these parameters and run a more complete gridsearch.
+Newer versions of \textsc{FlexFringe} make it possible to vary more of these parameters and run a more complete gridsearch.
 This will offer further insight about what state merging strategies work best for regular language learning, as well as potentially yielding a better-performing state merging algorithm.
 Relatedly, while the results of our gridsearch suggest that the \texttt{SearchDeep} search strategy may offer the best performance, this strategy is too time-consuming to use at a large scale without in some way limiting its search.
 As explained in Section~\ref{sec:ff}, the \texttt{SearchDeep} strategy is not just performing merges in a single prefix tree, but actually constructing a tree of all possible merges to find the smallest resulting finite state acceptor.
-This blows up exponentially with the size of the prefix tree in question, and for the \lrg data quickly becomes intractable.
+For the \lrg data, this quickly becomes impractical.
 To maintain the advantages of this strategy and still allow for scalability, this search of possible merges can be terminated after a specific time interval.
 Doing this will allow these experiments to be expanded to the \lrg data sizes.
 Finally, we follow \citet{adil23} in excluding languages with the largest alphabet size (64 characters) from our experiments, but future work should include these as well.
 
 
-\acks{Data set creation, model training, and evaluation were completed
-  on the Stony Brook SeaWulf HPC cluster maintained by Research
-  Computing and Cyberinfrastructure, and the Institute for Advanced
-  Computational Science at Stony Brook University and made possible by
-  NSF grant \#1531492. JH acknowledges the additional support of NSF
-  grant \#2416183. We also thank Sicco Verweer for his assistance with
-  FlexFringe.}
+% \acks{Data set creation, model training, and evaluation were completed
+%   on the Stony Brook SeaWulf HPC cluster maintained by Research
+%   Computing and Cyberinfrastructure, and the Institute for Advanced
+%   Computational Science at Stony Brook University and made possible by
+%   NSF grant \#1531492. JH acknowledges the additional support of NSF
+%   grant \#2416183. We also thank Sicco Verweer for his assistance with
+%   FlexFringe.}
 
 
 % \section*{Code Availability}
@@ -779,77 +780,94 @@ Finally, we follow \citet{adil23} in excluding languages with the largest alphab
 \newpage
 \appendix
 
+\section*{Appendix}
 
-\begin{table}[t]
+\begin{table}[h!]
   \centering
   \begin{tabular}{lcccc}
   \toprule
-    Training condition & \origRand    & \longRand    & \origAdv    & \longAdv    \\
+    Training condition & \origRand & \longRand & \origAdv & \longAdv \\
     \midrule                                                
-    \onlyShort         & 0.799 & 0.718 & 0.598 & 0.567  \\ 
-    \sm \plusShort   & 0.873 & 0.801 & 0.647 & 0.610  \\ 
-    \sm \onlyInt         & 0.851 & 0.790 & 0.621 & 0.594  \\ 
-    \med \plusShort  & 0.925 & 0.828 & 0.728 & 0.659  \\ 
-    \med \onlyInt        & 0.925 & 0.819 & 0.726 & 0.651  \\
+    \onlyShort         & 0.799     & 0.718     & 0.598    & 0.567    \\ 
+    \sm \plusShort     & 0.873     & 0.801     & 0.647    & 0.610    \\ 
+    \sm \onlyInt       & 0.851     & 0.790     & 0.621    & 0.594    \\ 
+    \med \plusShort    & 0.925     & 0.828     & 0.728    & 0.659    \\ 
+    \med \onlyInt      & 0.925     & 0.819     & 0.726    & 0.651    \\
     \bottomrule
 \end{tabular}
 \caption{Mean Simple RNN accuracy by test type and training condition}
  \label{tab:simple-acc-test-set-by-train}
 \end{table}
                   
-\begin{table}[t]
+\begin{table}[h!]
   \centering
   \begin{tabular}{lcccc}
   \toprule
-    Training condition & \origRand    & \longRand    & \origAdv    & \longAdv    \\
+    Training condition & \origRand & \longRand & \origAdv & \longAdv \\
     \midrule                                                
-    \onlyShort         & 0.765 & 0.721 & 0.565 & 0.544  \\ 
-    \sm \plusShort   & 0.860 & 0.822 & 0.636 & 0.604  \\ 
-    \sm \onlyInt         & 0.805 & 0.783 & 0.586 & 0.565  \\ 
-    \med \plusShort  & 0.956 & 0.923 & 0.820 & 0.767  \\ 
-    \med \onlyInt        & 0.948 & 0.912 & 0.812 & 0.751  \\
+    \onlyShort         & 0.765     & 0.721     & 0.565    & 0.544    \\ 
+    \sm \plusShort     & 0.860     & 0.822     & 0.636    & 0.604    \\ 
+    \sm \onlyInt       & 0.805     & 0.783     & 0.586    & 0.565    \\ 
+    \med \plusShort    & 0.956     & 0.923     & 0.820    & 0.767    \\ 
+    \med \onlyInt      & 0.948     & 0.912     & 0.812    & 0.751    \\
     \bottomrule
 \end{tabular}
 \caption{Mean LSTM accuracy by test type and training condition}
 \label{tab:lstm-acc-test-set-by-train}
 \end{table}
 
-\begin{table}[t]
+\begin{table}[h!]
   \centering
   \begin{tabular}{lcccc}
   \toprule
-    Training condition & \origRand    & \longRand    & \origAdv    & \longAdv    \\
+    Training condition & \origRand & \longRand & \origAdv & \longAdv \\
     \midrule                                                
-   \onlyShort         & 0.846 & 0.766 & 0.649 & 0.588  \\ 
-    \sm \plusShort   & 0.894 & 0.836 & 0.706 & 0.646  \\ 
-    \sm \onlyInt         & 0.879 & 0.827 & 0.684 & 0.640  \\ 
-    \med \plusShort  & 0.946 & 0.852 & 0.792 & 0.697  \\ 
-    \med \onlyInt        & 0.942 & 0.843 & 0.786 & 0.688  \\
+   \onlyShort          & 0.846     & 0.766     & 0.649    & 0.588    \\ 
+    \sm \plusShort     & 0.894     & 0.836     & 0.706    & 0.646    \\ 
+    \sm \onlyInt       & 0.879     & 0.827     & 0.684    & 0.640    \\ 
+    \med \plusShort    & 0.946     & 0.852     & 0.792    & 0.697    \\ 
+    \med \onlyInt      & 0.942     & 0.843     & 0.786    & 0.688    \\
     \bottomrule
 \end{tabular}
 \caption{Mean Transformer accuracy by test type and training condition}
 \label{tab:trans-acc-test-set-by-train}
 \end{table}
 
-\begin{table}[t]
+\begin{table}[h!]
   \centering
   \begin{tabular}{lcccc}
   \toprule
-   Training condition & \origRand    & \longRand    & \origAdv    & \longAdv    \\
+   Training condition & \origRand & \longRand & \origAdv & \longAdv \\
     \midrule                                                
-    \onlyShort         & 0.882 & 0.850 & 0.732 & 0.708  \\ 
-    \sm \plusShort   & 0.971 & 0.961 & 0.867 & 0.851  \\ 
-    \sm \onlyInt         & 0.911 & 0.899 & 0.774 & 0.762  \\ 
-    \med \plusShort  & 0.975 & 0.971 & 0.924 & 0.916  \\ 
-    \med \onlyInt        & 0.972 & 0.970 & 0.913 & 0.905  \\
+    \onlyShort        & 0.882     & 0.850     & 0.732    & 0.708    \\ 
+    \sm \plusShort    & 0.971     & 0.961     & 0.867    & 0.851    \\ 
+    \sm \onlyInt      & 0.911     & 0.899     & 0.774    & 0.762    \\ 
+    \med \plusShort   & 0.975     & 0.971     & 0.924    & 0.916    \\ 
+    \med \onlyInt     & 0.972     & 0.970     & 0.913    & 0.905    \\
     \bottomrule
 \end{tabular}
 \caption{Mean GRU accuracy by test type and training condition}
 \label{tab:gru-acc-test-set-by-train}
 \end{table}
 
+\begin{table}[h!]
+  \centering
+  \begin{tabular}{llll}
+    \toprule
+          & OTHER & PREC  & SUCC  \\
+    \midrule
+    PREC  & 0.692 & \(-\) & \(-\) \\
+    SUCC  & 0.169 & 0.009 & \(-\) \\
+    TSUCC & 0.773 & 0.999 & 0.014 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Nemenyi-Wilcoxon-Wilcon all-pairs test for the ordering relation}
+  \label{tab:nww-ord}
+\end{table}
+
 
 \vskip 0.2in
+
 \bibliography{refs}
 
 
