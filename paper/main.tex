@@ -361,7 +361,7 @@ details regarding these language classes.
   \label{tab:classes}
 \end{table}
 
-\citet{mlregtest} use the Language Toolkit \citep{Lambert2024} to
+\Citet{mlregtest} use the Language Toolkit \citep{Lambert2024} to
 verify that every language in some class A in \textsc{MLRegTest} belongs to A
 and does not belong to any other class B, where B is a subclass of A
 or is incomparable with A.
@@ -558,7 +558,7 @@ which see the large performance increases in the \sm and
 
 \subsection{FlexFringe Performance by Test Set} \label{sec:res-test}
 
-\citet{mlregtest} found that the performance of the neural models
+\Citet{mlregtest} found that the performance of the neural models
 varied significantly depending on the test sets. In particular, the
 accuracy on the adversarial test sets was much lower as compared to
 the random test sets. 
@@ -622,7 +622,7 @@ To investigate whether the drops between FlexFringe and each neural model were s
 \end{figure}
 
 In general, the paired t-test should be used for normally distributed data when the numbers of data points are small. As the number of data points increases,
-he normal population assumption becomes less important
+the normal population assumption becomes less important
 because of the Central Limit Theorem \citep[pp. 119, 192-3]{Agresti2018}. Here, the histograms did not appear normally distribution, but there were over a thousand data points being analyzed, so we concluded the paired t-test was appropriate.
 
 In sum, when only short strings are provided, \textsc{FlexFringe} is more
@@ -729,7 +729,7 @@ all-pairs test (Table~\ref{tab:nww-ord} in the appendix). It indicates
 that this marginal significance is due entirely to the pairwise
 comparison of \textsc{succ} with \textsc{prec} and \textsc{Tsucc}.
 
-To sum up, the flexfringe model does not especially appear to be
+To sum up, the \textsc{FlexFringe} model does not especially appear to be
 sensitive to the logical level or the ordering relation. This is not
 unexpected given that the state-merging algorithms it is based
 (e.g. RPNI and EDSM) on are intended to learn the class of
