@@ -48,6 +48,9 @@
 \usepackage{booktabs,multirow}
 \usepackage{subcaption}
 \usepackage[font=small,labelfont=bf]{caption}
+\usepackage{arydshln}
+
+\usepackage{cleveref}
 
 % Useful shorthand.
 \newcommand{\tsc}[1]{\textsc{#1}}
@@ -503,11 +506,8 @@ with \citet{adil23} and \citet{mlregtest}, respectively.
 % of calling the parenthesized Lisp expression, and \#& means
 % "whatever the entire pattern matched, converted to a number."
 
-The GRU consistently outperforms the other models across all
-experiments. 
-Interestingly, \textsc{FlexFringe} outperforms
-the other neural models in the \onlyShort and \sm \plusShort
-experiments. 
+Under the hyperparameters used here, the GRU consistently outperforms the other models across all experiments. 
+Interestingly, \textsc{FlexFringe} outperforms the other neural models in the \onlyShort and \sm \plusShort experiments. 
 In all other training conditions, the neural networks outperform
 \textsc{FlexFringe}, with the exception of the Simple RNN in the
 \med \plusShort condition.
@@ -565,52 +565,99 @@ the random test sets.
 The Friedman rank sum test for the \textsc{FlexFringe}
 model tested here is also significant (\(p < \num{2.2e-16}\)), with
 the biggest factor again being the adversariality of the test sets
-(Table~\ref{tab:ff-acc-test-set}).
-\begin{table}[t]
-  \centering
-  \begin{tabular}{cccc}
-    \toprule
-    \origRand & \longRand & \origAdv & \longAdv \\
-    \midrule                   
-    0.741     & 0.714     & 0.662    & 0.641    \\
-    \bottomrule
-  \end{tabular}
-  \caption{\textsc{FlexFringe} mean accuracy by test set}
- \label{tab:ff-acc-test-set}
-\end{table}
+(Table~\ref{tab:ff-acc-test-set-by-train}).
+%\begin{table}[t]
+%  \centering
+%  \begin{tabular}{ccc:ccc}
+%    \toprule
+%    \origRand & \origAdv & \% drop & \longRand & \longAdv & \% drop \\
+%    \midrule                   
+%    0.741     & 0.662    & 10.7\% 	& 0.714     & 0.641   & 10.2\% \\
+%    \bottomrule
+%  \end{tabular}
+%  \caption{\textsc{FlexFringe} mean accuracy by test set}
+% \label{tab:ff-acc-test-set}
+%\end{table}
 
 Interestingly, the state merging algorithm demonstrated less of a drop in performance between the random and adversarial conditions than the neural models.
 Table~\ref{tab:ff-acc-test-set-by-train} reports
 the mean accuracies in these test sets by training condition.
 
+%\begin{table}[t]
+%	\centering
+%	\begin{tabular}{lccc:ccc}
+%		\toprule
+%		Training condition & \origRand & \origAdv & \% drop & \longRand & \longAdv & \% drop \\
+%		\midrule                                                
+%		\onlyShort         & 0.832    & 0.725    & 12.9\%   & 0.791    & 0.698    & 11.8\%   \\
+%		\sm \plusShort     & 0.845    & 0.749    & 11.4\%   & 0.815    & 0.727    & 10.8\%   \\
+%		\sm \onlyInt       & 0.576    & 0.544    & 5.6\%    & 0.569    & 0.539    & 5.3\%    \\
+%		\med \plusShort    & 0.862    & 0.774    & 10.2\%   & 0.840    & 0.755    & 10.1\%   \\
+%		\med \onlyInt      & 0.613    & 0.579    & 5.5\%    & 0.603    & 0.571    & 5.3\%    \\
+%		\bottomrule
+%	\end{tabular}
+%	\caption{Mean \textsc{FlexFringe} accuracy by test type and training condition}
+%	\label{tab:ff-acc-test-set-by-train}
+%\end{table}
+
+
 \begin{table}[t]
-  \centering
-  \begin{tabular}{lcccc}
-  \toprule
-    Training condition & \origRand & \longRand & \origAdv & \longAdv \\
-    \midrule                                                
-    \onlyShort         & 0.832     & 0.791     & 0.725    & 0.698    \\ 
-    \sm \plusShort     & 0.845     & 0.815     & 0.749    & 0.727    \\
-    \sm \onlyInt       & 0.576     & 0.569     & 0.544    & 0.539    \\  
-    \med \plusShort    & 0.862     & 0.840     & 0.774    & 0.755    \\ 
-    \med \onlyInt      & 0.613     & 0.603     & 0.579    & 0.571    \\
-    \bottomrule
-\end{tabular}
-\caption{Mean \textsc{FlexFringe} accuracy by test type and training condition}
- \label{tab:ff-acc-test-set-by-train}
+	\centering
+	\begin{tabular}{lccc:ccc}
+		\toprule
+		Training condition & \origRand & \origAdv & $\Delta$ error rate & \longRand & \longAdv & $\Delta$ error rate \\
+		\midrule                                                
+		\onlyShort         & 0.832    & 0.725    & $\times$1.64   & 0.791    & 0.698    & $\times$1.44   \\
+		\sm \plusShort     & 0.845    & 0.749    & $\times$1.62   & 0.815    & 0.727    & $\times$1.48   \\
+		\sm \onlyInt       & 0.576    & 0.544    & $\times$1.08   & 0.569    & 0.539    & $\times$1.07   \\
+		\med \plusShort    & 0.862    & 0.774    & $\times$1.64   & 0.840    & 0.755    & $\times$1.53   \\
+		\med \onlyInt      & 0.613    & 0.579    & $\times$1.09   & 0.603    & 0.571    & $\times$1.08   \\
+		\bottomrule
+	\end{tabular}
+	\caption{Mean \textsc{FlexFringe} accuracy by test type and training condition}
+	\label{tab:ff-acc-test-set-by-train}
 \end{table}
 
-Table~\ref{tab:ff-acc-test-set-by-train} shows that, even in the \onlyShort training condition, the performance drop is at most roughly
-10-11 points. 
-This is in contrast to the neural models, which shows at
-best about a 15 point drop in accuracy in the \onlyShort condition
-(the GRU; see Tables~\ref{tab:gru-acc-test-set-by-train}) and at worst
-about a 20 point drop in accuracy (see
-Tables~\ref{tab:simple-acc-test-set-by-train}
-to~\ref{tab:trans-acc-test-set-by-train} in the appendix). 
-In the \med \plusShort condition, the situation between \textsc{FlexFringe} and the
-GRU reverses, with the GRU model only showing about a 5 point drop,
-and  \textsc{FlexFringe} showing about 9 point drop.
+
+%\begin{table}[t]
+%	\centering
+%	\begin{tabular}{lccc:ccc}
+%		\toprule
+%		Training condition & \origRand & \origAdv & \% drop & \longRand & \longAdv & \% drop \\
+%		\midrule                                                
+%		\onlyShort         & 0.882    & 0.732    & 17.0\%   & 0.850    & 0.708    & 16.7\%   \\
+%		\sm \plusShort     & 0.971    & 0.867    & 10.7\%   & 0.961    & 0.851    & 11.4\%   \\
+%		\sm \onlyInt       & 0.911    & 0.774    & 15.0\%   & 0.899    & 0.762    & 15.2\%   \\
+%		\med \plusShort    & 0.975    & 0.924    & 5.2\%    & 0.971    & 0.916    & 5.7\%    \\
+%		\med \onlyInt      & 0.972    & 0.913    & 6.1\%    & 0.970    & 0.905    & 6.7\%    \\
+%		\bottomrule
+%	\end{tabular}
+%	\caption{Mean GRU accuracy by test type and training condition}
+%	\label{tab:gru-acc-test-set-by-train}
+%\end{table}
+
+\begin{table}[t]
+	\centering
+	\begin{tabular}{lccc:ccc}
+		\toprule
+		Training condition & \origRand & \origAdv & $\Delta$ error rate & \longRand & \longAdv & $\Delta$ error rate \\
+		\midrule                                                
+		\onlyShort         & 0.882    & 0.732    & $\times$2.27   & 0.850    & 0.708    & $\times$1.95   \\
+		\sm \plusShort     & 0.971    & 0.867    & $\times$4.59   & 0.961    & 0.851    & $\times$3.82   \\
+		\sm \onlyInt       & 0.911    & 0.774    & $\times$2.54   & 0.899    & 0.762    & $\times$2.36   \\
+		\med \plusShort    & 0.975    & 0.924    & $\times$3.04   & 0.971    & 0.916    & $\times$2.90   \\
+		\med \onlyInt      & 0.972    & 0.913    & $\times$3.11   & 0.970    & 0.905    & $\times$3.17   \\
+		\bottomrule
+	\end{tabular}
+	\caption{Mean GRU accuracy by test type and training condition}
+	\label{tab:gru-acc-test-set-by-train}
+\end{table}
+
+Table~\ref{tab:ff-acc-test-set-by-train} shows that, even in the \onlyShort training condition, the performance drop is at most roughly 10-11 points. 
+This is in contrast to the neural models, which shows at best about a 15 point drop in accuracy in the \onlyShort condition (the GRU; see Table~\ref{tab:gru-acc-test-set-by-train}) and at worst about a 20 point drop in accuracy (see Tables~\crefrange{tab:simple-acc-test-set-by-train}{tab:trans-acc-test-set-by-train} in the appendix). 
+In the \med \plusShort condition, the GRU does a better job with the adversarial set in terms of absolute difference in accuracy, dropping about 5 percentage points where \textsc{FlexFringe} drops about 9.
+On the other hand, that 9 point drop represents only a 1.6-factor increase in the number of errors made by \textsc{FlexFringe}, while errors made by the GRU model increase by a factor of 3.
+
 
 To investigate whether the drops between FlexFringe and each neural model were statistically significant, we conducted statistical analyses using the paired t-test. Pairing was done by matching accuracy scores for FlexFringe and a neural model according to the factors \Alpha, \Class, \Tier, \kay, \jay, and \eye.  The differences between accuracy in the IR and IA test sets, and the differences between LR and LA test sets were examined separately. Since there were four neural models and 2 conditions (\orig and \lng), we ran 8 paired t-tests. Every test came back significant (\(p < \num{2.2e-16}\)). Figure~\ref{fig:test-diffs} shows the differences in accuracy between the test sets for each of the models.
 \begin{figure}[t!]
@@ -735,10 +782,10 @@ unexpected given that the state-merging algorithms it is based
 (e.g. RPNI and EDSM) on are intended to learn the class of
 deterministic finite-state automata.
 
-\vspace{-6ex}
+%\vspace{-6ex}
 
 \section{Conclusions}  \label{sec:conclusion}
-The strongest model overall was the GRU, which performed best across partitions.
+Across partitions, neural models--in particular the GRU--were able to outperform \textsc{FlexFringe} in terms of total accuracy.
 Strikingly, however, the state merging algorithm benefited far more from the addition of short strings than any of the neural models, seeing major jumps in performance between the \onlyInt and \plusShort conditions.
 In fact, the state merging algorithm performed most competitively in the \onlyShort and \sm \plusShort conditions, where it outperformed all neural models except the GRU.
 Additionally, the state merging algorithm showed particularly impressive performance on the Zp class of languages (characterized by modulo counting), where it outperformed all other models.
@@ -782,72 +829,106 @@ Finally, we follow \citet{adil23} in excluding languages with the largest alphab
 
 \section*{Appendix}
 
+%\begin{table}[h!]
+%	\centering
+%	\begin{tabular}{lcccccc}
+%		\toprule
+%		Training condition & \origRand & \origAdv & \% drop & \longRand & \longAdv & \% drop \\
+%		\midrule                                                
+%		\onlyShort         & 0.799    & 0.598    & 25.2\%   & 0.718    & 0.567    & 21.0\%   \\
+%		\sm \plusShort     & 0.873    & 0.647    & 25.9\%   & 0.801    & 0.610    & 23.8\%   \\
+%		\sm \onlyInt       & 0.851    & 0.621    & 27.0\%   & 0.790    & 0.594    & 24.8\%   \\
+%		\med \plusShort    & 0.925    & 0.728    & 21.3\%   & 0.828    & 0.659    & 20.4\%   \\
+%		\med \onlyInt      & 0.925    & 0.726    & 21.5\%   & 0.819    & 0.651    & 20.5\%   \\
+%		\bottomrule
+%	\end{tabular}
+%	\caption{Mean Simple RNN accuracy by test type and training condition}
+%	\label{tab:simple-acc-test-set-by-train}
+%\end{table}
+
 \begin{table}[h!]
-  \centering
-  \begin{tabular}{lcccc}
-  \toprule
-    Training condition & \origRand & \longRand & \origAdv & \longAdv \\
-    \midrule                                                
-    \onlyShort         & 0.799     & 0.718     & 0.598    & 0.567    \\ 
-    \sm \plusShort     & 0.873     & 0.801     & 0.647    & 0.610    \\ 
-    \sm \onlyInt       & 0.851     & 0.790     & 0.621    & 0.594    \\ 
-    \med \plusShort    & 0.925     & 0.828     & 0.728    & 0.659    \\ 
-    \med \onlyInt      & 0.925     & 0.819     & 0.726    & 0.651    \\
-    \bottomrule
-\end{tabular}
-\caption{Mean Simple RNN accuracy by test type and training condition}
- \label{tab:simple-acc-test-set-by-train}
+	\centering
+	\begin{tabular}{lcccccc}
+		\toprule
+		Training condition & \origRand & \origAdv & $\Delta$ error rate & \longRand & \longAdv & $\Delta$ error rate \\
+		\midrule                                                
+		\onlyShort         & 0.799    & 0.598    & $\times$2.00   & 0.718    & 0.567    & $\times$1.54   \\
+		\sm \plusShort     & 0.873    & 0.647    & $\times$2.78   & 0.801    & 0.610    & $\times$1.96   \\
+		\sm \onlyInt       & 0.851    & 0.621    & $\times$2.54   & 0.790    & 0.594    & $\times$1.93   \\
+		\med \plusShort    & 0.925    & 0.728    & $\times$3.63   & 0.828    & 0.659    & $\times$1.98   \\
+		\med \onlyInt      & 0.925    & 0.726    & $\times$3.65   & 0.819    & 0.651    & $\times$1.93   \\
+		\bottomrule
+	\end{tabular}
+	\caption{Mean Simple RNN accuracy by test type and training condition}
+	\label{tab:simple-acc-test-set-by-train}
 \end{table}
                   
-\begin{table}[h!]
-  \centering
-  \begin{tabular}{lcccc}
-  \toprule
-    Training condition & \origRand & \longRand & \origAdv & \longAdv \\
-    \midrule                                                
-    \onlyShort         & 0.765     & 0.721     & 0.565    & 0.544    \\ 
-    \sm \plusShort     & 0.860     & 0.822     & 0.636    & 0.604    \\ 
-    \sm \onlyInt       & 0.805     & 0.783     & 0.586    & 0.565    \\ 
-    \med \plusShort    & 0.956     & 0.923     & 0.820    & 0.767    \\ 
-    \med \onlyInt      & 0.948     & 0.912     & 0.812    & 0.751    \\
-    \bottomrule
-\end{tabular}
-\caption{Mean LSTM accuracy by test type and training condition}
-\label{tab:lstm-acc-test-set-by-train}
-\end{table}
+%\begin{table}[h!]
+%	\centering
+%	\begin{tabular}{lcccccc}
+%		\toprule
+%		Training condition & \origRand & \origAdv & \% drop & \longRand & \longAdv & \% drop \\
+%		\midrule                                                
+%		\onlyShort         & 0.765    & 0.565    & 26.1\%   & 0.721    & 0.544    & 24.5\%   \\
+%		\sm \plusShort     & 0.860    & 0.636    & 26.0\%   & 0.822    & 0.604    & 26.5\%   \\
+%		\sm \onlyInt       & 0.805    & 0.586    & 27.2\%   & 0.783    & 0.565    & 27.8\%   \\
+%		\med \plusShort    & 0.956    & 0.820    & 14.2\%   & 0.923    & 0.767    & 16.9\%   \\
+%		\med \onlyInt      & 0.948    & 0.812    & 14.3\%   & 0.912    & 0.751    & 17.7\%   \\
+%		\bottomrule
+%	\end{tabular}
+%	\caption{Mean LSTM accuracy by test type and training condition}
+%	\label{tab:lstm-acc-test-set-by-train}
+%\end{table}
 
 \begin{table}[h!]
-  \centering
-  \begin{tabular}{lcccc}
-  \toprule
-    Training condition & \origRand & \longRand & \origAdv & \longAdv \\
-    \midrule                                                
-   \onlyShort          & 0.846     & 0.766     & 0.649    & 0.588    \\ 
-    \sm \plusShort     & 0.894     & 0.836     & 0.706    & 0.646    \\ 
-    \sm \onlyInt       & 0.879     & 0.827     & 0.684    & 0.640    \\ 
-    \med \plusShort    & 0.946     & 0.852     & 0.792    & 0.697    \\ 
-    \med \onlyInt      & 0.942     & 0.843     & 0.786    & 0.688    \\
-    \bottomrule
-\end{tabular}
-\caption{Mean Transformer accuracy by test type and training condition}
-\label{tab:trans-acc-test-set-by-train}
+	\centering
+	\begin{tabular}{lcccccc}
+		\toprule
+		Training condition & \origRand & \origAdv & $\Delta$ error rate & \longRand & \longAdv & $\Delta$ error rate \\
+		\midrule                                                
+		\onlyShort         & 0.765    & 0.565    & $\times$1.85   & 0.721    & 0.544    & $\times$1.63   \\
+		\sm \plusShort     & 0.860    & 0.636    & $\times$2.60   & 0.822    & 0.604    & $\times$2.22   \\
+		\sm \onlyInt       & 0.805    & 0.586    & $\times$2.12   & 0.783    & 0.565    & $\times$2.00   \\
+		\med \plusShort    & 0.956    & 0.820    & $\times$4.09   & 0.923    & 0.767    & $\times$3.03   \\
+		\med \onlyInt      & 0.948    & 0.812    & $\times$3.62   & 0.912    & 0.751    & $\times$2.83   \\
+		\bottomrule
+	\end{tabular}
+	\caption{Mean LSTM accuracy by test type and training condition}
+	\label{tab:lstm-acc-test-set-by-train}
 \end{table}
 
+%\begin{table}[h!]
+%	\centering
+%	\begin{tabular}{lcccccc}
+%		\toprule
+%		Training condition & \origRand & \origAdv & \% drop & \longRand & \longAdv & \% drop \\
+%		\midrule                                                
+%		\onlyShort         & 0.846    & 0.649    & 23.3\%   & 0.766    & 0.588    & 23.2\%   \\
+%		\sm \plusShort     & 0.894    & 0.706    & 21.0\%   & 0.836    & 0.646    & 22.7\%   \\
+%		\sm \onlyInt       & 0.879    & 0.684    & 22.2\%   & 0.827    & 0.640    & 22.6\%   \\
+%		\med \plusShort    & 0.946    & 0.792    & 16.3\%   & 0.852    & 0.697    & 18.2\%   \\
+%		\med \onlyInt      & 0.942    & 0.786    & 16.6\%   & 0.843    & 0.688    & 18.4\%   \\
+%		\bottomrule
+%	\end{tabular}
+%	\caption{Mean Transformer accuracy by test type and training condition}
+%	\label{tab:trans-acc-test-set-by-train}
+%\end{table}
+
 \begin{table}[h!]
-  \centering
-  \begin{tabular}{lcccc}
-  \toprule
-   Training condition & \origRand & \longRand & \origAdv & \longAdv \\
-    \midrule                                                
-    \onlyShort        & 0.882     & 0.850     & 0.732    & 0.708    \\ 
-    \sm \plusShort    & 0.971     & 0.961     & 0.867    & 0.851    \\ 
-    \sm \onlyInt      & 0.911     & 0.899     & 0.774    & 0.762    \\ 
-    \med \plusShort   & 0.975     & 0.971     & 0.924    & 0.916    \\ 
-    \med \onlyInt     & 0.972     & 0.970     & 0.913    & 0.905    \\
-    \bottomrule
-\end{tabular}
-\caption{Mean GRU accuracy by test type and training condition}
-\label{tab:gru-acc-test-set-by-train}
+	\centering
+	\begin{tabular}{lcccccc}
+		\toprule
+		Training condition & \origRand & \origAdv & $\Delta$ error rate & \longRand & \longAdv & $\Delta$ error rate \\
+		\midrule                                                
+		\onlyShort         & 0.846    & 0.649    & $\times$2.28   & 0.766    & 0.588    & $\times$1.76   \\
+		\sm \plusShort     & 0.894    & 0.706    & $\times$2.77   & 0.836    & 0.646    & $\times$2.16   \\
+		\sm \onlyInt       & 0.879    & 0.684    & $\times$2.61   & 0.827    & 0.640    & $\times$2.08   \\
+		\med \plusShort    & 0.946    & 0.792    & $\times$3.85   & 0.852    & 0.697    & $\times$2.05   \\
+		\med \onlyInt      & 0.942    & 0.786    & $\times$3.69   & 0.843    & 0.688    & $\times$1.99   \\
+		\bottomrule
+	\end{tabular}
+	\caption{Mean Transformer accuracy by test type and training condition}
+	\label{tab:trans-acc-test-set-by-train}
 \end{table}
 
 \begin{table}[h!]
