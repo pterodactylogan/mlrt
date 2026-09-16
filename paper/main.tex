@@ -422,9 +422,8 @@ The purpose of including \short strings in training is to investigate how much t
 % In this work, we rebuilt the short training sets using that same recipe because \citeauthor{adil23} used a preliminary version of \textsc{MLRegTest}, and we used the published version.\footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}
 In their preliminary experiments, \citeauthor{adil23} used an early, unfinished version of \textsc{MLRegTest} which included issues with string sampling (see footnote 5 on page 19 of \citet{mlregtest}) as well as some errors in the underlying automata for generating certain languages.
 Additionally, \citeauthor{adil23} tested only three state merging variants (corresponding to the RPNI, EDSM, and ALERGIA algorithms) by setting the parameters of the \textsc{FlexFringe} model to fixed default settings.
-In this work, we replicate their analyses on the final, published version of \textsc{MLRegTest}
-\footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}, 
-as well as conducting a gridsearch to identify the best-performing \textsc{FlexFringe} parameter settings.
+In this work, we replicate their analyses on the final, published version of \textsc{MLRegTest},
+as well as conducting a gridsearch to identify the best-performing \textsc{FlexFringe} parameter settings.\footnote{MLRegTest is publicly available with Dryad \url{https://doi.org/10.5061/dryad.dncjsxm4h} under the license \emph{CC0 1.0 Universal (CC0 1.0) Public Domain Dedication} (\url{https://creativecommons.org/publicdomain/zero/1.0/}).}  
 We also extend their experiments to provide a comparison against neural network models on the \short datasets.
 
 We conducted three kinds of experiments. 
@@ -516,12 +515,12 @@ Another important observation is that the addition of the short training data ma
 Comparing the \onlyInt to the \plusShort training conditions, the \textsc{FlexFringe} model jumps at least 20 percentage points in each case.
 The neural models, on the other hand, are much less sensitive to the inclusion of the short training data, with the largest improvement being 10 points (for the LSTM model in the \med training regime) and the other models gaining less than 5 percentage points.
 These differences persist across test
-sets as shown in Figure \ref{fig:overall-diff} .\footnote{The boxes labeled SR and SA should be labeled IR and IA, respectively. This will be fixed if accepted to the conference.}
+sets as shown in Figure \ref{fig:overall-diff}.\footnote{The boxes labeled SR and SA should be labeled IR and IA, respectively. This will be fixed if accepted to the conference.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.75\linewidth]{../analysis/figs/acc-diff-ps-ol-box.pdf}
-\caption{Difference in overall accuracy between \plusShort and
-  \onlyInt by model \& test type.}
+\caption{Difference in overall accuracy between \sm \plusShort and
+  \sm \onlyInt by model and test type.}
 \vspace{-1em}
 \label{fig:overall-diff}
 \end{figure}
