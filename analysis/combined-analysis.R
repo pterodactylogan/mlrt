@@ -115,7 +115,6 @@ diffs <- everything %>%
 
 # PS vs. OS
 diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
-<<<<<<< Updated upstream
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
   facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
   theme_bw() +
@@ -125,7 +124,6 @@ diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
 	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
 	legend.position = "none"
   ) +
-=======
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
   facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
   theme_bw() + 
@@ -135,7 +133,6 @@ diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
         axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
         legend.position = "none"
   ) + 
->>>>>>> Stashed changes
   ggtitle("Difference in Acc from Small-PS to OS by Model")
 ggsave("figs/acc-diff-ps-os.pdf", width=6, height=4)
 
