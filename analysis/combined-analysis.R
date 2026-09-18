@@ -77,6 +77,11 @@ everything <- rbind(all_neural, all_ff)
 # TODO: RENAME SR,SA,LR,LA --> IR,IA,LR,LA respectively.
 #              (so really just SR,SA --> IR,IA)
 
+# In order for the figures to display the 
+# test set names we need to 
+# replace the values in the 'split' column:
+# "SR" -> "IR" and "SA" -> "IA"
+
 
 # write.csv(everything, "everything.csv", row.names = FALSE)
 
@@ -110,6 +115,7 @@ diffs <- everything %>%
 
 # PS vs. OS
 diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
+<<<<<<< Updated upstream
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
   facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
   theme_bw() +
@@ -119,10 +125,21 @@ diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
 	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
 	legend.position = "none"
   ) +
+=======
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) + 
+  theme_bw() + 
+  ylab("Difference in Accuracy") + 
+  xlab("") + 
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
+        legend.position = "none"
+  ) + 
+>>>>>>> Stashed changes
   ggtitle("Difference in Acc from Small-PS to OS by Model")
 ggsave("figs/acc-diff-ps-os.pdf", width=6, height=4)
 
-# PS vs. OL
+# PS vs. OL  -> PS vs. OI
 diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
   facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
