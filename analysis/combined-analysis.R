@@ -3,16 +3,16 @@ library(tidyr)
 library(stringr)
 library(ggplot2)
 
-# Helper function to add column adding the data types 
+# Helper function to add column adding the data types
 add_type <- function(df, type){
   new_df <- df %>% mutate(data_type = type)
   return(new_df)
 }
 
 
-# Load in and clean and fix all the neural data 
+# Load in and clean and fix all the neural data
 load_nn <- function(path){
-  # Load in and label all the nn results 
+  # Load in and label all the nn results
   neural_os <- add_type(
     read.csv(file.path(path, "onlyshort_evals.csv")),
     "OS")
@@ -22,30 +22,30 @@ load_nn <- function(path){
   neural_ol <- add_type(
     read.csv(file.path(path, "standard_evals.csv")),
     "OL")
-  # Clean it so the column names are the same as ff 
+  # Clean it so the column names are the same as ff
   neural_df = rbind(neural_os, neural_ps, neural_ol) %>%
     mutate(recall = tp / (tp+fn)) %>%
     filter(alph < 64) %>%
     select(data_type,
-           alphabet_size = alph, 
-           tier_size = tier, 
-           language_class = class, 
-           factor_width = k, 
-           threshold = j, 
-           index = i, 
-           split = test_type,
-           accuracy, 
-           precision, 
-           recall, 
-           f1 = fscore,
-           brier_score = brier,
-           model = network_type,
-           train_size = train_set_size
-    ) 
+	   alphabet_size = alph,
+	   tier_size = tier,
+	   language_class = class,
+	   factor_width = k,
+	   threshold = j,
+	   index = i,
+	   split = test_type,
+	   accuracy,
+	   precision,
+	   recall,
+	   f1 = fscore,
+	   brier_score = brier,
+	   model = network_type,
+	   train_size = train_set_size
+    )
   return(neural_df)
 }
 
-# Load in and clean and fix all the FF data 
+# Load in and clean and fix all the FF data
 load_ff <- function(path){
   ff_os <- add_type(
     read.csv(file.path(path, "models-os/0.0.1.0.0.0.searchdeep.0.ini/eval_combined.csv")),
@@ -74,31 +74,32 @@ all_neural <- load_nn("../neural")
 all_ff <- load_ff("../FlexFringe/FlexFringe")
 everything <- rbind(all_neural, all_ff)
 
+# TODO: RENAME SR,SA,LR,LA --> IR,IA,LR,LA respectively.
+#              (so really just SR,SA --> IR,IA)
+
+
 # write.csv(everything, "everything.csv", row.names = FALSE)
 
-# Make Table 1 in the paper 
+# Making Tables
+
 table1 <- everything %>%
   group_by(model, data_type, train_size) %>%
   summarize(meanaccuracy = round(mean(accuracy), 3))
 
-# Make Table 2 in the paper 
 table2 <- everything %>%
   filter(data_type == "OS") %>%
-  group_by(model, split) %>% 
+  group_by(model, split) %>%
   summarize(meanaccuracy = round(mean(accuracy), 3))
 
-# Make Table 3 in the paper 
-table3 <- everything %>% 
+table3 <- everything %>%
   filter(data_type == "PS" & train_size == "Small") %>%
-  group_by(model, split) %>% 
+  group_by(model, split) %>%
   summarize(meanaccuracy = round(mean(accuracy), 3))
 
-# Make Table 4 in the paper 
-table4 <- everything %>% 
-  filter(data_type == "OL" & train_size == "Small") %>% 
-  group_by(model, split) %>% 
+table4 <- everything %>%
+  filter(data_type == "OL" & train_size == "Small") %>%
+  group_by(model, split) %>%
   summarize(meanaccuracy = round(mean(accuracy), 3))
-
 
 # Get the differences in performance by language and make boxplots
 diffs <- everything %>%
@@ -107,31 +108,31 @@ diffs <- everything %>%
   pivot_wider(names_from = data_type, values_from = accuracy) %>%
   drop_na()
 
-# PS vs. OS 
+# PS vs. OS
 diffs %>% ggplot(aes(x = model, y = PS - OS, fill = model)) +
-  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  ylab("Difference in Accuracy") + 
-  xlab("") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
-        legend.position = "none"
-  ) + 
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Difference in Accuracy") +
+  xlab("") +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
+	legend.position = "none"
+  ) +
   ggtitle("Difference in Acc from Small-PS to OS by Model")
 ggsave("figs/acc-diff-ps-os.pdf", width=6, height=4)
 
 # PS vs. OL
 diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
-  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  ylab("Difference in Accuracy") + 
-  xlab("") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
-        legend.position = "none"
-  ) + 
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Difference in Accuracy") +
+  xlab("") +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
+	legend.position = "none"
+  ) +
   ggtitle("Difference in Acc from Small-PS to Small-OI by Model")
 ggsave("figs/acc-diff-ps-ol.pdf", width=6, height=4)
 
@@ -140,61 +141,61 @@ diffs$'PS-OS' <- diffs$PS - diffs$OS
 diffs$'PS-OL' <- diffs$PS - diffs$OL
 
 # Color by difference type
-diffs %>% 
+diffs %>%
   pivot_longer(c('PS-OS', 'PS-OL'), names_to = "Difference", values_to = "val") %>%
-  ggplot(aes(x = model, y = val, fill = Difference, alpha = Difference)) + 
+  ggplot(aes(x = model, y = val, fill = Difference, alpha = Difference)) +
   geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
-  scale_fill_manual(values = c("PS-OS" = "purple", "PS-OL" = "turquoise")) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
-  ) + 
-  ylab("Difference in Accuracy") + 
-  xlab("") + 
+  scale_fill_manual(values = c("PS-OS" = "purple", "PS-OL" = "turquoise")) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
+  ) +
+  ylab("Difference in Accuracy") +
+  xlab("") +
   ggtitle("Difference in Accuracy Across Conditions by Model")
 ggsave("figs/overall-diff-v2.pdf", width=6, height=4)
 
-# Color by model, alpha by difference type 
-diffs %>% 
+# Color by model, alpha by difference type
+diffs %>%
   pivot_longer(c('PS-OS', 'PS-OL'), names_to = "Difference", values_to = "val") %>%
-  ggplot(aes(x = model, y = val, fill = model, alpha = Difference)) + 
+  ggplot(aes(x = model, y = val, fill = model, alpha = Difference)) +
   scale_alpha_manual(values = c(0.25, 1)) +
-  geom_boxplot(outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
+  geom_boxplot(outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
   guides(
     fill = "none",
     alpha = guide_legend(override.aes = list(fill = "gray40"))
-  ) + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
-  ) + 
-  ylab("Difference in Accuracy") + 
-  xlab("") + 
+  ) +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
+  ) +
+  ylab("Difference in Accuracy") +
+  xlab("") +
   ggtitle("Difference in Accuracy Across Conditions by Model")
 ggsave("figs/overall-diff.pdf", width=6, height=4)
 
-# Box plots of the overall difference 
-temp <- everything %>% 
+# Box plots of the overall difference
+temp <- everything %>%
   filter(data_type == "PS" & train_size == "Small") %>%
-  group_by(model, split) %>% 
+  group_by(model, split) %>%
   summarize(meanaccuracy_ps = round(mean(accuracy), 3))
 
-# Explore the difference in accuracy scores between PS and OS 
+# Explore the difference in accuracy scores between PS and OS
 diff <- inner_join(temp, table2, by=c("model", "split"))
 diff$accuracy_diff = diff$meanaccuracy_ps - diff$meanaccuracy
 diff %>%
-  ggplot(aes(x = model, y = accuracy_diff, fill = model)) + 
-  geom_col(alpha = 0.7) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  ylab("Difference in Accuracy") + 
-  xlab("") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
-        legend.position = "none"
-  ) + 
+  ggplot(aes(x = model, y = accuracy_diff, fill = model)) +
+  geom_col(alpha = 0.7) +
+  facet_wrap(~factor(split, levels=c("SR", "SA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Difference in Accuracy") +
+  xlab("") +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
+	legend.position = "none"
+  ) +
   ggtitle("Difference in Acc from Small-PS to OS by Model")
 ggsave("figs/acc-diff-ps-os-box.pdf", width=6, height=4)
 
@@ -202,86 +203,86 @@ ggsave("figs/acc-diff-ps-os-box.pdf", width=6, height=4)
 diff <- inner_join(temp, table4, by=c("model", "split"))
 diff$accuracy_diff = diff$meanaccuracy_ps - diff$meanaccuracy
 diff %>%
-  ggplot(aes(x = model, y = accuracy_diff, fill = model)) + 
-  geom_col(alpha = 0.7) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  ylab("Difference in Accuracy") + 
-  xlab("") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1), 
-        legend.position = "none"
-  ) + 
+  ggplot(aes(x = model, y = accuracy_diff, fill = model)) +
+  geom_col(alpha = 0.7) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Difference in Accuracy") +
+  xlab("") +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
+	legend.position = "none"
+  ) +
   ggtitle("Difference in Acc from Small-PS to OI by Model")
 ggsave("figs/acc-diff-ps-ol-box.pdf", width=6, height=4)
 
-# accuracy by datatype 
+# accuracy by datatype
 everything %>%
   ggplot(aes(x = model, y = accuracy, fill = factor(data_type, levels=c("OS", "PS", "OL")))) +
-  geom_boxplot(alpha=0.6) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  ylab("Accuracy") + 
-  xlab("Model") + 
+  geom_boxplot(alpha=0.6) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Accuracy") +
+  xlab("Model") +
   labs(fill = "Data Type") +
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
-  ggtitle("Average Accuracy by Data Type") 
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 30, vjust = 1, hjust = 1)) +
+  ggtitle("Average Accuracy by Data Type")
 ggsave("figs/acc-by-datatype.pdf")
 
 
 # Performance by language class
 everything %>%
-  filter(data_type =="OS") %>% 
-  ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
-  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  ylab("Accuracy") + 
+  filter(data_type =="OS") %>%
+  ggplot(aes(x = language_class, y = accuracy, fill = model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Accuracy") +
   labs(fill="Model")+
-  xlab("Language Class") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average Accuracy by Language Class + Model on Only Short") 
+  xlab("Language Class") +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
+  ggtitle("Average Accuracy by Language Class + Model on Only Short")
 ggsave("figs/os-by-class.pdf", width = 15, height = 7)
 
 
 everything %>%
-  filter(data_type =="PS") %>% 
-  ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
-  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  ylab("Accuracy") + 
+  filter(data_type =="PS") %>%
+  ggplot(aes(x = language_class, y = accuracy, fill = model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Accuracy") +
   labs(fill="Model")+
-  xlab("Language Class") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average Accuracy by Language Class + Model on Plus Short") 
+  xlab("Language Class") +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
+  ggtitle("Average Accuracy by Language Class + Model on Plus Short")
 ggsave("figs/ps-by-class.pdf", width = 15, height = 7)
 
 everything %>%
-  filter(data_type =="OL") %>% 
-  ggplot(aes(x = language_class, y = accuracy, fill = model)) + 
-  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) + 
-  theme_bw() + 
-  ylab("Accuracy") + 
+  filter(data_type =="OL") %>%
+  ggplot(aes(x = language_class, y = accuracy, fill = model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Accuracy") +
   labs(fill="Model")+
-  xlab("Language Class") + 
-  theme(plot.title = element_text(hjust = 0.5), 
-        axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
-  ggtitle("Average Accuracy by Language Class + Model on Only Long") 
+  xlab("Language Class") +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 67, vjust = 1, hjust = 1)) +
+  ggtitle("Average Accuracy by Language Class + Model on Only Long")
 ggsave("figs/ol-by-class.pdf", width = 15, height = 7)
 
 
 # Want to show that when short strings are included, FF does better on adversarial than NN
 
 # Get the differences between adversarial and regular performance for L and S strings
-jeffstats <- everything %>% 
+jeffstats <- everything %>%
   select(-precision, -recall, -f1, -brier_score) %>%
   pivot_wider(
-    names_from = split, 
+    names_from = split,
     values_from = accuracy
   )
 jeffstats$Ldiff = jeffstats$LR - jeffstats$LA
@@ -289,22 +290,22 @@ jeffstats$Sdiff = jeffstats$SR - jeffstats$SA
 
 # For the long
 jeffstats %>% ggplot(aes(x = model, y = Ldiff, fill=model)) +
-  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  theme_bw() + 
-  xlab("") + 
-  ylab("Difference in Accuracy") + 
-  ggtitle("Difference in Accuracy between LR and LA Test Sets") + 
-  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) 
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  theme_bw() +
+  xlab("") +
+  ylab("Difference in Accuracy") +
+  ggtitle("Difference in Accuracy between LR and LA Test Sets") +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
 ggsave("figs/lr-la-diff.pdf", width=6, height=4)
 
 
 # For the short
 jeffstats %>% ggplot(aes(x = model, y = Sdiff, fill=model)) +
-  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) + 
-  theme_bw() + 
-  xlab("") + 
-  ylab("Difference in Accuracy") + 
-  ggtitle("Difference in Accuracy between IR and IA Test Sets") + 
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  theme_bw() +
+  xlab("") +
+  ylab("Difference in Accuracy") +
+  ggtitle("Difference in Accuracy between IR and IA Test Sets") +
   theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
 ggsave("figs/sr-sa-diff.pdf", width=6, height=4)
 
@@ -313,25 +314,25 @@ ggsave("figs/sr-sa-diff.pdf", width=6, height=4)
 
 jeffstats %>% ggplot(aes(x = Ldiff, fill = model)) +
   # Use bins or binwidth to control the bar sizes
-  geom_histogram(aes(alpha=0.6)) + 
-  facet_wrap(~model) + 
-  theme_bw() + 
-  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) 
+  geom_histogram(aes(alpha=0.6)) +
+  facet_wrap(~model) +
+  theme_bw() +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
 ggsave("figs/lr-la-hist.pdf", width=6, height=4)
 
 jeffstats %>% ggplot(aes(x = Ldiff, fill = model)) +
   # Use bins or binwidth to control the bar sizes
-  geom_histogram(aes(alpha=0.6)) + 
-  facet_wrap(~model) + 
-  theme_bw() + 
-  theme(legend.position = "none", plot.title = element_text(hjust = 0.5)) 
+  geom_histogram(aes(alpha=0.6)) +
+  facet_wrap(~model) +
+  theme_bw() +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
 ggsave("figs/sr-sa-hist.pdf", width=6, height=4)
 
 # Ok these are clearly non-normal. CLT should still protect a paired t-test but tread lightly
-finaljeffstats <- jeffstats %>% 
+finaljeffstats <- jeffstats %>%
   select(-c(SR, SA, LR, LA)) %>%
   pivot_wider(
-  names_from = model, 
+  names_from = model,
   values_from = c(Ldiff, Sdiff)
 )
 
@@ -345,4 +346,3 @@ for (column in c("Sdiff_simple", "Sdiff_lstm", "Sdiff_transformer", "Sdiff_gru")
   print(column)
   print(t.test(finaljeffstats[[column]], finaljeffstats$Sdiff_FF, paired=TRUE))
 }
-
