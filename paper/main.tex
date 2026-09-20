@@ -481,14 +481,15 @@ with \citet{adil23} and \citet{mlregtest}, respectively.
 \centering
 \begin{tabular}{rccccccc}
   \toprule
-                 & \textsc{only} & \sm      & \sm     & \med  & \med   \\
-  \textsc{Model} & \textsc{Short} & \plusShort & \onlyInt & \plusShort & \onlyInt \\
+                 & \textsc{only}  & \sm            & \sm            & \med           & \med           \\
+  \textsc{Model} & \textsc{Short} & \plusShort     & \onlyInt       & \plusShort     & \onlyInt       \\
   \midrule
-  FlexFringe     & 0.762          & 0.784               & 0.557               & 0.808          & 0.592           \\
-  Simple         & 0.671          & 0.733               & 0.714              & 0.785           & 0.780           \\
-  LSTM           & 0.649          & 0.730               & 0.685               & 0.866          & 0.856           \\
-  Transformer    & 0.712          & 0.770               & 0.758              & 0.822           & 0.815           \\
-  GRU            & \textbf{0.793} & \textbf{0.912}      & \textbf{0.837}      & \textbf{0.947} & \textbf{0.940}  \\
+   % Numbers from og-analysis.R 'FRIEDMAN TEST FOR TRAINING CONDITION'
+   FlexFringe   & 0.762          & 0.784          & 0.557          & 0.808          & 0.592          \\
+   Simple       & 0.671          & 0.733          & 0.714          & 0.785          & 0.780          \\
+   LSTM         & 0.649          & 0.730          & 0.685          & 0.866          & 0.856          \\
+   Transformer  & 0.712          & 0.770          & 0.758          & 0.822          & 0.815          \\
+   GRU          & \textbf{0.793} & \textbf{0.912} & \textbf{0.837} & \textbf{0.947} & \textbf{0.940} \\
   \bottomrule
 \end{tabular}
 \caption{Mean accuracy score across all test sets for all languages by
@@ -507,13 +508,12 @@ with \citet{adil23} and \citet{mlregtest}, respectively.
 
 Under the hyperparameters used here, the GRU consistently outperforms the other models across all experiments. 
 Interestingly, \textsc{FlexFringe} outperforms the other neural models in the \onlyShort and \sm \plusShort experiments. 
-In all other training conditions, the neural networks outperform
-\textsc{FlexFringe}, with the exception of the Simple RNN in the
-\med \plusShort condition.
+In all other training conditions, the neural networks outperform \textsc{FlexFringe},
+with the exception of the Simple RNN in the \med \plusShort condition.
 
 Another important observation is that the addition of the short training data makes a major impact on the performance of the \textsc{FlexFringe} model.
 Comparing the \onlyInt to the \plusShort training conditions, the \textsc{FlexFringe} model jumps at least 20 percentage points in each case.
-The neural models, on the other hand, are much less sensitive to the inclusion of the short training data, with the largest improvement being 10 points (for the LSTM model in the \med training regime) and the other models gaining less than 5 percentage points.
+The neural models, on the other hand, are much less sensitive to the inclusion of the short training data, with the largest improvement being about 4.5 points (for the LSTM model in the \sm training regime).
 These differences persist across test
 sets as shown in Figure \ref{fig:overall-diff}.\footnote{The boxes labeled SR and SA should be labeled IR and IA, respectively. This will be fixed if accepted to the conference.}
 \begin{figure}[t]
