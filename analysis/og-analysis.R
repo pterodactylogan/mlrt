@@ -34,21 +34,24 @@ everything$split <- recode_factor(everything$split, "SR" = "IR", "SA" = "IA")
 
 nolarge <- everything %>% filter(train_size != "Large")
 
-table1 <- data %>%
+# SP: ok so the issue here was that copying directly had a variable name that 
+# wasn't assigned in this notebook. Updated that. 
+
+table1 <- nolarge %>%
   group_by(model, data_type, train_size) %>%
   summarize(meanaccuracy = round(mean(accuracy), 3))
 
-table2 <- data %>%
+table2 <- nolarge %>%
   filter(data_type == "OS") %>%
   group_by(model, split) %>%
   summarize(meanaccuracy = round(mean(accuracy), 3))
 
-table3 <- data %>%
+table3 <- nolarge %>%
   filter(data_type == "PS" & train_size == "Small") %>%
   group_by(model, split) %>%
   summarize(meanaccuracy = round(mean(accuracy), 3))
 
-table4 <- data %>%
+table4 <- nolarge %>%
   filter(data_type == "OL" & train_size == "Small") %>%
   group_by(model, split) %>%
   summarize(meanaccuracy = round(mean(accuracy), 3))
