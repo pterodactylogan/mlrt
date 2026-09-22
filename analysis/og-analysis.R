@@ -125,6 +125,7 @@ for (m in models) {
 # FRIEDMAN TEST FOR TRAINING CONDITION
 # ========================================================================
 
+# This gives the data in Table 2 on page 7.
 for (m in models) {
   print(m)
   data.matrix = acast(df[[m]],
