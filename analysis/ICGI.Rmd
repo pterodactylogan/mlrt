@@ -1,0 +1,182 @@
+## The Final ICGI R-stats
+
+Import the relevant packages
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+```
+
+### Load in the data
+
+Ignoring large training size for now, and renaming SR to IR and SA to IA
+
+```{r}
+everything = read.csv('everything.csv', header=TRUE) %>% 
+  filter(train_size != "Large") %>% 
+   mutate(split = recode(split, SA = "IA", SR = "IR"))
+```
+
+### Table 2
+
+The micro-averaging version
+
+```{r}
+table2 <- everything %>%
+  group_by(model, data_type, train_size) %>%
+  summarize(.groups="drop_last", meanaccuracy = round(mean(accuracy), 3)) %>% 
+  pivot_wider(names_from = c(train_size, data_type),
+              values_from = meanaccuracy)
+print(table2, width = Inf)
+```
+
+### Figure 1
+
+```{r}
+# Get the differences 
+diffs <- everything %>%
+  filter(train_size == "Small") %>%
+  select(-c(brier_score, recall, precision, f1)) %>%
+  pivot_wider(names_from = data_type, values_from = accuracy) %>%
+  drop_na()
+
+# Make Figure 1
+diffs %>% ggplot(aes(x = model, y = PS - OL, fill = model)) +
+  stat_summary(fun = mean, geom = "bar", alpha = 0.7)  +
+  facet_wrap(~factor(split, levels=c("IR", "IA", "LR", "LA"))) +
+  theme_bw() +
+  ylab("Difference in Accuracy") +
+  xlab("") +
+  theme(plot.title = element_text(hjust = 0.5),
+	axis.text.x = element_text(angle = 35, vjust = 1, hjust = 1),
+	legend.position = "none"
+  ) +
+  ggtitle("Difference in Acc from PS to OI by Model")
+ggsave("figs/acc-diff-ps-ol-icgi.pdf", width=6, height=4)
+```
+
+### Table 3
+
+```{r}
+table3 <- everything %>% 
+  filter(model == "FF") %>% 
+  group_by(data_type, train_size, split) %>% 
+  summarize(.groups="drop_last", meanaccuracy = round(mean(accuracy), 3)) %>% 
+  pivot_wider(names_from = c(split), values_from = meanaccuracy) %>% 
+  mutate(delta_err_I = (1 - IA) / (1 - IR), delta_err_L = (1 - LA) / (1 - LR))
+
+print(table3, width = Inf)
+```
+
+### Table 4 
+
+```{r}
+table4 <- everything %>% 
+  filter(model == "gru") %>% 
+  group_by(data_type, train_size, split) %>% 
+  summarize(.groups="drop_last", meanaccuracy = round(mean(accuracy), 3)) %>% 
+  pivot_wider(names_from = c(split), values_from = meanaccuracy) %>% 
+  mutate(delta_err_I = (1 - IA) / (1 - IR), delta_err_L = (1 - LA) / (1 - LR))
+
+print(table4, width = Inf)
+```
+
+### Figure 2 
+
+```{r}
+# Get the differences between adversarial and regular performance for L and S strings
+jeffstats <- everything %>%
+  select(-precision, -recall, -f1, -brier_score) %>%
+  pivot_wider(
+    names_from = split,
+    values_from = accuracy
+  )
+jeffstats$Ldiff = jeffstats$LR - jeffstats$LA
+jeffstats$Sdiff = jeffstats$IR - jeffstats$IA
+
+# For the long
+jeffstats %>% ggplot(aes(x = model, y = Ldiff, fill=model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  theme_bw() +
+  xlab("") +
+  ylab("Difference in Accuracy") +
+  ggtitle("Difference in Accuracy between LR and LA Test Sets") +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
+ggsave("figs/lr-la-diff-icgi.pdf", width=6, height=4)
+
+
+# For the short
+jeffstats %>% ggplot(aes(x = model, y = Sdiff, fill=model)) +
+  geom_boxplot(alpha = 0.7, outlier.size = 0.5, outlier.alpha = 0.2, lwd = 0.2) +
+  theme_bw() +
+  xlab("") +
+  ylab("Difference in Accuracy") +
+  ggtitle("Difference in Accuracy between IR and IA Test Sets") +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5))
+ggsave("figs/sr-sa-diff-icgi.pdf", width=6, height=4)
+
+
+```
+
+### Table 5
+
+```{r}
+table5 <- everything %>% 
+  filter(model == "FF") %>% 
+  group_by(language_class) %>% 
+  summarize(meanaccuracy = round(mean(accuracy), 3))
+
+print(table5)
+```
+
+### Table 6
+
+```{r}
+table6 <- everything %>% 
+  filter(model == "FF" & data_type == "OS") %>% 
+  group_by(language_class) %>% 
+  summarize(meanaccuracy = round(mean(accuracy), 3))
+
+print(table6)
+```
+
+### Table 8 
+
+```{r}
+table8 <- everything %>% 
+  filter(model == "simple") %>% 
+  group_by(data_type, train_size, split) %>% 
+  summarize(.groups="drop_last", meanaccuracy = round(mean(accuracy), 3)) %>% 
+  pivot_wider(names_from = c(split), values_from = meanaccuracy) %>% 
+  mutate(delta_err_I = (1 - IA) / (1 - IR), delta_err_L = (1 - LA) / (1 - LR))
+
+print(table8, width = Inf)
+```
+
+### Table 9
+
+```{r}
+table9 <- everything %>% 
+  filter(model == "lstm") %>% 
+  group_by(data_type, train_size, split) %>% 
+  summarize(.groups="drop_last", meanaccuracy = round(mean(accuracy), 3)) %>% 
+  pivot_wider(names_from = c(split), values_from = meanaccuracy) %>% 
+  mutate(delta_err_I = (1 - IA) / (1 - IR), delta_err_L = (1 - LA) / (1 - LR))
+
+print(table9, width = Inf)
+```
+
+### Table 10 
+
+```{r}
+table10 <- everything %>% 
+  filter(model == "transformer") %>% 
+  group_by(data_type, train_size, split) %>% 
+  summarize(.groups="drop_last", meanaccuracy = round(mean(accuracy), 3)) %>% 
+  pivot_wider(names_from = c(split), values_from = meanaccuracy) %>% 
+  mutate(delta_err_I = (1 - IA) / (1 - IR), delta_err_L = (1 - LA) / (1 - LR))
+
+print(table10, width = Inf)
+```
