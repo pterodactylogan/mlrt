@@ -66,7 +66,7 @@
 \newcommand{\kay}{\tttx{k}}
 \newcommand{\jay}{\tttx{j}}
 \newcommand{\eye}{\tttx{i}}
-\newcommand{\TrainSize}{\tttx{TrainSize}}
+\newcommand{\TrainSize}{\tttx{TrainType}}
 \newcommand{\TestType}{\tttx{TestType}}
 \newcommand{\NNType}{\tttx{NNType}}
 \newcommand{\AlgoType}{\tttx{AlgoType}}
@@ -302,11 +302,11 @@ same hyperparameters as \citeauthor{mlregtest}\footnote{The
 
 \textsc{MLRegTest} \citep{mlregtest} contains training, development,
 and test data from 1,800 regular languages. The languages were
-organized along three dimensions: alphabet size, logical complexity,
-and model-theoretic representations of the ordering relation in
-strings. The logical complexity and ordering relations gave rise to 16
-distinct classes, shown in Table~\ref{tab:classes} (reproduced from
-\citet{adil23}).
+organized along three major dimensions: alphabet size (\Alpha), logical
+complexity, and model-theoretic representations of the ordering
+relation in strings. The logical complexity and ordering relations
+gave rise to 16 distinct classes, shown in Table~\ref{tab:classes}
+(reproduced from \citet{adil23}).
 
 Five logics are considered: Monadic Second Order (MSO), First Order
 (FO), Propositional (Prop), Conjunctions of Negative literals (CNL)
@@ -316,21 +316,28 @@ which is properly contained in FO, which is contained within MSO.  The
 three model-theoretic ordering relations are successor
 ($\triangleleft$), tier-successor ($\triangleleft_T$), and precedence
 ($<$), which correspond to the concepts of substring, tier-substring,
-and subsequence, respectively.  A tier $T$ is a subset of the alphabet
-which can lead to a change of state. Non-tier elements are neutral and
-can be freely inserted or deleted \citep{Lambert2023}. \textsc{MLRegTest}
+and subsequence, respectively.  We use the term \emph{factor} to refer
+to these concepts, and languages in \textsc{MLRegTest} vary the sizes
+of these factors. A tier $T$ is a subset of the alphabet which can
+lead to a change of state. Non-tier elements are neutral and can be
+freely inserted or deleted \citep{Lambert2023}. \textsc{MLRegTest}
 considers an additional subclass of purely periodic languages they
 call Zp. For example, the language whose words contain an even number
-of $a$ symbols belongs to Zp. 
+of $a$ symbols belongs to Zp. Three additional parameters further
+describe the languages within each class. These are \Tier (the size of
+the tier), \kay (the size of the factors), \jay (the size of the
+threshold), and \eye (an index uniquely specifying the language within
+the class and alphabet size, ranging from 0 to 9).
 
-The names of these classes are given in Table~\ref{tab:classes},
-alongside their logical characterization. These classes and their
-relationships are discussed by many, including
-\citet{McNaughtonPapert1971, Thomas1982, Thomas1997, RogersPullum2011,
-  Rogers-HeinzEtAl-2013-CSC, rogers-lambert-2019-classes}. See
-\citet{Lambert+2021-TESRL} for an approach to learning these classes
-individually. Readers are referred to \citet{mlregtest} for additional
-details regarding these language classes.
+The names of these classes (\Class) are given in
+Table~\ref{tab:classes}, alongside their logical
+characterization. These classes and their relationships are discussed
+by many, including \citet{McNaughtonPapert1971, Thomas1982,
+  Thomas1997, RogersPullum2011, Rogers-HeinzEtAl-2013-CSC,
+  rogers-lambert-2019-classes}. See \citet{Lambert+2021-TESRL} for an
+approach to learning these classes individually. Readers are referred
+to \citet{mlregtest} for additional details regarding these language
+classes.
 \begin{table}[!t]
   \centering
   \begin{tabular}{cccc}
@@ -388,7 +395,7 @@ sets disjoint from the training set.
 follows. 
 For each string length (1-19), 25 positive and 25 negative strings were
 sampled with replacement.
-If no positive negative strings of a given length existed, none were drawn for that length.
+If no positive or negative strings of a given length existed, none were drawn for that length.
 This method resulted in a supplemental \short training set for each language, containing up to 1,000 shorter strings.
 It is worth noting that a key difference between these \short sets and the \orig sets originally included in \textsc{MLRegTest} is that for many regular languages, there is no guarantee that 25 positive (negative) strings can be generated for a given length.
 For example, many regular languages contain \emph{no} strings of length 1 or 2.
@@ -401,7 +408,7 @@ Some contain mostly positive examples, and some mostly negative.
 The original \textsc{MLRegTest} excluded shorter string lengths in order to run controlled experiments with balanced training sets.
 This work, however, is intended to explicitly examine the impact of shorter strings on the learning of regular languages, and we therefore consider the \short training data to be valuable.
 
-\textsc{MLRegTest} contains four test sets per language, based on the
+\textsc{MLRegTest} contains four test sets (\TestType) per language, based on the
 string length and the method of generation. 
 \orig{} test sets have strings of length 20-29, matching the training data, while \lng{} sets have strings of length
 31-50. 
@@ -439,8 +446,8 @@ This submission also excludes the Large training sets because the
 training (see \S\ref{sec:conclusion} for notes on future work in this direction).
 
 Thus for each language, for each learning algorithm, we considered five
-training regimes: \onlyShort, \sm \plusShort, \sm \onlyInt, \med \plusShort, and \med \onlyInt.
-Each trained model was tested on
+training regimes (\TrainSize): \onlyShort, \sm \plusShort, \sm \onlyInt, \med \plusShort, and \med \onlyInt.
+Each trained model (\AlgoType) was tested on
 the aforementioned four test sets.
   
 % Terminology recap
@@ -453,18 +460,28 @@ The \onlyShort experiments for both \textsc{FlexFringe} and the neural models ar
 
 \section{Results} \label{sec:results}
 
-We use the same non-parametric methods as \citet{mlregtest} and \citet{adil23} in our analysis, as advocated by \citet{Demsar2006} and \citet{Stapor2017}. 
-% We report aggregate accuracy for the models as the primary measurement of performance since the test sets are balanced, and very strong correlations were found across performance measures. 
-We report aggregate accuracy as the primary measurement of performance for all models.
-Given the balanced nature of the tests sets, very strong correlations were found across performance measures.
-Experimental observations are aggregated over the variables
-\Tier, \kay, \jay, \eye and \Alpha. These are held as blocking
-variables, and factors \Class, \TrainSize, \TestType, and \AlgoType
-are treatment variables which average accuracy is computed over. The
-Friedman rank sum test is used to determine if the factor being held
-for treatment contributes significantly to predicting model accuracy
-by holding the null hypothesis that all variations of the value
-contribute equally. Additional analysis using the
+Given the balanced nature of the tests sets, very strong correlations
+were found across all performance measures (accuracy, brier score,
+f1). Therefore, we report aggregate accuracy as the primary
+measurement of performance for all models.
+
+We use the same non-parametric methods and full factorial design as
+\citet{mlregtest} and \citet{adil23} in our analysis, as advocated by
+\citet{Demsar2006} and \citet{Stapor2017}.
+% We report aggregate accuracy for the models as the primary measurement of performance since the test sets are balanced, and very strong correlations were found across performance measures.
+The factorial design mean-aggregates the factors \Tier, \kay, \jay,
+and \eye. As such, the value of each cell of the design is the average
+of accuracy scores of observations that have the same values of
+\Alpha, \Class, \TrainSize, \AlgoType, and \TestType but different
+values of \Tier, \kay, \jay, and \eye. Thus, any of the five factors
+\Alpha, \Class, \TrainSize, \TestType, or \AlgoType are treatment
+variables and can be tested for their association with accuracy using
+the non-parametric advocated for above.
+
+The Friedman rank sum test is used to determine if the factor being
+held for treatment contributes significantly to predicting model
+accuracy by holding the null hypothesis that all variations of the
+value contribute equally. Additional analysis using the
 Nemenyi-Wilcoxon-Wilcox all-pairs test identified which pairs differ
 significantly.
 
@@ -511,14 +528,10 @@ Interestingly, \textsc{FlexFringe} outperforms the other neural models in the \o
 In all other training conditions, the neural networks outperform \textsc{FlexFringe},
 with the exception of the Simple RNN in the \med \plusShort condition.
 
-Another important observation is that the addition of the short training data makes a major impact on the performance of the \textsc{FlexFringe} model.
-Comparing the \onlyInt to the \plusShort training conditions, the \textsc{FlexFringe} model jumps at least 20 percentage points in each case.
-The neural models, on the other hand, are much less sensitive to the inclusion of the short training data, with the largest improvement being about 4.5 points (for the LSTM model in the \sm training regime).
-These differences persist across test
-sets as shown in Figure \ref{fig:overall-diff}.\footnote{The boxes labeled SR and SA should be labeled IR and IA, respectively. This will be fixed if accepted to the conference.}
+Another important observation is that the addition of the short training data makes a major impact on the performance of the \textsc{FlexFringe} model.  Comparing the \onlyInt to the \plusShort training conditions, the \textsc{FlexFringe} model jumps at least 20 percentage points in each case.  The neural models, on the other hand, are much less sensitive to the inclusion of the short training data, with the largest improvement being about 4.5 points (for the LSTM model in the \sm training regime).  These differences persist across test sets as shown in Figure \ref{fig:overall-diff}.\footnote{This figure is computed directly from the full table of experimental observations and not from the mean-aggregate cells in the factorial design.}
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.75\linewidth]{../analysis/figs/acc-diff-ps-ol-box.pdf}
+\includegraphics[width=0.75\linewidth]{../analysis/figs/acc-diff-ps-ol-icgi.pdf}
 \caption{Difference in overall accuracy between \sm \plusShort and
   \sm \onlyInt by model and test type.}
 \vspace{-1em}
@@ -658,11 +671,11 @@ In the \med \plusShort condition, the GRU does a better job with the adversarial
 On the other hand, that 9 point drop represents only a 1.6-factor increase in the number of errors made by \textsc{FlexFringe}, while errors made by the GRU model increase by a factor of 3.
 
 
-To investigate whether the drops between FlexFringe and each neural model were statistically significant, we conducted statistical analyses using the paired t-test. Pairing was done by matching accuracy scores for FlexFringe and a neural model according to the factors \Alpha, \Class, \Tier, \kay, \jay, and \eye.  The differences between accuracy in the IR and IA test sets, and the differences between LR and LA test sets were examined separately. Since there were four neural models and 2 conditions (\orig and \lng), we ran 8 paired t-tests. Every test came back significant (\(p < \num{2.2e-16}\)). Figure~\ref{fig:test-diffs} shows the differences in accuracy between the test sets for each of the models.
+To investigate whether the drops between FlexFringe and each neural model were statistically significant, we conducted statistical analyses using the paired t-test. Pairing was done by matching accuracy scores for FlexFringe and a neural model according to the factors \Alpha, \Class, \Tier, \kay, \jay, and \eye.  The differences between accuracy in the IR and IA test sets, and the differences between LR and LA test sets were examined separately. Since there were four neural models and 2 conditions (\orig and \lng), we ran 8 paired t-tests. Every test came back significant (\(p < \num{2.2e-16}\)). Figure~\ref{fig:test-diffs} shows the differences in accuracy between the test sets for each of the models.\footnote{This figure is computed directly from the full table of experimental observations and not from the mean-aggregate cells in the factorial design.}
 \begin{figure}[t!]
   \centering
-  \includegraphics[width=0.45\linewidth]{../analysis/figs/sr-sa-diff.pdf}
-   \includegraphics[width=0.45\linewidth]{../analysis/figs/lr-la-diff.pdf} 
+  \includegraphics[width=0.45\linewidth]{../analysis/figs/sr-sa-diff-icgi.pdf}
+   \includegraphics[width=0.45\linewidth]{../analysis/figs/lr-la-diff-icgi.pdf} 
   \caption{Difference in overall accuracy between random and adversarial test sets by model and test string length.}
   \label{fig:test-diffs}
 \end{figure}
